@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-red: #C53B3B;
+  --color-brand-red-dark: #A02E2E;
+  --color-brand-dark: #1A1A1A;
+  --color-brand-gray: #4A4A4A;
+  --color-brand-light: #F4F4F4;
+  --color-brand-off-white: #F8F8F8;
+  --color-credit: #2D7A4F;
+  --color-build: #D4620A;
+  --color-buy-blue: #1A5C9A;
+  --color-ibm-blue: #006EB4;
+  --font-sans: var(--font-montserrat);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #C53B3B;
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid #C53B3B;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+/* --- KEYFRAMES --- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(3deg); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+
+@keyframes text-reveal {
+  0% { transform: translateY(100%) skewY(6deg); opacity: 0; }
+  100% { transform: translateY(0) skewY(0); opacity: 1; }
+}
+
+@keyframes counter-fill {
+  from { width: 0; }
+}
+
+/* --- UTILITIES --- */
+.animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.6s ease-out forwards; }
+.animate-blob-drift { animation: blob-drift 20s ease-in-out infinite; }
+.animate-marquee { animation: marquee 40s linear infinite; }
+.animate-marquee-reverse { animation: marquee-reverse 40s linear infinite; }
+.animate-marquee-slow { animation: marquee 60s linear infinite; }
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dot-grid {
+  background-image: radial-gradient(rgba(26,26,26,0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.text-gradient-red {
+  background: linear-gradient(135deg, #C53B3B 0%, #ff6b6b 55%, #C53B3B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.shimmer-mask {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 0%,
+    #1a1a1a 45%,
+    #C53B3B 50%,
+    #1a1a1a 55%,
+    #1a1a1a 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 4s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Reveal — subtle fade-up when in viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Word-by-word reveal container */
+.word-reveal > span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.7em);
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tilt on hover — pure CSS 3D */
+.tilt-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.tilt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+/* Arrow flick — nudge on hover */
+.arrow-nudge {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .arrow-nudge {
+  transform: translateX(6px);
+}
+
+/* Ripple pulse for pre-launch dot */
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulse-ring 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Hero mouse spotlight */
+.spotlight {
+  --sx: 50%;
+  --sy: 50%;
+  background: radial-gradient(
+    600px circle at var(--sx) var(--sy),
+    rgba(197, 59, 59, 0.18),
+    rgba(197, 59, 59, 0.06) 40%,
+    transparent 65%
+  );
+  transition: background 0.15s ease-out;
+  pointer-events: none;
+}
+
+/* Card shadow standard */
+.card-shadow {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.card-shadow-hover:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+/* Section divider — thin red accent line */
+.section-divider {
+  height: 3px;
+  background: #C53B3B;
+  width: 48px;
+}
+
+/* FAQ accordion transition */
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+.accordion-body.open {
+  max-height: 500px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-float-slow,
+  .animate-blob-drift,
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-marquee-slow,
+  .shimmer-mask,
+  .pulse-ring::after,
+  .word-reveal > span {
+    animation: none;
+  }
+  .tilt-card:hover {
+    transform: none;
+  }
+}
