@@ -1,215 +1,458 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import Reveal from "@/components/Reveal";
-import CountUp from "@/components/CountUp";
-import Section from "@/components/ui/Section";
-import SectionLabel from "@/components/ui/SectionLabel";
+import { motion, AnimatePresence } from "framer-motion";
+import SegmentNavbar from "@/components/layout/SegmentNavbar";
 import { IG_JURURANCANG, WA_LINK1 } from "@/constants";
 
-export const metadata: Metadata = {
-  title: "Layanan ConsTech LBAG",
-  description: "Jasa konstruksi profesional barumahID — Jasa Gambar, Analisa Struktur, Renovasi & Konstruksi. Fee kompetitif 8–14% dari RAB proyek.",
-};
+const CHECK = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
+    <path d="M3 8.5l3.5 3.5L13 4" stroke="#C53B3B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
-const pillars = [
-  { title: "Lean Construction", desc: "Metodologi efisien yang meminimalkan pemborosan material, waktu, dan biaya.", icon: "📐" },
-  { title: "BIM", desc: "Building Information Modeling untuk perencanaan dan koordinasi yang presisi.", icon: "📊" },
-  { title: "AI", desc: "Estimasi biaya dan optimasi desain dengan teknologi kecerdasan buatan.", icon: "🤖" },
-  { title: "Green Construction", desc: "Pendekatan pembangunan berkelanjutan yang ramah lingkungan.", icon: "🌿" },
+const CROSS = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
+    <path d="M4 4l8 8M12 4l-8 8" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const tabs = ["Jasa Gambar", "Analisa Struktur", "Renovasi & Konstruksi"];
+
+interface PricingCard {
+  tier: string;
+  price: string;
+  unit: string;
+  duration: string;
+  features: { label: string; included: boolean }[];
+  highlighted?: boolean;
+  badge?: string;
+  ctaStyle: "outline" | "solid";
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const jasaGambarCards: PricingCard[] = [
+  {
+    tier: "BASIC",
+    price: "Rp 15.000",
+    unit: "/m²",
+    duration: "Maks. 7 hari pengerjaan",
+    features: [
+      { label: "Survey lokasi", included: true },
+      { label: "Konsultasi kebutuhan", included: true },
+      { label: "Denah lantai", included: true },
+      { label: "Gambar 3D eksterior", included: true },
+      { label: "Gambar arsitektur", included: true },
+      { label: "Gambar struktur", included: true },
+      { label: "Denah listrik & air (MEP)", included: false },
+      { label: "RAB", included: false },
+    ],
+    ctaStyle: "outline",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
+  },
+  {
+    tier: "PLUS",
+    price: "Rp 20.000",
+    unit: "/m²",
+    duration: "Maks. 10 hari pengerjaan",
+    features: [
+      { label: "Survey lokasi", included: true },
+      { label: "Konsultasi kebutuhan", included: true },
+      { label: "Denah lantai", included: true },
+      { label: "Gambar 3D eksterior", included: true },
+      { label: "Gambar arsitektur", included: true },
+      { label: "Gambar struktur", included: true },
+      { label: "Denah listrik & air (MEP)", included: false },
+      { label: "RAB", included: false },
+    ],
+    ctaStyle: "outline",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
+  },
+  {
+    tier: "PRO",
+    price: "Rp 30.000",
+    unit: "/m²",
+    duration: "Maks. 14 hari pengerjaan",
+    highlighted: true,
+    badge: "PALING LENGKAP",
+    features: [
+      { label: "Survey lokasi", included: true },
+      { label: "Konsultasi kebutuhan", included: true },
+      { label: "Denah lantai", included: true },
+      { label: "Gambar 3D eksterior", included: true },
+      { label: "Gambar arsitektur", included: true },
+      { label: "Gambar struktur", included: true },
+      { label: "Denah listrik & air (MEP)", included: true },
+      { label: "RAB", included: true },
+    ],
+    ctaStyle: "solid",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
+  },
 ];
 
-const services = [
+const analisaStrukturCards: PricingCard[] = [
   {
-    href: "/services/jasa-gambar",
-    title: "Jasa Gambar",
-    desc: "Gambar arsitektur dan struktur — DED, gambar kerja, site plan, potongan, dan detail.",
-    pricing: "Basic / Plus / Pro — per m²",
-    contact: "DM @jururancang_mahaksa",
-    contactHref: IG_JURURANCANG,
+    tier: "BASIC",
+    price: "Rp 18.000",
+    unit: "/item",
+    duration: "Maks. 7 hari pengerjaan",
+    features: [
+      { label: "Laporan perhitungan struktur (SNI)", included: true },
+      { label: "Dimensi kolom, balok, pelat, pondasi", included: true },
+      { label: "Penulangan / pembesian", included: true },
+      { label: "Gambar Detail Engineering Design (DED)", included: false },
+      { label: "RAB Struktur", included: false },
+    ],
+    ctaStyle: "outline",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
   },
   {
-    href: "/services/analisa-struktur",
-    title: "Analisa Struktur",
-    desc: "Analisa beban, material, fondasi, dan tulangan untuk keamanan struktur bangunan.",
-    pricing: "Basic / Plus / Pro — per item",
-    contact: "DM @jururancang_mahaksa",
-    contactHref: IG_JURURANCANG,
+    tier: "PLUS",
+    price: "Rp 25.000",
+    unit: "/item",
+    duration: "Maks. 10 hari pengerjaan",
+    features: [
+      { label: "Laporan perhitungan struktur (SNI)", included: true },
+      { label: "Dimensi kolom, balok, pelat, pondasi", included: true },
+      { label: "Penulangan / pembesian", included: true },
+      { label: "Gambar Detail Engineering Design (DED)", included: true },
+      { label: "RAB Struktur", included: false },
+    ],
+    ctaStyle: "outline",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
   },
   {
-    href: "/services/renovasi",
-    title: "Renovasi & Konstruksi",
-    desc: "Renovasi dan pembangunan baru dengan RAB transparan berdasarkan AHSP.",
-    pricing: "AHSP-based — fee 8–14% dari RAB",
-    contact: "WA Admin",
-    contactHref: `${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin konsultasi proyek.")}`,
+    tier: "PRO",
+    price: "Rp 35.000",
+    unit: "/item",
+    duration: "Maks. 14 hari pengerjaan",
+    highlighted: true,
+    badge: "PALING LENGKAP",
+    features: [
+      { label: "Laporan perhitungan struktur (SNI)", included: true },
+      { label: "Dimensi kolom, balok, pelat, pondasi", included: true },
+      { label: "Penulangan / pembesian", included: true },
+      { label: "Gambar Detail Engineering Design (DED)", included: true },
+      { label: "RAB Struktur", included: true },
+    ],
+    ctaStyle: "solid",
+    ctaLabel: "DM @jururancang_mahaksa →",
+    ctaHref: IG_JURURANCANG,
   },
 ];
 
-const processSteps = [
-  { num: "1", title: "Konsultasi Awal", desc: "Diskusi kebutuhan dan requirement proyek." },
-  { num: "2", title: "Survey Lokasi", desc: "Tim survey langsung ke lokasi proyek." },
-  { num: "3", title: "Perencanaan & RAB", desc: "Desain dan perhitungan anggaran transparan." },
-  { num: "4", title: "Pengerjaan", desc: "Eksekusi dengan monitoring progres berkala." },
-  { num: "5", title: "Serah Terima", desc: "Inspeksi final dan dokumentasi lengkap." },
+const tabFooterNotes = [
+  "* Harga dapat berubah sesuai kompleksitas project",
+  "* Perhitungan berbasis SNI + ETABS/SAP2000 · Harga dapat berubah sesuai kompleksitas project",
+  "* Harga sesuai AHSP — disepakati bersama klien",
+];
+
+function Card({ card }: { card: PricingCard }) {
+  return (
+    <div
+      className={`relative flex flex-col rounded-2xl p-8 ${
+        card.highlighted
+          ? "border-2 border-[#C53B3B] bg-[#FFF8F8]"
+          : "border border-black/[0.08] bg-white"
+      }`}
+    >
+      {card.badge && (
+        <span className="absolute right-4 top-4 rounded-full bg-[#C53B3B] px-3 py-1 text-xs font-bold text-white">
+          {card.badge}
+        </span>
+      )}
+      <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#888]">
+        {card.tier}
+      </p>
+      <p className="text-4xl font-black text-[#1A1A1A]">
+        {card.price}
+        <span className="ml-1 text-base font-normal text-[#888]">{card.unit}</span>
+      </p>
+      <p className="mb-6 mt-1 text-xs text-[#aaa]">{card.duration}</p>
+
+      <div className="my-6 border-t border-black/[0.06]" />
+
+      <div className="flex flex-1 flex-col gap-2">
+        {card.features.map((f) => (
+          <div key={f.label} className="flex items-start gap-2 text-sm">
+            {f.included ? CHECK : CROSS}
+            <span className={f.included ? "text-[#1A1A1A]" : "text-[#bbb]"}>
+              {f.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <a
+        href={card.ctaHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`mt-6 block w-full rounded-full py-3 text-center text-sm font-semibold transition ${
+          card.ctaStyle === "solid"
+            ? "bg-[#C53B3B] text-white hover:bg-red-700"
+            : "border border-black/20 text-[#1A1A1A] hover:border-black/50"
+        }`}
+      >
+        {card.ctaLabel}
+      </a>
+    </div>
+  );
+}
+
+function RenovasiTab() {
+  return (
+    <div className="mx-auto max-w-3xl">
+      <div className="rounded-2xl border border-black/[0.08] bg-white p-8">
+        <div className="grid gap-8 md:grid-cols-2">
+          <div>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#888]">
+              Yang Klien Dapatkan:
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {[
+                "Konsultasi & estimasi biaya awal",
+                "Pendampingan dan pengawasan lapangan",
+                "Koordinasi mandor, tukang & supplier",
+                "Manajemen proyek: perencanaan hingga serah terima",
+                "Pengadaan material dengan referensi harga pasar",
+                "Kontrol kualitas sesuai spesifikasi",
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-2 text-sm">
+                  {CHECK}
+                  <span className="text-[#1A1A1A]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#888]">
+              Cara Kami Menghitung Biaya:
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {[
+                "Dihitung berdasarkan AHSP (Analisa Harga Satuan Pekerjaan)",
+                "Standar resmi konstruksi Indonesia",
+                "RAB transparan disepakati di awal",
+                "Tidak ada biaya tersembunyi",
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-2 text-sm">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="mt-0.5 shrink-0"
+                  >
+                    <path
+                      d="M5 8h6M11 8l-2-2M11 8l-2 2"
+                      stroke="#C53B3B"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span className="text-[#1A1A1A]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-xl border border-[#C53B3B] bg-red-50 p-6 text-center">
+          <p className="text-lg font-bold text-[#1A1A1A]">
+            Konsultasi pertama GRATIS.
+          </p>
+          <p className="mt-1 text-sm text-[#666]">
+            Hubungi kami untuk penawaran sesuai project Anda.
+          </p>
+          <a
+            href={`${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin konsultasi proyek konstruksi.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block rounded-full bg-[#C53B3B] px-8 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+          >
+            Hubungi Admin WA →
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const tabHeaders = [
+  {
+    title: "Jasa Gambar & Modelling Konstruksi",
+    sub: "Via @jururancang_mahaksa · Gambar arsitektur, struktur, dan 3D lengkap",
+  },
+  {
+    title: "Jasa Desain & Analisa Struktur",
+    sub: "Via @jururancang_mahaksa · Perhitungan berbasis SNI + ETABS/SAP2000",
+  },
+  {
+    title: "Jasa Renovasi & Bangun Konstruksi",
+    sub: "Pendampingan & Manajemen Konstruksi — Fee berdasarkan RAB proyek",
+  },
+];
+
+const serviceMenuItems = [
+  { label: "Home", href: "/" },
+  { label: "Layanan", href: "/services" },
+  { label: "Tentang", href: "/tentang" },
+];
+
+const featureChips = [
+  "Jasa Gambar & Modelling",
+  "Analisa Struktur",
+  "Renovasi & Konstruksi",
+];
+
+const chipIcons = [
+  <svg key="g" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C53B3B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20h20" /><path d="M5 20V7l7-4 7 4v13" /><path d="M9 20v-4h6v4" /><path d="M9 12h.01M15 12h.01" /></svg>,
+  <svg key="s" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C53B3B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h20v18H2z" /><path d="M2 9h20" /><path d="M9 21V9" /></svg>,
+  <svg key="r" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C53B3B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>,
 ];
 
 export default function ServicesPage() {
+  const [activeTab, setActiveTab] = useState(0);
+
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-dark text-white">
-        <div className="absolute inset-0 hero-grid" />
-        <div className="animate-blob-drift absolute -top-20 -right-20 h-80 w-80 rounded-full bg-brand-red/15 blur-3xl" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <Reveal>
-            <SectionLabel dark>ConsTech LBAG</SectionLabel>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+      <SegmentNavbar segment="services" menuItems={serviceMenuItems} />
+
+      {/* Split Hero */}
+      <section className="bg-[#F8F5F0] px-6 py-24 md:px-10 md:py-32">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 md:grid-cols-[55fr_45fr]">
+          <div>
+            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#C53B3B]">
+              LAYANAN CONSTECH LBAG
+            </p>
+            <h1 className="mb-6 text-4xl font-black leading-tight text-[#1A1A1A] md:text-5xl lg:text-6xl">
               Proyekmu, dibikin mudah aja.
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/60">
-              Layanan konstruksi profesional dengan pendekatan modern — Lean, BIM, AI, Green Construction. Fee 8–14% dari RAB proyek.
+            <p className="mb-8 max-w-md text-base leading-relaxed text-[#666]">
+              Jasa gambar arsitektur, analisa struktur, dan manajemen konstruksi
+              — transparan dari awal, berbasis AHSP dan SNI.
             </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Keunggulan — 4 pillars */}
-      <Section background="light">
-        <Reveal>
-          <SectionLabel>Keunggulan</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            4 pilar pendekatan LBAG
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {pillars.map((p, i) => (
-            <Reveal key={p.title} delay={i * 80}>
-              <div className="flex h-full flex-col gap-3 rounded-xl border border-brand-dark/8 bg-white p-6 card-shadow tilt-card">
-                <span className="text-3xl">{p.icon}</span>
-                <h3 className="text-base font-extrabold text-brand-dark">{p.title}</h3>
-                <p className="text-sm leading-relaxed text-brand-gray">{p.desc}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
-      {/* 3 Layanan */}
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Layanan</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            3 layanan utama
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {services.map((s, i) => (
-            <Reveal key={s.title} delay={i * 100}>
-              <div className="flex h-full flex-col gap-5 rounded-xl border border-brand-dark/8 bg-white p-7 card-shadow tilt-card">
-                <h3 className="text-xl font-extrabold text-brand-dark">{s.title}</h3>
-                <p className="flex-1 text-sm leading-relaxed text-brand-gray">{s.desc}</p>
-                <p className="text-xs font-semibold text-brand-dark/60">{s.pricing}</p>
-                <div className="flex items-center justify-between gap-4 border-t border-brand-dark/8 pt-4">
-                  <Link href={s.href} className="text-sm font-bold text-brand-red hover:underline">
-                    Detail →
-                  </Link>
-                  <a href={s.contactHref} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-brand-gray hover:text-brand-dark">
-                    {s.contact}
-                  </a>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
-      {/* Track record */}
-      <section className="bg-brand-dark text-white">
-        <div className="mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <Reveal>
-            <SectionLabel dark>Track Record</SectionLabel>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Kenapa barumahID
-            </h2>
-          </Reveal>
-          <div className="mt-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-            <Reveal><div className="text-center"><p className="text-3xl font-black sm:text-4xl"><CountUp end={7} suffix="+" /></p><p className="mt-2 text-sm text-white/60">Tahun Pengalaman</p></div></Reveal>
-            <Reveal delay={80}><div className="text-center"><p className="text-3xl font-black sm:text-4xl"><CountUp end={457} prefix="Rp " suffix=" Jt" /></p><p className="mt-2 text-sm text-white/60">Revenue 2024–Mar 2026</p></div></Reveal>
-            <Reveal delay={160}><div className="text-center"><p className="text-3xl font-black sm:text-4xl"><CountUp end={30} suffix="+" /></p><p className="mt-2 text-sm text-white/60">Proyek Selesai</p></div></Reveal>
-            <Reveal delay={240}><div className="text-center"><p className="text-3xl font-black sm:text-4xl"><CountUp end={4} /></p><p className="mt-2 text-sm text-white/60">Kota Pilot Market</p></div></Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Partner */}
-      <Section background="light">
-        <Reveal>
-          <SectionLabel>Partner Engineering</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            Tim teknis yang berpengalaman
-          </h2>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-brand-gray">
-            Untuk Jasa Gambar dan Analisa Struktur, barumahID bermitra dengan{" "}
-            <a href={IG_JURURANCANG} target="_blank" rel="noopener noreferrer" className="font-bold text-brand-red hover:underline">
-              @jururancang_mahaksa
-            </a>{" "}
-            — tim arsitektur dan teknik sipil yang profesional.
-          </p>
-        </Reveal>
-      </Section>
-
-      {/* Proses */}
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Proses Kerja</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            5 tahap dari konsultasi sampai selesai
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {processSteps.map((s, i) => (
-            <Reveal key={s.num} delay={i * 80}>
-              <div className="flex flex-col gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-red text-sm font-black text-white">
-                  {s.num}
-                </span>
-                <h3 className="text-sm font-extrabold text-brand-dark">{s.title}</h3>
-                <p className="text-xs leading-relaxed text-brand-gray">{s.desc}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
-      {/* CTA */}
-      <section className="bg-brand-red text-white">
-        <div className="mx-auto max-w-[1200px] px-6 py-16 text-center sm:py-20">
-          <Reveal>
-            <h2 className="text-3xl font-extrabold sm:text-4xl">Punya proyek?</h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/80">
-              Konsultasikan proyek konstruksi kamu — gratis, tanpa komitmen.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap gap-3">
               <a
                 href={`${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin konsultasi proyek.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-white px-8 py-3.5 text-sm font-bold text-brand-red shadow-xl transition hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#C53B3B] px-8 py-4 text-sm font-bold text-white transition hover:bg-red-700"
               >
-                Konsultasi via WA
+                Konsultasikan Proyek
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
               </a>
-              <a
-                href={IG_JURURANCANG}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border-2 border-white/40 px-8 py-3.5 text-sm font-bold text-white transition hover:bg-white/10"
+              <Link
+                href="#pricing"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#1A1A1A]/15 px-8 py-[14px] text-sm font-semibold text-[#1A1A1A] transition hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
               >
-                DM @jururancang_mahaksa
-              </a>
+                Lihat harga lengkap
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
             </div>
-          </Reveal>
+            <p className="mt-6 text-xs tracking-wide text-[#aaa]">
+              Via @jururancang_mahaksa · Berbasis SNI + AHSP
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {featureChips.map((chip, i) => (
+              <div
+                key={chip}
+                className="flex items-center gap-3 rounded-xl border border-black/[0.08] bg-white px-5 py-4 text-sm font-semibold text-[#1A1A1A] shadow-sm"
+              >
+                {chipIcons[i]}
+                {chip}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* Pricing Tabs */}
+      <div id="pricing" className="bg-[#F8F5F0]">
+        <div className="mx-auto max-w-5xl px-6 pb-8 pt-16 text-center">
+          <h2 className="text-3xl font-black text-[#1A1A1A] sm:text-4xl">
+            Harga Layanan
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-[#666]">
+            Tiga layanan utama, transparan dari awal. Pilih sesuai kebutuhan proyekmu.
+          </p>
+        </div>
+
+        <div className="mb-12 flex flex-wrap justify-center gap-3 px-6">
+          {tabs.map((tab, i) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(i)}
+              className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+                activeTab === i
+                  ? "bg-[#C53B3B] text-white"
+                  : "border border-black/20 text-[#666] hover:border-black/50"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <div className="mx-auto max-w-5xl px-6 pb-20">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="mb-8 text-center">
+                <h3 className="text-2xl font-bold text-[#1A1A1A]">
+                  {tabHeaders[activeTab].title}
+                </h3>
+                <p className="mt-2 text-sm text-[#888]">
+                  {tabHeaders[activeTab].sub}
+                </p>
+              </div>
+
+              {activeTab === 0 && (
+                <div className="grid gap-6 md:grid-cols-3">
+                  {jasaGambarCards.map((card) => (
+                    <Card key={card.tier} card={card} />
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 1 && (
+                <div className="grid gap-6 md:grid-cols-3">
+                  {analisaStrukturCards.map((card) => (
+                    <Card key={card.tier} card={card} />
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 2 && <RenovasiTab />}
+
+              <p className="mt-8 text-center text-xs text-[#aaa]">
+                {tabFooterNotes[activeTab]}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
     </>
   );
 }

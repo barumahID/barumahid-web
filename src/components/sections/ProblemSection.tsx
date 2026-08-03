@@ -4,58 +4,45 @@ import SectionLabel from "@/components/ui/SectionLabel";
 
 const problems = [
   {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ),
-    title: "Harga naik terus",
+    num: "01",
+    title: "Harga naik terus.",
     desc: "Properti naik 5–8% per tahun. Kemampuan menabung DP tidak mengejar.",
   },
   {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18" />
-        <path d="M9 21V9" />
-      </svg>
-    ),
-    title: "Syarat KPR berat",
+    num: "02",
+    title: "Syarat KPR berat.",
     desc: "Banyak yang penghasilannya cukup tapi tidak lolos administrasi bank.",
   },
   {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="23 4 23 10 17 10" />
-        <polyline points="1 20 1 14 7 14" />
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-      </svg>
-    ),
-    title: "Sewa tanpa arah",
-    desc: "Bayar sewa setiap bulan tapi tidak ada yang terakumulasi untuk masa depan.",
+    num: "03",
+    title: "Sewa tanpa arah.",
+    desc: "Bayar sewa tiap bulan, tapi tidak ada yang terakumulasi untuk masa depan.",
   },
 ];
 
 export default function ProblemSection() {
   return (
-    <Section background="light">
+    <Section background="cream">
       <Reveal>
-        <SectionLabel>Masalah</SectionLabel>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-          Kenapa rumah impian selalu terasa jauh?
-        </h2>
+        <div className="max-w-3xl">
+          <SectionLabel number="03">Masalah</SectionLabel>
+          <h2 className="mt-6 type-h1 text-brand-dark">
+            Kenapa rumah impian selalu terasa jauh?
+          </h2>
+        </div>
       </Reveal>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-3">
+      <div className="mt-16 md:mt-20 grid gap-8 md:grid-cols-3 md:gap-12">
         {problems.map((p, i) => (
-          <Reveal key={p.title} delay={i * 100}>
-            <div className="flex h-full flex-col gap-4 rounded-xl border border-brand-dark/8 bg-white p-7 card-shadow tilt-card">
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red">
-                {p.icon}
-              </span>
-              <h3 className="text-lg font-extrabold text-brand-dark">{p.title}</h3>
-              <p className="text-sm leading-relaxed text-brand-gray">{p.desc}</p>
+          <Reveal key={p.num} delay={i * 120}>
+            <div className="border-t hairline-strong pt-6">
+              <p className="type-micro text-brand-red">{p.num}</p>
+              <h3 className="mt-4 text-[clamp(1.25rem,2vw,1.6rem)] font-semibold tracking-tight text-brand-dark leading-[1.2]">
+                {p.title}
+              </h3>
+              <p className="mt-3 type-small text-brand-gray max-w-xs">
+                {p.desc}
+              </p>
             </div>
           </Reveal>
         ))}

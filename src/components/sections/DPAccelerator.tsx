@@ -1,62 +1,77 @@
+"use client";
+
 import Reveal from "@/components/Reveal";
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
-import Badge from "@/components/ui/Badge";
 
 const channels = [
   {
-    icon: "🏠",
+    num: "01",
     title: "Sewa Core",
     desc: "25% sewa → tabungan DP otomatis",
-    status: "active" as const,
+    active: true,
   },
   {
-    icon: "👕",
+    num: "02",
     title: "Kosanesia Laundry",
-    desc: "Cuci baju, dapat cashback DP",
-    status: "coming-soon" as const,
+    desc: "Cuci baju, cashback masuk DP",
+    active: false,
   },
   {
-    icon: "📦",
+    num: "03",
     title: "Jasa Titip",
-    desc: "Titip barang, cashback masuk DP",
-    status: "coming-soon" as const,
+    desc: "Titip barang antar kota, cashback DP",
+    active: false,
   },
   {
-    icon: "🚚",
+    num: "04",
     title: "Jasa Pindahan",
-    desc: "Pindah lebih mudah + cashback DP",
-    status: "coming-soon" as const,
+    desc: "Layanan pindah + cashback DP",
+    active: false,
   },
   {
-    icon: "♻️",
+    num: "05",
     title: "GreenPoint",
     desc: "Pilah sampah, dapat poin DP",
-    status: "coming-soon" as const,
+    active: false,
   },
 ];
 
 export default function DPAccelerator() {
   return (
-    <Section background="light">
+    <Section background="cream">
       <Reveal>
-        <SectionLabel>DP Acceleration Engine</SectionLabel>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-          5 cara DP-mu terkumpul lebih cepat
-        </h2>
+        <div className="grid gap-6 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-6">
+            <SectionLabel number="05">Ekosistem DP</SectionLabel>
+            <h2 className="mt-6 type-h1 text-brand-dark">
+              Lima cara DP-mu<br />terkumpul lebih cepat.
+            </h2>
+          </div>
+          <div className="md:col-span-5 md:col-start-8">
+            <p className="type-body text-brand-gray max-w-md">
+              Selain sewa, layanan ekosistem barumahID lainnya juga berkontribusi ke tabungan DP-mu.
+            </p>
+          </div>
+        </div>
       </Reveal>
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+      {/* Editorial list */}
+      <div className="mt-16 md:mt-20 border-t hairline">
         {channels.map((ch, i) => (
-          <Reveal key={ch.title} delay={i * 80}>
-            <div className="flex h-full flex-col gap-3 rounded-xl border border-brand-dark/8 bg-white p-6 card-shadow tilt-card">
-              <span className="text-3xl">{ch.icon}</span>
-              <h3 className="text-sm font-extrabold text-brand-dark">{ch.title}</h3>
-              <p className="text-xs leading-relaxed text-brand-gray">{ch.desc}</p>
-              <div className="mt-auto">
-                <Badge variant={ch.status}>
-                  {ch.status === "active" ? "Aktif" : "Segera Hadir"}
-                </Badge>
+          <Reveal key={ch.num} delay={i * 60}>
+            <div className={`flex items-center border-b hairline py-6 md:py-8 gap-6 md:gap-10 ${!ch.active ? "opacity-55" : ""}`}>
+              <span className="type-micro text-brand-red min-w-[3ch]">{ch.num}</span>
+              <div className="flex-1 grid gap-2 md:grid-cols-12 md:items-baseline md:gap-6">
+                <h3 className="md:col-span-3 text-[clamp(1rem,1.4vw,1.2rem)] font-semibold tracking-tight text-brand-dark">
+                  {ch.title}
+                </h3>
+                <p className="md:col-span-6 type-small text-brand-gray">{ch.desc}</p>
+                <span className={`md:col-span-3 md:text-right type-micro ${
+                  ch.active ? "text-credit" : "text-brand-mute"
+                }`}>
+                  {ch.active ? "Aktif" : "Segera Hadir"}
+                </span>
               </div>
             </div>
           </Reveal>

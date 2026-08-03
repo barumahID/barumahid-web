@@ -29,11 +29,11 @@ export default function ScrollProgress() {
 
   return (
     <div
-      className="fixed inset-x-0 top-0 z-[60] h-[3px] bg-transparent"
+      className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-transparent"
       aria-hidden="true"
     >
       <div
-        className="h-full bg-gradient-to-r from-brand-red via-red-400 to-brand-red shadow-[0_0_10px_rgba(197,59,59,0.6)] transition-[width] duration-100"
+        className="h-full bg-brand-red transition-[width] duration-100"
         style={{ width: `${progress}%` }}
       />
     </div>

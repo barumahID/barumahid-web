@@ -1,18 +1,19 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import CountUp from "@/components/CountUp";
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import Badge from "@/components/ui/Badge";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import RTOSimulator from "@/components/RTOSimulator";
+import SegmentNavbar from "@/components/layout/SegmentNavbar";
 import { FORM_CUSTOMER_RTO } from "@/constants";
 
-export const metadata: Metadata = {
-  title: "Program Rent-to-Own",
-  description: "Sewa hari ini, miliki hunian nantinya. Program RTO barumahID mendampingi perjalanan kepemilikan rumah kamu dari penyewa menjadi pemilik.",
-};
+const rtoMenuItems = [
+  { label: "Home", href: "/" },
+  { label: "Program", href: "/rto" },
+  { label: "Cara Kerja", href: "/rto#cara-kerja" },
+  { label: "FAQ", href: "/rto#faq" },
+];
 
 const steps = [
   { num: "1", title: "Daftar & Verifikasi", desc: "Isi form minat, tim kami asesmen kelayakan dan cocokkan dengan unit mitra yang tersedia." },
@@ -42,23 +43,67 @@ const faqItems = [
   { question: "Di kota mana program ini tersedia?", answer: "Pilot market saat ini: Padang, Jambi, Palembang, dan Riau." },
 ];
 
+const heroChips = [
+  { icon: "🏠", label: "25% Sewa → Saldo DP Otomatis" },
+  { icon: "📊", label: "Skor Siap Punya Rumah™" },
+  { icon: "🔑", label: "3 Jalur Kepemilikan" },
+];
+
 export default function RTOPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-dark text-white">
-        <div className="absolute inset-0 hero-grid" />
-        <div className="animate-blob-drift absolute -top-20 -right-20 h-80 w-80 rounded-full bg-brand-red/15 blur-3xl" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <Reveal>
-            <Badge variant="pre-launch" className="mb-6">Pre-launch</Badge>
-            <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-              Program Rent-to-Own barumahID
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/60">
-              Sewa hari ini. Miliki hunian nantinya. Program pertama sedang dipersiapkan.
+      <SegmentNavbar segment="rto" menuItems={rtoMenuItems} />
+
+      {/* Split Hero */}
+      <section className="bg-[#F8F5F0] px-6 py-24 md:px-10 md:py-32">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 md:grid-cols-[55fr_45fr]">
+          <div>
+            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#C53B3B]">
+              PROGRAM RENT-TO-OWN
             </p>
-          </Reveal>
+            <h1 className="mb-6 text-4xl font-black leading-tight text-[#1A1A1A] md:text-5xl lg:text-6xl">
+              Sewa hari ini. Miliki hunian nantinya.
+            </h1>
+            <p className="mb-8 max-w-md text-base leading-relaxed text-[#666]">
+              Setiap bulan sewa, 25% langsung jadi saldo DP rumahmu. Otomatis,
+              tanpa perlu disiplin ekstra.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/daftar"
+                className="inline-flex items-center gap-2 rounded-full bg-[#C53B3B] px-8 py-4 text-sm font-bold text-white transition hover:bg-red-700"
+              >
+                Mulai Perjalanan Saya
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
+              <Link
+                href="#cara-kerja"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#1A1A1A]/15 px-8 py-[14px] text-sm font-semibold text-[#1A1A1A] transition hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
+              >
+                Pelajari cara kerja
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
+            </div>
+            <p className="mt-6 text-xs tracking-wide text-[#aaa]">
+              Melayani Padang · Jambi · Palembang · Riau
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {heroChips.map((chip) => (
+              <div
+                key={chip.label}
+                className="flex items-center gap-3 rounded-xl border border-black/[0.08] bg-white px-5 py-4 text-sm font-semibold text-[#1A1A1A] shadow-sm"
+              >
+                <span className="text-lg">{chip.icon}</span>
+                {chip.label}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -78,7 +123,7 @@ export default function RTOPage() {
       </Section>
 
       {/* Cara Kerja — 4 langkah */}
-      <Section background="white">
+      <Section background="white" id="cara-kerja">
         <Reveal>
           <SectionLabel>Cara Kerja</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
@@ -203,22 +248,14 @@ export default function RTOPage() {
       </Section>
 
       {/* Simulator */}
-      <Section background="white" id="simulasi">
-        <Reveal>
-          <SectionLabel>Simulasi DP</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            Coba hitung estimasi perjalanan DP-mu
-          </h2>
-        </Reveal>
+      <Section background="cream" id="simulasi">
         <Reveal delay={100}>
-          <div className="mt-10">
-            <RTOSimulator />
-          </div>
+          <RTOSimulator />
         </Reveal>
       </Section>
 
       {/* FAQ */}
-      <Section background="light">
+      <Section background="light" id="faq">
         <Reveal>
           <SectionLabel>FAQ</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
@@ -258,9 +295,6 @@ export default function RTOPage() {
                 </a>
               )}
             </div>
-            <p className="mt-4 text-xs text-white/50">
-              Program pertama sedang dipersiapkan
-            </p>
           </Reveal>
         </div>
       </section>

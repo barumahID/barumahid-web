@@ -6,58 +6,54 @@ import AccordionFAQ from "@/components/ui/AccordionFAQ";
 const faqItems = [
   {
     question: "Apa itu barumahID?",
-    answer:
-      "barumahID adalah platform pendamping kepemilikan rumah yang membantu kamu dari penyewa menjadi pemilik. Kami menyediakan program Rent-to-Own dan layanan konstruksi profesional LBAG.",
+    answer: "Platform pendamping kepemilikan rumah — membantu kamu dari penyewa jadi pemilik lewat program Rent-to-Own dan layanan konstruksi profesional.",
   },
   {
     question: "Bagaimana cara kerja program Rent-to-Own?",
-    answer:
-      "Kamu menyewa unit dari mitra barumahID. Setiap bulan, 25% dari sewa otomatis masuk tabungan DP. Saat DP cukup, kamu bisa mengkonversi ke kepemilikan melalui jalur yang sesuai kondisi finansialmu.",
+    answer: "Kamu menyewa unit mitra barumahID. Setiap bulan, 25% sewa otomatis masuk tabungan DP. Saat DP cukup, jalur konversi kepemilikan terbuka sesuai kondisi finansialmu.",
   },
   {
-    question: "Berapa yang masuk ke tabungan DP saya setiap bulan?",
-    answer:
-      "25% dari biaya sewa bulanan otomatis tersimpan sebagai tabungan DP kamu. Selain itu, kamu juga bisa mengumpulkan poin tambahan dari ekosistem barumahID (Kosanesia, GreenPoint, dll) yang sedang dikembangkan.",
+    question: "Berapa yang masuk ke tabungan DP setiap bulan?",
+    answer: "25% dari sewa bulanan. Kamu juga bisa menambah lewat ekosistem barumahID (Kosanesia, GreenPoint, dll) yang sedang dikembangkan.",
   },
   {
     question: "Apakah ada biaya untuk daftar?",
-    answer:
-      "Tidak ada biaya pendaftaran. Kamu cukup mengisi form minat dan tim kami akan menghubungi untuk menjelaskan detail program.",
+    answer: "Tidak ada biaya pendaftaran. Cukup isi form minat dan tim kami akan menghubungi untuk penjelasan detail program.",
   },
   {
     question: "Di kota mana saja barumahID beroperasi?",
-    answer:
-      "Saat ini pilot market kami di Padang, Jambi, Palembang, dan Riau. Kami berencana ekspansi ke kota-kota lain di Indonesia.",
+    answer: "Pilot market di Padang, Jambi, Palembang, dan Riau. Rencana ekspansi ke kota lain di Indonesia.",
   },
   {
-    question: "Apa bedanya barumahID dengan beli properti biasa?",
-    answer:
-      "barumahID menyediakan jalur alternatif selain KPR konvensional. Kamu mulai dari menyewa, lalu DP terakumulasi dari sewa itu sendiri. Ini cocok untuk yang belum memenuhi syarat KPR bank atau belum punya DP cukup.",
+    question: "Apa bedanya dengan beli properti biasa?",
+    answer: "Jalur alternatif selain KPR konvensional. Mulai dari sewa — DP terakumulasi dari sewa itu sendiri. Cocok untuk yang belum memenuhi syarat KPR atau belum punya DP cukup.",
   },
   {
-    question: "Bagaimana dengan layanan konstruksi barumahID?",
-    answer:
-      "barumahID juga aktif di layanan konstruksi melalui ConsTech LBAG — meliputi jasa gambar, analisa struktur, renovasi dan pembangunan. Fee kompetitif 8–14% dari RAB proyek.",
+    question: "Bagaimana dengan layanan konstruksi?",
+    answer: "ConsTech LBAG — jasa gambar, analisa struktur, renovasi dan pembangunan. Fee kompetitif 8–14% dari RAB proyek.",
   },
   {
     question: "Kapan program RTO mulai bisa diikuti?",
-    answer:
-      "Program pertama sedang dipersiapkan. Daftar minat sekarang agar kamu jadi yang pertama mendapat info saat program diluncurkan.",
+    answer: "Program pertama sedang dipersiapkan. Daftar minat sekarang agar jadi yang pertama mendapat info saat program diluncurkan.",
   },
 ];
 
 export default function FAQSection() {
   return (
-    <Section background="white" id="faq">
+    <Section background="cream" id="faq">
       <Reveal>
-        <SectionLabel>FAQ</SectionLabel>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-          Pertanyaan yang sering ditanyakan
-        </h2>
+        <div className="grid gap-6 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-7">
+            <SectionLabel number="10">FAQ</SectionLabel>
+            <h2 className="mt-6 type-h1 text-brand-dark">
+              Pertanyaan yang<br />sering ditanyakan.
+            </h2>
+          </div>
+        </div>
       </Reveal>
 
       <Reveal delay={100}>
-        <div className="mt-10 max-w-3xl">
+        <div className="mt-16 md:mt-20 max-w-4xl">
           <AccordionFAQ items={faqItems} />
         </div>
       </Reveal>

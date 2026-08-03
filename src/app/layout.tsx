@@ -40,11 +40,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${montserrat.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-white text-brand-dark">
+    <html lang="id" className={`${montserrat.variable} antialiased`}>
+      <body className="flex min-h-screen flex-col bg-brand-cream text-brand-dark">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-red focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:shadow-lg">
+          Langsung ke konten utama
+        </a>
         <ScrollProgress />
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

@@ -1,93 +1,71 @@
-import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
+import { FORM_MITRA_HUNIAN, FORM_DEVELOPER, WA_LINK1 } from "@/constants";
 
-const personas = [
+const mitraCards = [
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 10l9-5 9 5-9 5-9-5z" />
-        <path d="M7 12v4c2 2 8 2 10 0v-4" />
-        <path d="M21 10v6" />
-      </svg>
-    ),
-    title: "Fresh Graduate",
-    name: "Aldi, 25 tahun",
-    desc: "Baru kerja, belum punya tabungan DP.",
-    detail: "Gaji Rp 4–6 juta",
+    num: "01",
+    title: "mitrabarumahID Construction",
+    desc: "Subkontraktor, supplier material, konsultan teknis.",
+    ctaHref: `${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin mendaftar sebagai Mitra Konstruksi.")}`,
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="7" width="18" height="13" rx="2" />
-        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-        <path d="M3 12h18" />
-      </svg>
-    ),
-    title: "Karyawan Swasta",
-    name: "Sari, 30 tahun",
-    desc: "Sudah menabung tapi DP tetap tidak cukup.",
-    detail: "Gaji Rp 5–7 juta",
+    num: "02",
+    title: "mitrabarumahID Projectlink",
+    desc: "Jaringan proyek konstruksi profesional & partner ekosistem.",
+    ctaHref: FORM_DEVELOPER,
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 21h18" />
-        <path d="M5 21V8l7-5 7 5v13" />
-        <path d="M10 21v-6h4v6" />
-      </svg>
-    ),
-    title: "Pengusaha Kecil",
-    name: "Budi, 34 tahun",
-    desc: "Income fluktuatif, butuh jalur yang fleksibel.",
-    detail: "Pengusaha, sudah menikah",
+    num: "03",
+    title: "mitrabarumahID Knowledges",
+    desc: "Ekosistem edukasi dan pengembangan SDM konstruksi.",
+    ctaHref: FORM_MITRA_HUNIAN,
   },
 ];
 
 export default function PersonaCards() {
   return (
-    <Section background="light">
+    <Section background="warm">
       <Reveal>
-        <SectionLabel>Untuk Siapa</SectionLabel>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-          Apakah barumahID untuk kamu?
-        </h2>
+        <div className="grid gap-6 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-6">
+            <SectionLabel number="08">Kemitraan</SectionLabel>
+            <h2 className="mt-6 type-h1 text-brand-dark">
+              Bergabung dalam<br />ekosistem barumahID.
+            </h2>
+          </div>
+          <div className="md:col-span-5 md:col-start-8">
+            <p className="type-body text-brand-gray max-w-md">
+              Tiga jalur kemitraan — untuk konstruksi, proyek, dan pengembangan SDM.
+            </p>
+          </div>
+        </div>
       </Reveal>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-3">
-        {personas.map((p, i) => (
-          <Reveal key={p.title} delay={i * 100}>
-            <div className="flex h-full flex-col gap-4 rounded-xl border border-brand-dark/8 bg-white p-7 card-shadow tilt-card">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-dark text-white">
-                {p.icon}
-              </span>
-              <div>
-                <h3 className="text-lg font-extrabold text-brand-dark">{p.title}</h3>
-                <p className="mt-0.5 text-xs font-semibold text-brand-gray">{p.detail}</p>
+      <div className="mt-16 md:mt-20 border-t hairline">
+        {mitraCards.map((m, i) => (
+          <Reveal key={m.num} delay={i * 100}>
+            <a
+              href={m.ctaHref !== "#" ? m.ctaHref : `${WA_LINK1}?text=${encodeURIComponent(`Halo barumahID, saya tertarik dengan ${m.title}.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group row-hover flex items-center border-b hairline py-8 md:py-10 gap-6 md:gap-10"
+            >
+              <span className="type-micro text-brand-red min-w-[3ch]">{m.num}</span>
+              <div className="flex-1 grid gap-2 md:grid-cols-12 md:items-baseline md:gap-8">
+                <h3 className="md:col-span-5 text-[clamp(1.15rem,1.8vw,1.5rem)] font-semibold tracking-tight text-brand-dark">
+                  {m.title}
+                </h3>
+                <p className="md:col-span-4 type-small text-brand-gray">{m.desc}</p>
+                <span className="md:col-span-3 md:text-right text-[13px] font-medium text-brand-gray group-hover:text-brand-red transition-colors">
+                  Daftar sekarang →
+                </span>
               </div>
-              <p className="flex-1 text-sm leading-relaxed text-brand-gray">{p.desc}</p>
-              <p className="text-xs font-semibold italic text-brand-dark/50">
-                &ldquo;{p.name}&rdquo;
-              </p>
-            </div>
+            </a>
           </Reveal>
         ))}
       </div>
-
-      <Reveal delay={350}>
-        <div className="mt-10">
-          <Link
-            href="/daftar"
-            className="group inline-flex items-center gap-2 rounded-lg bg-brand-red px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/20 transition hover:bg-brand-red-dark hover:scale-[1.02]"
-          >
-            Cek apakah kamu eligible
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="arrow-nudge">
-              <path d="M3 8h10M9 4l4 4-4 4" />
-            </svg>
-          </Link>
-        </div>
-      </Reveal>
     </Section>
   );
 }

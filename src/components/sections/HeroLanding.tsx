@@ -1,177 +1,307 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
-import CountUp from "@/components/CountUp";
-import { WA_LINK1 } from "@/constants";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useRef } from "react";
 
+/* ── Word-by-word clip reveal ────────────────────────────── */
+function WordReveal({
+  text,
+  className,
+  highlightWord,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  highlightWord?: string;
+  delay?: number;
+}) {
+  const words = text.split(" ");
+  return (
+    <span className={className}>
+      {words.map((word, i) => (
+        <span key={i} className="inline-block overflow-hidden">
+          <motion.span
+            className="inline-block"
+            initial={{ y: "110%", rotateX: -80 }}
+            animate={{ y: "0%", rotateX: 0 }}
+            transition={{
+              duration: 0.7,
+              ease: [0.16, 1, 0.3, 1],
+              delay: delay + i * 0.08,
+            }}
+          >
+            {word === highlightWord ? (
+              <span className="text-brand-red">{word}</span>
+            ) : (
+              word
+            )}
+          </motion.span>
+          {i < words.length - 1 && " "}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ── Magnetic button wrapper ─────────────────────────────── */
+function MagneticWrap({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 200, damping: 20 });
+  const springY = useSpring(y, { stiffness: 200, damping: 20 });
+
+  const onMove = (e: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    x.set((e.clientX - cx) * 0.25);
+    y.set((e.clientY - cy) * 0.25);
+  };
+  const onLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ x: springX, y: springY }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className="inline-block"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── Marquee ticker ──────────────────────────────────────── */
+const TICKER =
+  "Sewa · Tabung DP Otomatis · Miliki Rumah · Padang · Jambi · Palembang · Riau · ";
+
+function Marquee() {
+  return (
+    <div className="overflow-hidden border-t border-brand-line bg-brand-cream py-4">
+      <div className="flex animate-marquee whitespace-nowrap">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <span
+            key={i}
+            className="mx-4 text-[13px] font-semibold uppercase tracking-[0.18em] text-brand-mute"
+          >
+            {TICKER}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
 export default function HeroLanding() {
-  const spotRef = useRef<HTMLDivElement | null>(null);
+  const blobRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = spotRef.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      el.style.setProperty("--sx", `${e.clientX - rect.left}px`);
-      el.style.setProperty("--sy", `${e.clientY - rect.top}px`);
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduced || !blobRef.current) return;
+
+    let frame = 0;
+    const animate = () => {
+      frame++;
+      if (blobRef.current) {
+        const t = frame * 0.003;
+        const x1 = Math.sin(t) * 60;
+        const y1 = Math.cos(t * 0.7) * 40;
+        const x2 = Math.cos(t * 0.5) * 50;
+        const y2 = Math.sin(t * 0.8) * 55;
+        blobRef.current.style.setProperty("--bx1", `${50 + x1}%`);
+        blobRef.current.style.setProperty("--by1", `${30 + y1}%`);
+        blobRef.current.style.setProperty("--bx2", `${40 + x2}%`);
+        blobRef.current.style.setProperty("--by2", `${60 + y2}%`);
+      }
+      requestAnimationFrame(animate);
     };
-    el.addEventListener("mousemove", onMove);
-    return () => el.removeEventListener("mousemove", onMove);
+    const raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
-    <section
-      ref={spotRef}
-      className="relative overflow-hidden bg-brand-dark text-white"
-    >
-      <div className="absolute inset-0 hero-grid" />
-      <div className="animate-blob-drift absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-red/15 blur-3xl" />
-      <div className="animate-blob-drift absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-brand-red/8 blur-2xl" style={{ animationDelay: "-8s" }} />
-      <div className="spotlight absolute inset-0" aria-hidden="true" />
+    <>
+      <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden bg-brand-cream">
+        {/* Animated gradient mesh blobs */}
+        <div
+          ref={blobRef}
+          className="pointer-events-none absolute inset-0"
+          style={
+            {
+              "--bx1": "55%",
+              "--by1": "35%",
+              "--bx2": "45%",
+              "--by2": "65%",
+            } as React.CSSProperties
+          }
+        >
+          <div
+            className="absolute h-[600px] w-[600px] rounded-full opacity-30 blur-[120px]"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(197,59,59,0.15) 0%, transparent 70%)",
+              left: "var(--bx1)",
+              top: "var(--by1)",
+              transform: "translate(-50%, -50%)",
+              transition: "left 0.05s, top 0.05s",
+            }}
+          />
+          <div
+            className="absolute h-[500px] w-[500px] rounded-full opacity-25 blur-[100px]"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(197,59,59,0.1) 0%, rgba(237,232,224,0.3) 60%, transparent 80%)",
+              left: "var(--bx2)",
+              top: "var(--by2)",
+              transform: "translate(-50%, -50%)",
+              transition: "left 0.05s, top 0.05s",
+            }}
+          />
+        </div>
 
-      <div className="relative mx-auto flex max-w-[1200px] flex-col gap-12 px-6 py-20 md:min-h-[90vh] md:flex-row md:items-center md:py-0">
-        {/* Left — content (55%) */}
-        <div className="flex flex-1 flex-col gap-7 md:max-w-[55%]">
-          {/* Pill label */}
-          <div className="word-reveal">
-            <span
-              className="inline-block rounded-full border border-brand-red/30 bg-brand-red/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70"
-              style={{ animationDelay: "0ms" }}
-            >
-              Platform Pendamping Kepemilikan Rumah
-            </span>
-          </div>
+        {/* Ghosted background typography */}
+        <div
+          className="pointer-events-none absolute right-[-5%] top-1/2 -translate-y-1/2 select-none text-[clamp(12rem,22vw,20rem)] font-black uppercase leading-none tracking-tighter text-brand-dark/[0.03]"
+          aria-hidden="true"
+        >
+          RUMAH
+        </div>
 
-          {/* Headline */}
-          <h1 className="word-reveal text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block" style={{ animationDelay: "100ms" }}>
-              Sewa hari ini.
-            </span>
-            <span className="mt-2 block text-gradient-red" style={{ animationDelay: "250ms" }}>
-              Miliki hunian
-            </span>
-            <span className="mt-2 block" style={{ animationDelay: "400ms" }}>
-              nantinya.
-            </span>
+        {/* Content */}
+        <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 py-32 md:px-10 lg:px-14">
+          {/* Label */}
+          <motion.span
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 }}
+            className="inline-block text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-red"
+          >
+            Platform Pendamping Kepemilikan Rumah
+          </motion.span>
+
+          {/* Headline — word-by-word reveal */}
+          <h1 className="mt-8 max-w-[14ch] text-[clamp(2.8rem,8vw,5.5rem)] font-black leading-[0.98] tracking-[-0.04em] text-brand-dark">
+            <WordReveal
+              text="Sewa hari ini."
+              delay={0.15}
+            />
+            <br />
+            <WordReveal
+              text="Miliki hunian"
+              highlightWord="Miliki"
+              delay={0.45}
+            />
+            <br />
+            <WordReveal text="nantinya." delay={0.65} />
           </h1>
 
-          {/* Subheadline */}
-          <p className="word-reveal max-w-lg text-base leading-relaxed text-white/60 sm:text-lg">
-            <span className="inline-block" style={{ animationDelay: "550ms" }}>
-              barumahID mendampingi perjalanan kepemilikan rumah kamu
-              — dari penyewa jadi pemilik, dengan jalur yang sesuai
-              kondisi finansialmu.
-            </span>
-          </p>
+          {/* Sub-headline */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              ease: [0.16, 1, 0.3, 1],
+              delay: 0.9,
+            }}
+            className="mt-8 max-w-md text-[clamp(0.95rem,1.15vw,1.1rem)] leading-relaxed text-brand-gray"
+          >
+            Dari penyewa menjadi pemilik. barumahID mendampingi setiap langkah.
+          </motion.p>
 
-          {/* CTAs */}
-          <div className="word-reveal flex flex-wrap gap-4" style={{ animationDelay: "700ms" }}>
-            <Link
-              href="/daftar"
-              className="group relative overflow-hidden rounded-lg bg-brand-red px-7 py-3.5 text-sm font-bold text-white shadow-xl shadow-brand-red/30 transition hover:bg-brand-red-dark hover:scale-[1.02]"
-            >
-              <span className="relative z-10 flex items-center gap-2">
+          {/* CTA buttons — spring physics */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 20,
+              delay: 1.1,
+            }}
+            className="mt-10 flex flex-wrap items-center gap-4"
+          >
+            <MagneticWrap>
+              <Link
+                href="/daftar"
+                className="group inline-flex items-center gap-2.5 rounded-full bg-brand-red px-8 py-4 text-[14px] font-bold text-white shadow-lg shadow-brand-red/20 transition-all duration-300 hover:bg-brand-red-dark hover:shadow-xl hover:shadow-brand-red/30"
+              >
                 Mulai Perjalanan Saya
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="arrow-nudge">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                >
                   <path d="M3 8h10M9 4l4 4-4 4" />
                 </svg>
-              </span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            </Link>
-            <Link
-              href="/rto"
-              className="group rounded-lg border border-white/25 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-white/50"
-            >
-              <span className="flex items-center gap-2">
+              </Link>
+            </MagneticWrap>
+
+            <MagneticWrap>
+              <Link
+                href="/rto"
+                className="group inline-flex items-center gap-2 rounded-full border-2 border-brand-dark/15 px-8 py-[14px] text-[14px] font-semibold text-brand-dark transition-all duration-300 hover:border-brand-dark hover:bg-brand-dark hover:text-white"
+              >
                 Pelajari Program
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="arrow-nudge">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                >
                   <path d="M3 8h10M9 4l4 4-4 4" />
                 </svg>
-              </span>
-            </Link>
-          </div>
-
-          {/* Social proof */}
-          <p className="word-reveal text-xs text-white/35" style={{ animationDelay: "850ms" }}>
-            <span className="inline-block">
-              Melayani wilayah Padang &middot; Jambi &middot; Palembang &middot; Riau
-            </span>
-          </p>
+              </Link>
+            </MagneticWrap>
+          </motion.div>
         </div>
 
-        {/* Right — floating stats card (45%) */}
-        <div className="flex flex-1 items-center justify-center md:max-w-[45%]">
-          <div className="word-reveal w-full max-w-sm" style={{ animationDelay: "500ms" }}>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-md">
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red/20 text-brand-red">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 21h18" />
-                      <path d="M5 21V8l7-5 7 5v13" />
-                      <path d="M10 21v-6h4v6" />
-                    </svg>
-                  </span>
-                  <div>
-                    <p className="text-3xl font-black text-white sm:text-4xl">
-                      <CountUp end={12.7} decimals={1} suffix=" Juta" />
-                    </p>
-                    <p className="mt-1 text-sm text-white/50">Unit backlog perumahan nasional</p>
-                    <p className="mt-0.5 text-[10px] text-white/30">Kemenpera</p>
-                  </div>
-                </div>
-
-                <div className="h-px bg-white/10" />
-
-                <div className="flex items-start gap-4">
-                  <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red/20 text-brand-red">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                  </span>
-                  <div>
-                    <p className="text-3xl font-black text-white sm:text-4xl">
-                      <CountUp end={9.9} decimals={1} suffix=" Juta" />
-                    </p>
-                    <p className="mt-1 text-sm text-white/50">Rumah tangga tanpa hunian layak</p>
-                    <p className="mt-0.5 text-[10px] text-white/30">BPS Susenas 2023</p>
-                  </div>
-                </div>
-
-                <div className="h-px bg-white/10" />
-
-                <div className="flex items-start gap-4">
-                  <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red/20 text-brand-red">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                  </span>
-                  <div>
-                    <p className="text-3xl font-black text-white sm:text-4xl">
-                      <CountUp end={4} suffix=" Kota" />
-                    </p>
-                    <p className="mt-1 text-sm text-white/50">Pilot market barumahID</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.8 }}
+          className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
+        >
+          <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-brand-mute">
+            Scroll
+          </span>
+          <div className="flex h-10 w-5 items-start justify-center rounded-full border border-brand-dark/15 p-1">
+            <motion.div
+              className="h-2 w-1.5 rounded-full bg-brand-red"
+              animate={{ y: [0, 14, 0] }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
-      {/* Scroll cue */}
-      <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-white/25">
-        <span>Scroll</span>
-        <svg width="14" height="20" viewBox="0 0 14 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-          <rect x="1" y="1" width="12" height="18" rx="6" />
-          <path d="M7 5v4" className="animate-bounce" />
-        </svg>
-      </div>
-    </section>
+      {/* Marquee ticker */}
+      <Marquee />
+    </>
   );
 }

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const timeline = [
-  { year: "2018", title: "Brand Lahir", desc: "barumahID lahir dari pengalaman lapangan konstruksi — melihat langsung betapa sulitnya memiliki rumah bagi pekerja Indonesia." },
+  { year: "2018", title: "Brand Lahir", desc: "Perusahaan lahir dari pengalaman lapangan konstruksi — melihat langsung betapa sulitnya memiliki rumah bagi pekerja Indonesia." },
   { year: "2024", title: "PT Resmi Berdiri", desc: "PT. Inditek Bluprim Mahaksa (IBM) didirikan secara formal pada 9 Januari 2024." },
   { year: "2026", title: "Full-time & Pivot", desc: "Tim beralih full-time dan fokus mengembangkan platform pendamping kepemilikan rumah." },
 ];
@@ -18,7 +18,6 @@ const timeline = [
 const pillars = [
   { title: "ConsTech", desc: "Layanan konstruksi profesional dengan pendekatan Lean, BIM, AI, dan Green Construction.", color: "border-brand-red" },
   { title: "PropTech", desc: "Program Rent-to-Own yang mendampingi perjalanan dari penyewa menjadi pemilik.", color: "border-brand-red" },
-  { title: "GreenTech", desc: "Ekosistem pendamping yang mengubah aktivitas sehari-hari menjadi DP rumah.", color: "border-credit" },
 ];
 
 const values = [
@@ -28,20 +27,13 @@ const values = [
   { title: "Berkelanjutan", desc: "Pendekatan hijau dan responsible dalam setiap layanan." },
 ];
 
-const team = [
-  { name: "Zulprima", role: "Founder & CEO" },
-  { name: "COO", role: "Chief Operating Officer" },
-  { name: "Co-Founder", role: "Co-Founder" },
-  { name: "CTO", role: "Chief Technology Officer" },
-];
-
 export default function TentangPage() {
   return (
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-brand-dark text-white">
         <div className="absolute inset-0 hero-grid" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
+        <div className="relative mx-auto max-w-[1200px] px-6 py-16 sm:py-24">
           <Reveal>
             <SectionLabel dark>Tentang Kami</SectionLabel>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
@@ -82,7 +74,7 @@ export default function TentangPage() {
       </Section>
 
       {/* Misi */}
-      <Section background="light">
+      <Section background="cream">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
             <SectionLabel>Misi</SectionLabel>
@@ -93,15 +85,15 @@ export default function TentangPage() {
         </Reveal>
       </Section>
 
-      {/* 3 Pilar */}
+      {/* 2 Pilar */}
       <Section background="white">
         <Reveal>
-          <SectionLabel>3 Pilar</SectionLabel>
+          <SectionLabel>Pilar Bisnis</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            ConsTech &middot; PropTech &middot; GreenTech
+            ConsTech &middot; PropTech
           </h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {pillars.map((p, i) => (
             <Reveal key={p.title} delay={i * 100}>
               <div className={`flex h-full flex-col gap-3 rounded-xl border-t-4 bg-white p-7 card-shadow ${p.color}`}>
@@ -114,12 +106,12 @@ export default function TentangPage() {
       </Section>
 
       {/* Values */}
-      <Section background="light">
+      <Section background="cream">
         <Reveal>
           <SectionLabel>Nilai</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">Yang kami pegang</h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((v, i) => (
             <Reveal key={v.title} delay={i * 80}>
               <div className="rounded-xl border border-brand-dark/8 bg-white p-6 card-shadow">
@@ -131,29 +123,8 @@ export default function TentangPage() {
         </div>
       </Section>
 
-      {/* Tim */}
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Tim</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">Core team</h2>
-        </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {team.map((t, i) => (
-            <Reveal key={t.role} delay={i * 80}>
-              <div className="rounded-xl border border-brand-dark/8 bg-brand-off-white p-6 text-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-dark text-xl font-black text-white">
-                  {t.name.charAt(0)}
-                </div>
-                <h3 className="mt-4 text-base font-extrabold text-brand-dark">{t.name}</h3>
-                <p className="mt-1 text-xs text-brand-gray">{t.role}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
       {/* Dual Brand */}
-      <Section background="light">
+      <Section background="white">
         <Reveal>
           <SectionLabel>Dual Brand</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">IBM &amp; barumahID</h2>
@@ -166,9 +137,9 @@ export default function TentangPage() {
       </Section>
 
       {/* Contact card */}
-      <Section background="white">
+      <Section background="cream">
         <Reveal>
-          <div className="rounded-xl border border-brand-dark/8 bg-brand-off-white p-8">
+          <div className="rounded-xl border border-brand-dark/8 bg-white p-8">
             <h3 className="text-lg font-extrabold text-brand-dark">Kontak</h3>
             <div className="mt-4 grid gap-4 text-sm text-brand-gray sm:grid-cols-2">
               <div>

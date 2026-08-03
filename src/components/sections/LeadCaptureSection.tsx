@@ -7,34 +7,15 @@ import SectionLabel from "@/components/ui/SectionLabel";
 import { FORM_CUSTOMER_RTO, FORM_MITRA_HUNIAN, FORM_DEVELOPER } from "@/constants";
 
 const tabs = [
-  {
-    id: "customer",
-    icon: "🙋",
-    title: "Saya calon penyewa",
-    desc: "Daftar minat program RTO",
-    formUrl: FORM_CUSTOMER_RTO,
-  },
-  {
-    id: "mitra",
-    icon: "🏠",
-    title: "Saya pemilik properti",
-    desc: "Jadi mitra hunian barumahID",
-    formUrl: FORM_MITRA_HUNIAN,
-  },
-  {
-    id: "developer",
-    icon: "🏗️",
-    title: "Saya developer",
-    desc: "Partnership developer mitra",
-    formUrl: FORM_DEVELOPER,
-  },
+  { id: "customer", label: "Calon Penyewa", desc: "Daftar minat program RTO", formUrl: FORM_CUSTOMER_RTO },
+  { id: "mitra", label: "Pemilik Properti", desc: "Jadi mitra hunian", formUrl: FORM_MITRA_HUNIAN },
+  { id: "developer", label: "Developer", desc: "Partnership developer", formUrl: FORM_DEVELOPER },
 ];
 
 export default function LeadCaptureSection() {
   const [active, setActive] = useState("customer");
   const [form, setForm] = useState({ nama: "", wa: "", kota: "" });
   const [submitted, setSubmitted] = useState(false);
-
   const activeTab = tabs.find((t) => t.id === active)!;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,111 +29,132 @@ export default function LeadCaptureSection() {
   return (
     <Section background="white" id="daftar">
       <Reveal>
-        <SectionLabel>Bergabung</SectionLabel>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-          Bergabung dengan barumahID
-        </h2>
-      </Reveal>
-
-      {/* Tab selector */}
-      <div className="mt-10 grid gap-3 sm:grid-cols-3">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => { setActive(tab.id); setSubmitted(false); }}
-            className={`flex items-center gap-3 rounded-xl border-2 p-5 text-left transition ${
-              active === tab.id
-                ? "border-brand-red bg-brand-red/5"
-                : "border-brand-dark/8 bg-white hover:border-brand-dark/20"
-            }`}
-          >
-            <span className="text-2xl">{tab.icon}</span>
-            <div>
-              <p className="text-sm font-bold text-brand-dark">{tab.title}</p>
-              <p className="text-xs text-brand-gray">{tab.desc}</p>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Form */}
-      <Reveal>
-        <div className="mt-8 rounded-xl border border-brand-dark/8 bg-brand-off-white p-8">
-          {submitted ? (
-            <div className="py-8 text-center">
-              <span className="text-4xl">✅</span>
-              <p className="mt-3 text-lg font-bold text-brand-dark">Terima kasih!</p>
-              <p className="mt-1 text-sm text-brand-gray">Tim kami akan menghubungi kamu via WhatsApp.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <label htmlFor="lc-nama" className="mb-1.5 block text-xs font-semibold text-brand-dark">
-                    Nama Lengkap
-                  </label>
-                  <input
-                    id="lc-nama"
-                    type="text"
-                    required
-                    value={form.nama}
-                    onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                    className="w-full rounded-lg border-2 border-brand-dark/10 bg-white px-4 py-3 text-sm transition focus:border-brand-red focus:ring-4 focus:ring-brand-red/10"
-                    placeholder="Nama kamu"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lc-wa" className="mb-1.5 block text-xs font-semibold text-brand-dark">
-                    No. WhatsApp
-                  </label>
-                  <input
-                    id="lc-wa"
-                    type="tel"
-                    required
-                    value={form.wa}
-                    onChange={(e) => setForm({ ...form, wa: e.target.value })}
-                    className="w-full rounded-lg border-2 border-brand-dark/10 bg-white px-4 py-3 text-sm transition focus:border-brand-red focus:ring-4 focus:ring-brand-red/10"
-                    placeholder="08xxxxxxxxxx"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lc-kota" className="mb-1.5 block text-xs font-semibold text-brand-dark">
-                    Kota
-                  </label>
-                  <input
-                    id="lc-kota"
-                    type="text"
-                    required
-                    value={form.kota}
-                    onChange={(e) => setForm({ ...form, kota: e.target.value })}
-                    className="w-full rounded-lg border-2 border-brand-dark/10 bg-white px-4 py-3 text-sm transition focus:border-brand-red focus:ring-4 focus:ring-brand-red/10"
-                    placeholder="Kota kamu"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <button
-                  type="submit"
-                  className="rounded-lg bg-brand-red px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/20 transition hover:bg-brand-red-dark hover:scale-[1.02]"
-                >
-                  Kirim Data
-                </button>
-                {activeTab.formUrl !== "#" && (
-                  <a
-                    href={activeTab.formUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-brand-red hover:underline"
-                  >
-                    Isi Form Lengkap →
-                  </a>
-                )}
-              </div>
-            </form>
-          )}
+        <div className="grid gap-6 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-7">
+            <SectionLabel number="09">Bergabung</SectionLabel>
+            <h2 className="mt-6 type-h1 text-brand-dark">
+              Mulai perjalananmu<br />bersama barumahID.
+            </h2>
+          </div>
+          <div className="md:col-span-4 md:col-start-9">
+            <p className="type-body text-brand-gray max-w-md">
+              Isi data singkat — tim kami akan menghubungimu via WhatsApp.
+            </p>
+          </div>
         </div>
       </Reveal>
+
+      <div className="mt-16 md:mt-20 grid gap-10 md:grid-cols-12">
+        {/* Left — tab selector */}
+        <Reveal>
+          <div className="md:col-span-4">
+            <p className="type-micro text-brand-gray mb-6">Pilih Peran</p>
+            <div className="border-t hairline">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => { setActive(tab.id); setSubmitted(false); }}
+                  className={`w-full border-b hairline py-5 text-left transition-colors ${
+                    active === tab.id ? "" : "hover:bg-brand-dark/[0.02]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[15px] font-medium tracking-tight ${
+                      active === tab.id ? "text-brand-red" : "text-brand-dark"
+                    }`}>
+                      {tab.label}
+                    </span>
+                    {active === tab.id && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                    )}
+                  </div>
+                  <p className="mt-1 type-small text-brand-gray">{tab.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Right — form */}
+        <Reveal delay={100}>
+          <div className="md:col-span-8">
+            {submitted ? (
+              <div className="border hairline-strong rounded-2xl p-10 md:p-14 text-center bg-brand-cream">
+                <span className="flex mx-auto h-14 w-14 items-center justify-center rounded-full bg-brand-dark text-white">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                </span>
+                <p className="mt-6 type-h3 text-brand-dark">Terima kasih.</p>
+                <p className="mt-2 type-small text-brand-gray">Tim kami akan menghubungimu via WhatsApp.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="lc-nama" className="block type-micro text-brand-gray mb-3">Nama Lengkap</label>
+                    <input
+                      id="lc-nama"
+                      type="text"
+                      required
+                      value={form.nama}
+                      onChange={(e) => setForm({ ...form, nama: e.target.value })}
+                      className="w-full border-b hairline-strong bg-transparent py-3 text-[15px] text-brand-dark placeholder:text-brand-mute focus:border-brand-red transition-colors"
+                      placeholder="Namamu"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="lc-wa" className="block type-micro text-brand-gray mb-3">No. WhatsApp</label>
+                    <input
+                      id="lc-wa"
+                      type="tel"
+                      required
+                      value={form.wa}
+                      onChange={(e) => setForm({ ...form, wa: e.target.value })}
+                      className="w-full border-b hairline-strong bg-transparent py-3 text-[15px] text-brand-dark placeholder:text-brand-mute focus:border-brand-red transition-colors"
+                      placeholder="08xxxxxxxxxx"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label htmlFor="lc-kota" className="block type-micro text-brand-gray mb-3">Kota</label>
+                    <input
+                      id="lc-kota"
+                      type="text"
+                      required
+                      value={form.kota}
+                      onChange={(e) => setForm({ ...form, kota: e.target.value })}
+                      className="w-full border-b hairline-strong bg-transparent py-3 text-[15px] text-brand-dark placeholder:text-brand-mute focus:border-brand-red transition-colors"
+                      placeholder="Padang, Jambi, ..."
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="group inline-flex items-center gap-2 rounded-full bg-brand-dark px-6 py-3.5 text-[13px] font-medium text-white hover:bg-brand-red transition-all duration-300"
+                  >
+                    Kirim
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="transition-transform duration-300 group-hover:translate-x-1">
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
+                  </button>
+                  {activeTab.formUrl !== "#" && (
+                    <a
+                      href={activeTab.formUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-editorial text-[13px] font-medium text-brand-dark hover:text-brand-red transition-colors"
+                    >
+                      Isi form lengkap →
+                    </a>
+                  )}
+                </div>
+              </form>
+            )}
+          </div>
+        </Reveal>
+      </div>
     </Section>
   );
 }
