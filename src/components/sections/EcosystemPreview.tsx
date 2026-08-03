@@ -17,7 +17,7 @@ const ecosystems = [
 
 export default function EcosystemPreview() {
   return (
-    <Section background="light">
+    <Section background="cream">
       <Reveal>
         <SectionLabel>Ekosistem</SectionLabel>
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">

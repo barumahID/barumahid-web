@@ -53,7 +53,7 @@ export default function AnalisaStrukturPage() {
         </div>
       </Section>
 
-      <Section background="light">
+      <Section background="cream">
         <Reveal>
           <SectionLabel>Ruang Lingkup</SectionLabel>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">Cakupan analisa</h2>
