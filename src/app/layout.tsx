@@ -40,8 +40,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   icons: {
-    icon: [{ url: "/favicon.ico" }, { url: "/brand/logo-circle-192.png", type: "image/png", sizes: "192x192" }],
-    apple: "/brand/logo-circle-192.png",
+    icon: [{ url: "/favicon.ico" }, { url: "/brand/logo-icon-192.png", type: "image/png", sizes: "192x192" }],
+    apple: "/brand/logo-icon-192.png",
   },
 };
 
@@ -56,7 +56,7 @@ const orgJsonLd = {
   name: SITE.name,
   legalName: SITE.company,
   url: SITE.url,
-  logo: `${SITE.url}/brand/logo-circle-512.png`,
+  logo: `${SITE.url}/brand/logo-icon-512.png`,
   image: `${SITE.url}/opengraph-image.jpg`,
   description: SITE.description,
   email: EMAIL,
