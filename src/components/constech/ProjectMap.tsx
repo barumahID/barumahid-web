@@ -116,7 +116,7 @@ export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCi
             {placedOffices.length > 0 && (
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full border border-dashed border-white" aria-hidden="true" />
-                Kantor barumahID
+                Base &amp; VO barumahID
               </span>
             )}
           </div>

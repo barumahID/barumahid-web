@@ -84,7 +84,8 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  const solid = scrolled || mobileOpen;
+  // Beranda pakai hero berlatar terang, jadi navbar selalu solid di sana supaya teksnya terbaca.
+  const solid = scrolled || mobileOpen || pathname === "/";
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
   const serviceActive = SERVICE_LINKS.some((s) => isActive(s.href)) || pathname === "/layanan";

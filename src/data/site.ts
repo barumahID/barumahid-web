@@ -20,14 +20,18 @@ export const WA_ADMIN_1_LABEL = "+62 851-5788-3292";
 export const WA_ADMIN_2_LABEL = "+62 896-3641-0565";
 export const EMAIL = "barumahid@gmail.com";
 
+// Istilah dari user: Padang = "Base barumahID", virtual office ditulis "VO".
+// mapsUrl dicek mendarat di lokasi yang benar (Okt 2026).
 export const ADDRESSES = {
   hq: {
-    label: "Kantor Pusat",
+    label: "Base barumahID",
     lines: ["Komp. PJKA, Jl. Sunda No. 98B", "Padang, Sumatera Barat"],
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Komp.%20PJKA%2C%20Jl.%20Sunda%20No.%2098B%2C%20Padang%2C%20Sumatera%20Barat",
   },
   vo: {
-    label: "Virtual Office",
+    label: "VO",
     lines: ["Ruko De Mansion, Jl. Jalur Sutera Timur No. C-5", "Alam Sutera, Tangerang, Banten"],
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Ruko%20De%20Mansion%2C%20Jl.%20Jalur%20Sutera%20Timur%20No.%20C-5%2C%20Alam%20Sutera%2C%20Tangerang",
   },
 } as const;
 

@@ -60,11 +60,20 @@ export default function KontakPage() {
               <div key={a.label}>
                 <h2 className="text-[19px] font-extrabold text-brand-dark">{a.label}</h2>
                 <address className="mt-3 not-italic text-[15px] leading-relaxed text-brand-gray">
-                  {a.lines.map((l) => (
-                    <span key={l} className="block">
-                      {l}
-                    </span>
-                  ))}
+                  <a
+                    href={a.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block hover:text-brand-dark"
+                    aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
+                  >
+                    {a.lines.map((l) => (
+                      <span key={l} className="block">
+                        {l}
+                      </span>
+                    ))}
+                    <span className="mt-1 block text-[13px] font-bold text-brand-red group-hover:underline">Lihat di Google Maps</span>
+                  </a>
                 </address>
               </div>
             ))}

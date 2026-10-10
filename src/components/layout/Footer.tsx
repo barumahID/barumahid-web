@@ -110,12 +110,23 @@ export default function Footer() {
               <div className="mt-6 space-y-4 text-[12.5px] leading-relaxed text-white/50">
                 {[ADDRESSES.hq, ADDRESSES.vo].map((a) => (
                   <address key={a.label} className="not-italic">
-                    <span className="block font-semibold text-white/70">{a.label}</span>
-                    {a.lines.map((line) => (
-                      <span key={line} className="block">
-                        {line}
+                    <a
+                      href={a.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block transition-colors hover:text-white"
+                      aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
+                    >
+                      <span className="block font-semibold text-white/70 group-hover:text-white">{a.label}</span>
+                      {a.lines.map((line) => (
+                        <span key={line} className="block">
+                          {line}
+                        </span>
+                      ))}
+                      <span className="mt-0.5 block text-[11.5px] font-semibold text-brand-red/90 group-hover:underline">
+                        Lihat di Google Maps
                       </span>
-                    ))}
+                    </a>
                   </address>
                 ))}
               </div>

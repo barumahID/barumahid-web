@@ -6,7 +6,8 @@ import ProjectMap from "@/components/constech/ProjectMap";
 import { STATS, verifiedCities } from "@/data/projects";
 import { ADDRESSES } from "@/data/site";
 
-// Peta penyebaran proyek di /tentang (arahan user): titik proyek + basis kantor Padang dan virtual office Tangerang.
+// Peta penyebaran proyek di /tentang (arahan user): titik proyek + Base barumahID di Padang dan VO di Tangerang.
+// Kartu alamat bisa diklik, membuka Google Maps.
 // Angka dari STATS, titik kota hanya yang verified (aturan CLAUDE.md).
 const OFFICES = [
   { cityId: "padang", label: `${ADDRESSES.hq.label}, Padang` },
@@ -62,7 +63,13 @@ export default function PetaProyek() {
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           {[ADDRESSES.hq, ADDRESSES.vo].map((a) => (
             <Reveal key={a.label}>
-              <div className="flex h-full gap-4 rounded-3xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm md:p-7">
+              <a
+                href={a.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
+                className="group flex h-full gap-4 rounded-3xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm transition-colors hover:border-white/30 hover:bg-white/[0.1] md:p-7"
+              >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-white/80" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 10.5 12 3l9 7.5" />
@@ -70,14 +77,17 @@ export default function PetaProyek() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-red">{a.label}</p>
+                  <p className="text-[13px] font-bold tracking-wide text-brand-red">{a.label}</p>
                   {a.lines.map((l) => (
                     <p key={l} className="mt-1 text-[15px] leading-relaxed text-white/85">
                       {l}
                     </p>
                   ))}
+                  <p className="mt-2 text-[13px] font-semibold text-white/60 group-hover:text-white group-hover:underline">
+                    Lihat di Google Maps
+                  </p>
                 </div>
-              </div>
+              </a>
             </Reveal>
           ))}
         </div>

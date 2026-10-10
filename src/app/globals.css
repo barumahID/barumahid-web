@@ -184,6 +184,15 @@ textarea:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 2px 4px rgba(20, 20, 20, 0.05), 0 24px 48px -20px rgba(20, 20, 20, 0.3);
 }
+/* Grid halus untuk latar terang (hero beranda) */
+.hero-grid-light {
+  background-image:
+    linear-gradient(rgba(20, 20, 20, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 20, 20, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at 50% 45%, black 25%, transparent 75%);
+}
+
 .animate-marquee-slow { animation: marquee 60s linear infinite; }
 .animate-marquee-reverse { animation: marquee-reverse 48s linear infinite; }
 .marquee-pause:hover .animate-marquee,

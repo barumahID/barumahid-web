@@ -1,11 +1,20 @@
 // Isi beranda dan hub /layanan.
-// Arahan user (Okt 2026): beranda bersih seperti tikalindustries.com. Setelah hero langsung 2 gambar besar
-// yang mengarah ke 2 layanan utama: Jasa Konstruksi dan Rent-to-Own. Penjelasan barumahID ada di /tentang.
+// Arahan user (Okt 2026): beranda bersih seperti tikalindustries.com. Halaman 1 = hero scroll-expand dengan
+// DUA gambar (Jasa Konstruksi dan Rent-to-Own). Halaman 2 = deskripsi singkat barumahID + event yang diikuti.
 
-export const HOME_INTRO = {
-  label: "Platform pendamping kepemilikan rumah",
-  title: "Mau bangun, atau mau punya rumah?",
-  body: "Pilih jalurmu. Dua-duanya dikerjakan tim yang sama, dari Padang untuk seluruh Indonesia.",
+export const HOME_HERO = {
+  title: "barumahID",
+  tagline: "Platform pendamping kepemilikan rumah",
+};
+
+export const HOME_ABOUT = {
+  label: "Tentang barumahID",
+  title: "Satu tempat untuk membangun dan memiliki rumah.",
+  body: [
+    "barumahID adalah platform pendamping kepemilikan rumah dari PT Inditek Bluprim Mahaksa, berbasis di Padang sejak 2018.",
+    "Lewat ConsTech, tim insinyur kami mengerjakan gambar, analisa struktur, renovasi, dan bangun dengan biaya yang dihitung per item pekerjaan. Lewat program Rent-to-Own yang sedang kami siapkan, kami membuka jalan untuk memiliki rumah dari sewa.",
+  ],
+  cta: { label: "Kenali barumahID", href: "/tentang" },
 };
 
 export interface PhotoCard {
@@ -20,7 +29,7 @@ export interface PhotoCard {
   badge?: string;
 }
 
-// Dua gambar besar di beranda.
+// Dua gambar di hero beranda.
 export const DUA_LAYANAN: PhotoCard[] = [
   {
     href: "/layanan/constech",
