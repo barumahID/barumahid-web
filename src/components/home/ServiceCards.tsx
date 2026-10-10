@@ -1,62 +1,43 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import type { PhotoCard } from "@/data/beranda";
 
-const services = [
-  {
-    href: "/layanan/rto",
-    audience: "Untuk calon pemilik rumah",
-    name: "Rent-to-Own",
-    headline: "Sewa hari ini. Miliki hunian nantinya.",
-    body: "Sewa unit mitra, 25% dari sewa jadi saldo DP. Ada listing rumah, simulasi DP, dan tiga jalur kepemilikan.",
-    cta: "Lihat program RTO",
-    image: "/images/hero-card.webp",
-    alt: "Rumah tinggal satu lantai dengan pagar dan taman depan",
-  },
-  {
-    href: "/layanan/constech",
-    audience: "Untuk pemilik proyek",
-    name: "ConsTech",
-    headline: "Proyekmu, dibikin mudah aja.",
-    body: "Jasa gambar, analisa struktur, renovasi, dan bangun. Dikerjakan insinyur, dihitung transparan.",
-    cta: "Lihat jasa dan harga",
-    image: "/images/proyek/render-rumah-2-lantai.webp",
-    alt: "Render 3D desain rumah dua lantai karya tim barumahID",
-  },
-  {
-    href: "/kemitraan",
-    audience: "Untuk mitra dan profesional",
-    name: "Kemitraan",
-    headline: "Tumbuh bareng ekosistem barumahID.",
-    body: "Penyedia kos, developer, kontraktor, tukang, supplier, freelancer, dan institusi pendidikan.",
-    cta: "Pilih peran mitra",
-    image: "/images/proyek/bangun-rumah-2-lantai-padang.webp",
-    alt: "Rumah dua lantai yang sedang dibangun bersama mitra mandor",
-  },
-];
-
-export default function ServiceCards() {
+// Kartu foto yang melebar saat disorot. Dipakai beranda Konstruksi (3 jasa) dan beranda RTO (3 jalur).
+export default function ServiceCards({
+  id,
+  eyebrow,
+  title,
+  intro,
+  items,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  items: PhotoCard[];
+}) {
   return (
-    <section id="layanan" className="bg-brand-cream">
+    <section id={id} className="scroll-mt-20 bg-brand-cream">
       <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
         <Reveal>
           <div className="grid gap-5 md:grid-cols-12 md:items-end">
             <div className="md:col-span-7">
-              <p className="type-micro text-brand-red">Tiga layanan, satu tujuan</p>
+              <p className="type-micro text-brand-red">{eyebrow}</p>
               <h2 className="mt-5 text-[clamp(1.9rem,4.4vw,3.3rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-brand-dark">
-                Pilih pintu yang paling pas buat kamu.
+                {title}
               </h2>
             </div>
             <p className="text-[15px] leading-relaxed text-brand-gray md:col-span-4 md:col-start-9">
-              Mau punya rumah, butuh jasa konstruksi, atau ingin jadi bagian dari ekosistemnya. Semua dimulai dari sini.
+              {intro}
             </p>
           </div>
         </Reveal>
 
         <div className="no-scrollbar -mx-5 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:mt-16 md:h-[560px] md:overflow-visible md:px-0 md:pb-0">
-          {services.map((s) => (
+          {items.map((s) => (
             <Link
-              key={s.href}
+              key={s.name}
               href={s.href}
               className="group relative flex h-[480px] w-[84%] shrink-0 snap-center flex-col justify-end overflow-hidden rounded-3xl bg-brand-dark text-white md:h-full md:w-auto md:flex-1 md:transition-[flex-grow] md:duration-500 md:ease-[cubic-bezier(0.16,1,0.3,1)] md:hover:flex-[1.7]"
             >
@@ -68,6 +49,11 @@ export default function ServiceCards() {
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
+              {s.badge && (
+                <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-brand-dark md:left-6 md:top-6">
+                  {s.badge}
+                </span>
+              )}
               <div className="relative p-6 md:p-8">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">{s.audience}</p>
                 <h3 className="mt-3 text-[28px] font-extrabold leading-none tracking-tight md:text-[34px]">{s.name}</h3>

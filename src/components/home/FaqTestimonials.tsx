@@ -2,16 +2,17 @@ import Reveal from "@/components/Reveal";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import ButtonLink from "@/components/ui/ButtonLink";
 import TestimonialSlider from "./TestimonialSlider";
-import { HOME_FAQ, TESTIMONIALS } from "@/data/faq";
+import { HOME_FAQ, TESTIMONIALS, type FaqItem } from "@/data/faq";
 import { waLink } from "@/data/site";
 
 // Testimoni + FAQ dalam satu section (arahan: FAQ terlalu makan tempat, gabung dengan feedback klien).
 // Testimoni wajib dari form F03 dengan izin tampil. Selama datanya kosong, kolom kiri berisi ajakan bertanya.
-export default function FaqTestimonials() {
+// `faq`: beranda Konstruksi pakai HOME_FAQ, beranda Rent-to-Own pakai RTO_FAQ.
+export default function FaqTestimonials({ faq = HOME_FAQ }: { faq?: FaqItem[] }) {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: HOME_FAQ.map((f) => ({
+    mainEntity: faq.map((f) => ({
       "@type": "Question",
       name: f.question,
       acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -48,7 +49,7 @@ export default function FaqTestimonials() {
           {TESTIMONIALS.length > 0 && (
             <p className="mb-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-brand-mute">Tanya jawab</p>
           )}
-          <AccordionFAQ items={HOME_FAQ} compact />
+          <AccordionFAQ items={faq} compact />
         </Reveal>
       </div>
     </section>

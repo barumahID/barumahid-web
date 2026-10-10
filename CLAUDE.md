@@ -25,8 +25,9 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 ## Struktur situs
 | Route | Isi |
 |---|---|
-| `/` | Hero scroll-expand, masalah, 3 layanan (`#layanan`), angka bukti, marquee program dan grup, FAQ (+ testimoni kalau ada), CTA penutup. Komponen di `src/components/home/`. |
-| `/layanan` | Hub 3 layanan. |
+| `/` | **Beranda Konstruksi** (tab 1). Tab beranda, hero scroll-expand, peta proyek + angka bukti (`#peta-proyek`), masalah, kartu 3 jasa (`#jasa`) ke `/layanan/constech`, marquee, FAQ, CTA penutup. |
+| `/rent-to-own` | **Beranda Rent-to-Own** (tab 2). UI sama dengan `/`: tab, hero, masalah, kartu 3 jalur (`#jalur-rto`) ke `/layanan/rto#<jalur>`, marquee, FAQ RTO, CTA. |
+| `/layanan` | Hub 3 layanan (RTO, ConsTech, Kemitraan). |
 | `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
 | `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
 | `/layanan/constech` | Jasa, peta proyek (`#peta`), harga (`#harga`), renovasi dan bangun (`#renovasi`), portofolio, form konsultasi (`#konsultasi`). |
@@ -46,6 +47,7 @@ SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `rob
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
+- `beranda.ts`: tab beranda, isi hero, masalah, dan kartu foto untuk kedua beranda, plus kartu hub `/layanan`.
 - `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`.
 - `nav.ts`: menu utama dan dropdown Layanan.
 - `projects.ts`: kota proyek untuk peta, portofolio, `STATS`.
@@ -76,7 +78,8 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
 - `layout/Footer.tsx`, `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
 - `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `scroll-expansion-hero`.
-- `home/`, `constech/` (`ProjectMap`, `PricingTiers`), `rto/` (`DPSimulator`, `ListingGrid`), `about/`, `portfolio/`.
+- `home/`: `BerandaTabs` (2 tab, menempel di bawah navbar, sembunyi saat gulir ke bawah), `PetaProyek` (peta + angka, pakai `ProjectMap`), `ServiceCards` (kartu foto, isinya lewat props dari `beranda.ts`), `ProblemSection` (`variant`), `FaqTestimonials` (`faq`). `sections/ScrollExpandHeroSection` juga punya `variant` (`konstruksi` / `rto`).
+- `constech/` (`ProjectMap`, `PricingTiers`), `rto/` (`DPSimulator`, `ListingGrid`), `about/`, `portfolio/`.
 - `CountUp`: angka final dirender di server, animasi hanya kalau elemen di luar layar dan reduced motion tidak aktif. `Reveal`: animasi muncul, ada fallback `<noscript>` di layout.
 
 ## Warna dan font
@@ -100,7 +103,7 @@ Font: Montserrat lewat `next/font/google` di `src/app/layout.tsx`, jadi default 
 - Next.js 16.2 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. Library `three` sudah dihapus.
 - Versi Next.js ini punya breaking changes dari data latih model. Cek `node_modules/next/dist/docs/` sebelum pakai API yang tidak familiar.
 - ESLint `react-hooks/set-state-in-effect`: untuk mereset state saat prop atau route berubah, simpan nilai sebelumnya di state lalu bandingkan saat render (contoh di `Navbar.tsx`). Jangan `setState` langsung di `useEffect`.
-- Gambar proyek di `public/images/proyek/*.webp` (lebar maks 1600 px), tampilkan dengan `next/image`. Logo di `public/brand/`.
+- Gambar proyek di `public/images/proyek/*.webp` (lebar maks 1600 px), tampilkan dengan `next/image`. Logo di `public/brand/`: `logo-mark-red.png` (merahnya disamakan dengan `brand-red` #C53B3B), `logo-mark-white.png`, `logo-icon-192/512.png` (ikon tanpa lingkaran). Logo tidak boleh pakai border lingkaran.
 - **Windows + path panjang:** path folder project ini sekitar 150 karakter dan `LongPathsEnabled = 0`, jadi **Turbopack gagal di laptop ini** (`next build`: "path length ... exceeds max length of filesystem"; `next dev`: panic "Next.js package not found" saat hot reload). Junction ke path pendek tidak membantu, karena Next resolve ke path asli. Solusinya **webpack untuk lokal**: `npm run dev` = `next dev --webpack`, `npm run build:local` = `next build --webpack`. Script `build` tetap Turbopack untuk Vercel (Linux, tidak kena batas path).
 - Build di lingkungan tanpa akses Google Fonts (sandbox tertutup): pakai `NEXT_FONT_GOOGLE_MOCKED_RESPONSES=<file mock>` dan `next build --webpack`. Di laptop dan Vercel tidak perlu.
 - **Alur kerja dengan user:** user menjalankan `npm run dev` di panel Terminal aplikasi Claude (PowerShell). Claude membaca output-nya dengan `read_terminal`, lalu cek tampilan di browser pane (`http://localhost:3000`, buka dengan `preview_start {url}`). Jangan start server kedua di port yang sama. Kalau dev server belum jalan, jalankan dengan `run_in_terminal` (`npm run dev`) supaya user bisa lihat dan stop sendiri.

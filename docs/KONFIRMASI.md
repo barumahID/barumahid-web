@@ -16,7 +16,8 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Link DM Instagram Jururancang (`ig.me`) | Belum dites di HP | `src/data/site.ts` |
 | Testimoni pelanggan | Kosong, menunggu izin tampil dari pemberi testimoni | `src/data/faq.ts` |
 | Logo program, event, dan unit grup | Tampil sebagai teks | `src/data/partners.ts` |
-| Listing RTO pertama | Kosong, menunggu izin tertulis pemilik dan cek dokumen legal | `src/data/listings.ts` |
+| Listing RTO pertama | Kosong. Dua calon unit sudah diusulkan (satu Siap Berdaya, satu Siap Beli). Menunggu foto, data unit, izin tertulis pemilik, dan cek dokumen legal | `src/data/listings.ts` |
+| Satuan harga analisa struktur | Ditulis per m² (pricelist Jururancang Juli 2026). Halaman lama menulis per item | `src/data/pricing.ts` |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |
 | Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/app/rekrutmen/page.tsx` (`BATCH`) |
 

@@ -86,8 +86,8 @@ export default function RtoPage() {
         </div>
       </section>
 
-      {/* Tiga jalur */}
-      <section className="relative isolate overflow-hidden bg-brand-dark text-white">
+      {/* Tiga jalur (anchor #jalur dan #<id-jalur> dipakai kartu di beranda Rent-to-Own) */}
+      <section id="jalur" className="relative isolate scroll-mt-20 overflow-hidden bg-brand-dark text-white">
         <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
@@ -101,7 +101,7 @@ export default function RtoPage() {
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {RTO_PATHS.map((p, i) => (
               <Reveal key={p.id} delay={i * 100}>
-                <article className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.06] p-6 md:p-7">
+                <article id={p.id} className="flex h-full scroll-mt-28 flex-col rounded-3xl border border-white/10 bg-white/[0.06] p-6 md:p-7">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">0{i + 1}</p>
                     <span

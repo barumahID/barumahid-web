@@ -9,7 +9,7 @@ import PortfolioCard from "@/components/portfolio/PortfolioCard";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
 import { PORTFOLIO, STATS, verifiedCities } from "@/data/projects";
-import { BUILD_STEPS, ORDER_STEPS } from "@/data/pricing";
+import { AHSP_FORMULA, BUILD_STEPS, ORDER_STEPS } from "@/data/pricing";
 import { JURURANCANG_DM, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -154,6 +154,21 @@ export default function ConstechPage() {
             <p className="mt-4 text-[16px] leading-relaxed text-brand-gray">
               Dikerjakan barumahID bersama mitra mandor yang sudah pernah bekerja dengan kami. Konsultasi pertama gratis.
             </p>
+            <div className="mt-8 rounded-3xl bg-white p-6 card-shadow">
+              <p className="type-micro text-brand-red">Cara hitung dengan AHSP</p>
+              <ol className="mt-4 space-y-3">
+                {AHSP_FORMULA.map((f, i) => (
+                  <li key={f.label} className="flex gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-dark text-[12px] font-black text-white">
+                      {i + 1}
+                    </span>
+                    <span className="text-[14px] leading-relaxed text-brand-gray">
+                      <span className="font-extrabold text-brand-dark">{f.label}.</span> {f.body}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="#konsultasi" variant="dark">
                 Minta hitungan RAB

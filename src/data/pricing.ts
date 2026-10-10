@@ -51,6 +51,16 @@ export const ORDER_STEPS = [
   { title: "Deal dan mulai dikerjakan", body: "Setelah sepakat, gambar dikerjakan sesuai paket dan batas waktu." },
 ];
 
+// Cara hitung biaya renovasi dan bangun dengan AHSP (Analisa Harga Satuan Pekerjaan). Rumus umum, tanpa angka contoh.
+export const AHSP_FORMULA = [
+  {
+    label: "Harga satuan",
+    body: "Koefisien bahan × harga bahan, ditambah koefisien tenaga × upah, ditambah alat. Lalu ditambah biaya umum dan keuntungan.",
+  },
+  { label: "Biaya per item", body: "Volume pekerjaan × harga satuan. Misalnya luas dinding dalam m² × harga satuan pasang bata per m²." },
+  { label: "RAB", body: "Jumlah biaya semua item pekerjaan. Angka ini yang kamu setujui sebelum pekerjaan dimulai." },
+];
+
 export const BUILD_STEPS = [
   { title: "Konsultasi", body: "Gratis. Kami dengarkan kebutuhan dan anggaranmu." },
   { title: "Survei lokasi", body: "Tim cek kondisi lapangan dan ukur kebutuhan pekerjaan." },

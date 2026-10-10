@@ -1,25 +1,10 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
+import { PROBLEMS, type BerandaId } from "@/data/beranda";
 
-const problems = [
-  {
-    num: "01",
-    title: "Cari jasa bangun yang bisa dipercaya itu susah.",
-    body: "Harga sering tidak jelas, hasil tidak sesuai gambar.",
-  },
-  {
-    num: "02",
-    title: "DP rumah terasa makin jauh.",
-    body: "Tiap bulan bayar sewa, tapi tidak ada yang jadi milik sendiri.",
-  },
-  {
-    num: "03",
-    title: "Bingung mulai dari mana.",
-    body: "Desain, izin, biaya, dan KPR berjalan sendiri-sendiri.",
-  },
-];
-
-export default function ProblemSection() {
+export default function ProblemSection({ variant = "konstruksi" }: { variant?: BerandaId }) {
+  const { title, closing, items } = PROBLEMS[variant];
+  const problems = items.map((p, i) => ({ ...p, num: String(i + 1).padStart(2, "0") }));
   return (
     <section className="relative isolate overflow-hidden bg-brand-dark text-white">
       <Image
@@ -34,7 +19,7 @@ export default function ProblemSection() {
         <Reveal>
           <p className="type-micro text-brand-red">Masalah yang kami lihat di lapangan</p>
           <h2 className="mt-5 max-w-3xl text-[clamp(1.9rem,4.4vw,3.3rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
-            Dari membangun sampai memiliki, urusan rumah masih terasa ribet.
+            {title}
           </h2>
         </Reveal>
 
@@ -53,7 +38,7 @@ export default function ProblemSection() {
         <Reveal delay={200}>
           <p className="mt-12 flex items-center gap-4 text-[clamp(1.1rem,1.8vw,1.45rem)] font-semibold md:mt-16">
             <span className="h-px w-10 bg-brand-red md:w-16" aria-hidden="true" />
-            barumahID menyatukan semuanya dalam satu jalur.
+            {closing}
           </p>
         </Reveal>
       </div>
