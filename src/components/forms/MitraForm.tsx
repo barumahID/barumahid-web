@@ -2,23 +2,36 @@
 
 import { useState } from "react";
 import { FormField, inputClass } from "./FormField";
+import { submitLead, LEAD_ERROR_MESSAGE } from "@/lib/leads";
 
 export default function MitraForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    // TODO: sambungkan ke backend, untuk sekarang cuma log ke console.
-    console.log("Lead Mitra:", data);
-    e.currentTarget.reset();
-    setSubmitted(true);
+    const form = e.currentTarget;
+    setSending(true);
+    setError(false);
+    try {
+      await submitLead("mitra", Object.fromEntries(new FormData(form).entries()));
+      form.reset();
+      setSubmitted(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      onChange={() => setSubmitted(false)}
+      onChange={() => {
+        setSubmitted(false);
+        setError(false);
+      }}
       className="grid gap-5 sm:grid-cols-2"
     >
       <FormField label="Nama">
@@ -75,10 +88,16 @@ export default function MitraForm() {
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="rounded-full bg-brand-red px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-brand-red/25 transition hover:bg-brand-red/90 hover:scale-105 sm:w-auto"
+          disabled={sending}
+          className="disabled:cursor-wait disabled:opacity-60 rounded-full bg-brand-red px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-brand-red/25 transition hover:bg-brand-red/90 hover:scale-105 sm:w-auto"
         >
           Daftar sebagai Mitra
         </button>
+        {error && (
+          <p role="alert" className="mt-3 text-sm font-medium text-brand-red">
+            {LEAD_ERROR_MESSAGE}
+          </p>
+        )}
         {submitted && (
           <p className="mt-3 text-sm font-medium text-emerald-600">
             Terima kasih! Data kamu sudah kami terima, tim barumahID akan

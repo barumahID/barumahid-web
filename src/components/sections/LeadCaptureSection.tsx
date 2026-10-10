@@ -5,25 +5,36 @@ import Reveal from "@/components/Reveal";
 import Section from "@/components/ui/Section";
 import SectionLabel from "@/components/ui/SectionLabel";
 import { FORM_CUSTOMER_RTO, FORM_MITRA_HUNIAN, FORM_DEVELOPER } from "@/constants";
+import { submitLead, LEAD_ERROR_MESSAGE, type LeadJenis } from "@/lib/leads";
 
-const tabs = [
+const tabs: { id: LeadJenis; label: string; desc: string; formUrl: string }[] = [
   { id: "customer", label: "Calon Penyewa", desc: "Daftar minat program RTO", formUrl: FORM_CUSTOMER_RTO },
   { id: "mitra", label: "Pemilik Properti", desc: "Jadi mitra hunian", formUrl: FORM_MITRA_HUNIAN },
   { id: "developer", label: "Developer", desc: "Partnership developer", formUrl: FORM_DEVELOPER },
 ];
 
 export default function LeadCaptureSection() {
-  const [active, setActive] = useState("customer");
+  const [active, setActive] = useState<LeadJenis>("customer");
   const [form, setForm] = useState({ nama: "", wa: "", kota: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
   const activeTab = tabs.find((t) => t.id === active)!;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(`[LeadCapture/${active}]`, form);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setForm({ nama: "", wa: "", kota: "" });
+    setSending(true);
+    setError(false);
+    try {
+      await submitLead(active, form);
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 3000);
+      setForm({ nama: "", wa: "", kota: "" });
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -46,15 +57,15 @@ export default function LeadCaptureSection() {
 
       <div className="mt-16 md:mt-20 grid gap-10 md:grid-cols-12">
         {/* Left — tab selector */}
-        <Reveal>
-          <div className="md:col-span-4">
+        <Reveal className="md:col-span-4">
+          <div>
             <p className="type-micro text-brand-gray mb-6">Pilih Peran</p>
             <div className="border-t hairline">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => { setActive(tab.id); setSubmitted(false); }}
+                  onClick={() => { setActive(tab.id); setSubmitted(false); setError(false); }}
                   className={`w-full border-b hairline py-5 text-left transition-colors ${
                     active === tab.id ? "" : "hover:bg-brand-dark/[0.02]"
                   }`}
@@ -77,8 +88,8 @@ export default function LeadCaptureSection() {
         </Reveal>
 
         {/* Right — form */}
-        <Reveal delay={100}>
-          <div className="md:col-span-8">
+        <Reveal delay={100} className="md:col-span-8">
+          <div>
             {submitted ? (
               <div className="border hairline-strong rounded-2xl p-10 md:p-14 text-center bg-brand-cream">
                 <span className="flex mx-auto h-14 w-14 items-center justify-center rounded-full bg-brand-dark text-white">
@@ -132,9 +143,10 @@ export default function LeadCaptureSection() {
                 <div className="flex flex-wrap items-center gap-4 pt-4">
                   <button
                     type="submit"
-                    className="group inline-flex items-center gap-2 rounded-full bg-brand-dark px-6 py-3.5 text-[13px] font-medium text-white hover:bg-brand-red transition-all duration-300"
+                    disabled={sending}
+                    className="group inline-flex items-center gap-2 rounded-full bg-brand-dark px-6 py-3.5 text-[13px] font-medium text-white hover:bg-brand-red transition-all duration-300 disabled:cursor-wait disabled:opacity-60"
                   >
-                    Kirim
+                    {sending ? "Mengirim..." : "Kirim"}
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="transition-transform duration-300 group-hover:translate-x-1">
                       <path d="M3 8h10M9 4l4 4-4 4" />
                     </svg>
@@ -150,6 +162,9 @@ export default function LeadCaptureSection() {
                     </a>
                   )}
                 </div>
+                {error && (
+                  <p role="alert" className="type-small text-brand-red">{LEAD_ERROR_MESSAGE}</p>
+                )}
               </form>
             )}
           </div>

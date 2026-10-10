@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Layanan ConsTech — barumahID",
+  title: { default: "Layanan ConsTech", template: "%s | barumahID" },
   description:
     "Jasa konstruksi profesional barumahID — Jasa Gambar, Analisa Struktur, Renovasi & Konstruksi dengan pricing transparan.",
 };

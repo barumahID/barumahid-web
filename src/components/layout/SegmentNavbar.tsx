@@ -45,7 +45,12 @@ export default function SegmentNavbar({ segment, menuItems }: SegmentNavbarProps
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  useEffect(() => setMobileOpen(false), [pathname]);
+  // Tutup menu mobile saat pindah halaman.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+  }
 
   const options = switchOptions[segment];
 

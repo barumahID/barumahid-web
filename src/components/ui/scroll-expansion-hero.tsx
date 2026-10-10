@@ -39,11 +39,14 @@ const ScrollExpandMedia = ({
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Reset animasi kalau jenis media berganti.
+  const [prevMediaType, setPrevMediaType] = useState(mediaType);
+  if (mediaType !== prevMediaType) {
+    setPrevMediaType(mediaType);
     setScrollProgress(0);
     setShowContent(false);
     setMediaFullyExpanded(false);
-  }, [mediaType]);
+  }
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {

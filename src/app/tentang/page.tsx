@@ -5,7 +5,7 @@ import SectionLabel from "@/components/ui/SectionLabel";
 import { EMAIL, WA_LINK1, IG_URL, LINKEDIN_URL, HQ_ADDRESS, VO_ADDRESS } from "@/constants";
 
 export const metadata: Metadata = {
-  title: "Tentang barumahID",
+  title: "Tentang",
   description: "barumahID (PT Inditek Bluprim Mahaksa) — Platform Pendamping Kepemilikan Rumah dari Padang, Sumatera Barat.",
 };
 
