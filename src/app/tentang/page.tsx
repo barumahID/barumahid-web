@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import PillarCards from "@/components/about/PillarCards";
@@ -291,10 +292,16 @@ export default function TentangPage() {
               const year = e.note?.match(/\b(19|20)\d{2}\b/)?.[0];
               return (
                 <Reveal key={e.name} delay={(i % 3) * 80}>
-                  <li className="flex h-full gap-4 rounded-3xl bg-white p-6 card-shadow">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-red/10 text-brand-red" aria-hidden="true">
-                      <Trophy />
-                    </span>
+                  <li className="flex h-full flex-col gap-4 rounded-3xl bg-white p-6 card-shadow">
+                    {e.logo ? (
+                      <span className="flex h-12 items-center" aria-hidden="true">
+                        <Image src={e.logo.src} width={e.logo.w} height={e.logo.h} alt="" className="h-auto max-h-12 w-auto max-w-[150px] rounded-md" />
+                      </span>
+                    ) : (
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-red/10 text-brand-red" aria-hidden="true">
+                        <Trophy />
+                      </span>
+                    )}
                     <div>
                       <p className="text-[16px] font-extrabold leading-snug text-brand-dark">{e.name}</p>
                       {e.note && <p className="mt-1 text-[14px] leading-relaxed text-brand-gray">{e.note}</p>}

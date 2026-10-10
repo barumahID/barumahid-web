@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# bahan mentah dari user (kartu nama, logo pihak lain); yang dipakai sudah diolah ke public/
+/Picture/

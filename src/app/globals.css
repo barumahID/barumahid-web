@@ -193,6 +193,43 @@ textarea:focus-visible {
   mask-image: radial-gradient(ellipse at 50% 45%, black 25%, transparent 75%);
 }
 
+/* Latar hero beranda (HeroBackdrop) */
+@keyframes bg-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+.hero-bg-drift { animation: bg-drift 28s ease-in-out infinite alternate; }
+@keyframes line-draw { to { stroke-dashoffset: 0; } }
+.hero-line-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: line-draw 3s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+.hero-line-delay { animation-delay: 1s; }
+@keyframes dash-flow { to { stroke-dashoffset: -400; } }
+.hero-line-flow {
+  stroke-dasharray: 6 14;
+  animation: dash-flow 18s linear infinite;
+}
+.hero-orb { position: absolute; border-radius: 9999px; }
+.hero-orb-a {
+  width: 48vmax; height: 48vmax; left: -14vmax; top: -16vmax;
+  background: radial-gradient(circle, rgba(197, 59, 59, 0.14), rgba(197, 59, 59, 0) 68%);
+  animation: orb-a 22s ease-in-out infinite alternate;
+}
+.hero-orb-b {
+  width: 40vmax; height: 40vmax; right: -12vmax; bottom: -18vmax;
+  background: radial-gradient(circle, rgba(20, 20, 20, 0.08), rgba(20, 20, 20, 0) 68%);
+  animation: orb-b 26s ease-in-out infinite alternate;
+}
+@keyframes orb-a { to { transform: translate(9vmax, 7vmax) scale(1.1); } }
+@keyframes orb-b { to { transform: translate(-7vmax, -6vmax) scale(1.08); } }
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.hero-float { animation: float-y 7s ease-in-out infinite; }
+
 .animate-marquee-slow { animation: marquee 60s linear infinite; }
 .animate-marquee-reverse { animation: marquee-reverse 48s linear infinite; }
 .marquee-pause:hover .animate-marquee,
@@ -295,8 +332,17 @@ textarea:focus-visible {
   .animate-pulse-dot,
   .animate-ping-soft,
   .animate-hero-zoom,
-  .animate-fade-up {
+  .animate-fade-up,
+  .hero-bg-drift,
+  .hero-line-flow,
+  .hero-orb-a,
+  .hero-orb-b,
+  .hero-float {
     animation: none;
+  }
+  .hero-line-draw {
+    animation: none;
+    stroke-dashoffset: 0;
   }
   .tilt-card:hover {
     transform: none;

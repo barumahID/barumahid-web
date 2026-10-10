@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import DualScrollHero from "@/components/ui/dual-scroll-hero";
+import HeroBackdrop from "@/components/ui/hero-backdrop";
 import EventMarquee from "@/components/home/EventMarquee";
 import { STATS } from "@/data/projects";
 import { DUA_LAYANAN, HOME_ABOUT, HOME_HERO } from "@/data/beranda";
@@ -55,7 +56,12 @@ function HomeAbout() {
 
 export default function ScrollExpandHero() {
   return (
-    <DualScrollHero panels={DUA_LAYANAN} title={HOME_HERO.title} tagline={HOME_HERO.tagline}>
+    <DualScrollHero
+      panels={DUA_LAYANAN}
+      title={HOME_HERO.title}
+      tagline={HOME_HERO.tagline}
+      background={<HeroBackdrop image={HOME_HERO.background} logo={HOME_HERO.logoPt} />}
+    >
       <HomeAbout />
     </DualScrollHero>
   );

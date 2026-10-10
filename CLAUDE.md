@@ -25,7 +25,7 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 ## Struktur situs
 | Route | Isi |
 |---|---|
-| `/` | Beranda bersih gaya tikalindustries.com. Halaman 1: hero scroll-expand berisi **dua gambar** (Jasa Konstruksi ke `/layanan/constech`, Rent-to-Own ke `/layanan/rto`) di latar polos, membesar penuh saat digulir. Halaman 2: deskripsi singkat barumahID + angka, lalu marquee program/lomba yang diikuti. Penjelasan lengkap ada di `/tentang`. |
+| `/` | Beranda bersih gaya tikalindustries.com. Halaman 1: hero scroll-expand berisi **dua gambar** (Jasa Konstruksi ke `/layanan/constech`, Rent-to-Own ke `/layanan/rto`) di atas latar beranimasi (`HeroBackdrop`: foto gedung + gelombang merah yang sudah di-blur, logo PT samar, garis dan cahaya bergerak, parallax kursor), membesar penuh saat digulir. Halaman 2: deskripsi singkat barumahID + angka, lalu marquee logo event dan partner (logo saja). Penjelasan lengkap ada di `/tentang`. |
 | `/layanan` | Hub 3 layanan (RTO, ConsTech, Kemitraan). |
 | `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
 | `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
@@ -46,14 +46,14 @@ SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `rob
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
-- `beranda.ts`: judul hero (`HOME_HERO`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
+- `beranda.ts`: judul hero, gambar latar, dan logo PT (`HOME_HERO`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
 - `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`.
 - `nav.ts`: menu utama dan dropdown Layanan.
 - `projects.ts`: kota proyek untuk peta, portofolio, `STATS`. Kota luar negeri diberi `country` (mis. Kota Kinabalu, Malaysia) dan tidak dihitung di `STATS.provinces`; jumlah negara di `STATS.countries`.
 - `pricing.ts`: tier harga ConsTech (Basic, Plus, Pro per m²), isi paket, langkah order.
 - `rto.ts`: jalur RTO, langkah, kanal DP, keamanan dana, FAQ RTO.
 - `listings.ts`: listing RTO (kosong). `roles.ts`: 7 peran mitra. `masuk.ts`: pilihan di `/masuk`.
-- `company.ts`: isi halaman Tentang. `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program yang pernah diikuti (`/tentang` dan marquee beranda). Isi `logo` dengan path di `/public/logos/` kalau file logonya sudah ada; tanpa logo tampil ikon piala.
+- `company.ts`: isi halaman Tentang. `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program (`EVENTS_AND_PROGRAMS`, tampil di `/tentang`) dan partner (`PARTNERS`). Semua yang punya `logo` ({src, w, h}, file di `/public/logos/`) ikut di marquee beranda (`MARQUEE_LOGOS`); tanpa logo, di `/tentang` tampil ikon piala.
 - `articles.ts`: artikel (kosong).
 - `indonesia-map.ts`: hasil generate `scripts/gen-indonesia-map.mjs`. Jangan diedit manual. Cara pakai ada di header script.
 
@@ -76,8 +76,8 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 ## Komponen
 - `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
 - `layout/Footer.tsx`, `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
-- `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `dual-scroll-hero` (hero dua panel beranda; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
-- `home/`: `EventMarquee` (grafis bergerak program/lomba di beranda), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
+- `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
+- `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
 - `about/`: `PetaProyek` (peta + angka + kartu kantor, pakai `ProjectMap` dengan prop `offices`), `PillarCards`, `ValueLetters`.
 - `constech/` (`ProjectMap`, `PricingTiers`), `rto/` (`DPSimulator`, `ListingGrid`), `about/`, `portfolio/`.
 - `CountUp`: angka final dirender di server, animasi hanya kalau elemen di luar layar dan reduced motion tidak aktif. `Reveal`: animasi muncul, ada fallback `<noscript>` di layout.
@@ -103,6 +103,7 @@ Font: Montserrat lewat `next/font/google` di `src/app/layout.tsx`, jadi default 
 - Next.js 16.2 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. Library `three` sudah dihapus.
 - Versi Next.js ini punya breaking changes dari data latih model. Cek `node_modules/next/dist/docs/` sebelum pakai API yang tidak familiar.
 - ESLint `react-hooks/set-state-in-effect`: untuk mereset state saat prop atau route berubah, simpan nilai sebelumnya di state lalu bandingkan saat render (contoh di `Navbar.tsx`). Jangan `setState` langsung di `useEffect`.
+- Bahan mentah dari user ada di folder `Picture/` (di-ignore git, jangan di-commit: berisi kartu nama dengan no HP dan logo pihak lain). Yang dipakai situs diolah dulu ke `public/` (latar transparan, trim, webp) dengan sharp dari `node_modules`.
 - Gambar proyek di `public/images/proyek/*.webp` (lebar maks 1600 px), tampilkan dengan `next/image`. Logo di `public/brand/`: `logo-mark-red.png` (merahnya disamakan dengan `brand-red` #C53B3B), `logo-mark-white.png`, `logo-icon-192/512.png` (ikon tanpa lingkaran). Logo tidak boleh pakai border lingkaran.
 - **Windows + path panjang:** path folder project ini sekitar 150 karakter dan `LongPathsEnabled = 0`, jadi **Turbopack gagal di laptop ini** (`next build`: "path length ... exceeds max length of filesystem"; `next dev`: panic "Next.js package not found" saat hot reload). Junction ke path pendek tidak membantu, karena Next resolve ke path asli. Solusinya **webpack untuk lokal**: `npm run dev` = `next dev --webpack`, `npm run build:local` = `next build --webpack`. Script `build` tetap Turbopack untuk Vercel (Linux, tidak kena batas path).
 - Build di lingkungan tanpa akses Google Fonts (sandbox tertutup): pakai `NEXT_FONT_GOOGLE_MOCKED_RESPONSES=<file mock>` dan `next build --webpack`. Di laptop dan Vercel tidak perlu.

@@ -26,13 +26,13 @@ export default function DualScrollHero({
   panels,
   title,
   tagline,
-  bgImageSrc,
+  background,
   children,
 }: {
   panels: HeroPanel[];
   title: string;
   tagline: string;
-  bgImageSrc?: string;
+  background?: ReactNode;
   children?: ReactNode;
 }) {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -152,15 +152,9 @@ export default function DualScrollHero({
   return (
     <div className="overflow-x-hidden bg-brand-cream">
       <section className="relative h-[100dvh] w-full">
-        {/* Latar bersih ala Tikal: polos + grid halus. Foto latar opsional, sangat samar. */}
+        {/* Latar: diisi lewat prop `background` (beranda pakai HeroBackdrop). Memudar saat panel membesar. */}
         <div className="pointer-events-none absolute inset-0" style={{ opacity: 1 - p }} aria-hidden="true">
-          {bgImageSrc && (
-            <>
-              <Image src={bgImageSrc} alt="" fill priority sizes="100vw" className="object-cover opacity-[0.14] grayscale" />
-              <div className="absolute inset-0 bg-gradient-to-b from-brand-cream/40 via-brand-cream/70 to-brand-cream" />
-            </>
-          )}
-          <div className="hero-grid-light absolute inset-0" />
+          {background ?? <div className="hero-grid-light absolute inset-0" />}
         </div>
 
         {/* Judul di atas panel, bergeser ke samping dan memudar saat panel membesar */}

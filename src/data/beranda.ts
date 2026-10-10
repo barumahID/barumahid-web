@@ -5,6 +5,10 @@
 export const HOME_HERO = {
   title: "barumahID",
   tagline: "Platform pendamping kepemilikan rumah",
+  // Latar dari bahan user: kartu nama PT tanpa teks (no HP, alamat, email dihapus), sudah di-blur.
+  background: "/images/beranda/hero-bg.webp",
+  // Logo PT Inditek Bluprim Mahaksa, tampil samar di latar.
+  logoPt: { src: "/images/beranda/logo-pt.webp", w: 520, h: 268 },
 };
 
 export const HOME_ABOUT = {
