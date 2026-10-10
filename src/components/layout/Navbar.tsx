@@ -86,8 +86,7 @@ export default function Navbar() {
 
   const solid = scrolled || mobileOpen;
   const isActive = (href: string) =>
-    // "Beranda" aktif di kedua tab beranda: Konstruksi (/) dan Rent-to-Own (/rent-to-own).
-    href === "/" ? pathname === "/" || pathname === "/rent-to-own" : pathname === href || pathname.startsWith(href + "/");
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
   const serviceActive = SERVICE_LINKS.some((s) => isActive(s.href)) || pathname === "/layanan";
 
   const linkCls = (active: boolean) =>

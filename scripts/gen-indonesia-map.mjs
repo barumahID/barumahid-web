@@ -32,8 +32,10 @@ const cities = [
   { id: "bandung", name: "Bandung", prov: "Jawa Barat", lon: 107.6191, lat: -6.9175 },
   { id: "cimahi", name: "Cimahi", prov: "Jawa Barat", lon: 107.5425, lat: -6.8722 },
   { id: "jonggol", name: "Jonggol", prov: "Jawa Barat", lon: 107.0544, lat: -6.4708 },
+  { id: "cikarang", name: "Cikarang", prov: "Jawa Barat", lon: 107.158, lat: -6.2615 },
   { id: "tangerang", name: "Tangerang", prov: "Banten", lon: 106.6319, lat: -6.1783 },
   { id: "mamuju", name: "Mamuju", prov: "Sulawesi Barat", lon: 118.8861, lat: -2.6806 },
+  { id: "kinabalu", name: "Kota Kinabalu", prov: "Sabah, Malaysia", lon: 116.0735, lat: 5.9804 },
   { id: "sumedang", name: "Sumedang", prov: "Jawa Barat", lon: 107.9206, lat: -6.8381 },
 ];
 const pts = Object.fromEntries(cities.map((c) => {

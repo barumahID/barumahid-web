@@ -37,6 +37,10 @@ export const CITY_POINTS: Record<string, { x: number; y: number }> = {
     "x": 267.4,
     "y": 273.3
   },
+  "cikarang": {
+    "x": 269.6,
+    "y": 268.9
+  },
   "tangerang": {
     "x": 258.5,
     "y": 267.1
@@ -44,6 +48,10 @@ export const CITY_POINTS: Record<string, { x: number; y: number }> = {
   "mamuju": {
     "x": 516.7,
     "y": 193.2
+  },
+  "kinabalu": {
+    "x": 457.5,
+    "y": 10.4
   },
   "sumedang": {
     "x": 285.7,

@@ -7,7 +7,7 @@ import { waLink } from "@/data/site";
 
 // Testimoni + FAQ dalam satu section (arahan: FAQ terlalu makan tempat, gabung dengan feedback klien).
 // Testimoni wajib dari form F03 dengan izin tampil. Selama datanya kosong, kolom kiri berisi ajakan bertanya.
-// `faq`: beranda Konstruksi pakai HOME_FAQ, beranda Rent-to-Own pakai RTO_FAQ.
+// Tampil di /tentang. `faq` default HOME_FAQ (pertanyaan umum barumahID).
 export default function FaqTestimonials({ faq = HOME_FAQ }: { faq?: FaqItem[] }) {
   const faqJsonLd = {
     "@context": "https://schema.org",

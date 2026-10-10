@@ -1,7 +1,6 @@
-// Logo bergerak di beranda. Sumber: halaman Event & Partner di Katalog, sheet Compro ADART,
-// dan folder 08. barumahID Activity.
-// `logo` diisi path file di /public/logos/ kalau file logonya sudah ada. Selama kosong,
-// yang tampil adalah nama dalam bentuk wordmark teks.
+// Event dan program yang pernah diikuti barumahID, tampil di bagian bawah /tentang.
+// Sumber: halaman Event & Partner di Katalog, sheet Compro ADART, dan folder 08. barumahID Activity.
+// `logo` diisi path file di /public/logos/ kalau file logonya sudah ada. Selama kosong, yang tampil nama saja.
 // Logo dan nama klien B2B BELUM boleh tampil sebelum ada izin tertulis dari tiap klien.
 
 export interface PartnerMark {
@@ -18,10 +17,4 @@ export const EVENTS_AND_PROGRAMS: PartnerMark[] = [
   { name: "Nakama.id", note: "Hackathon Scalebox, 2021" },
   { name: "Studec International" },
   { name: "Rocket Incubation", note: "Yayasan Indonesia Setara × Sandination Academy, 2026" },
-];
-
-export const GROUP_UNITS: PartnerMark[] = [
-  { name: "PT Inditek Bluprim Mahaksa" },
-  { name: "barumahID" },
-  { name: "Jururancang Engineering Mahaksa" },
 ];

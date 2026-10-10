@@ -4,6 +4,10 @@ import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import PillarCards from "@/components/about/PillarCards";
 import ValueLetters from "@/components/about/ValueLetters";
+import PetaProyek from "@/components/about/PetaProyek";
+import ProblemSection from "@/components/home/ProblemSection";
+import FaqTestimonials from "@/components/home/FaqTestimonials";
+import { EVENTS_AND_PROGRAMS } from "@/data/partners";
 import ChannelGrid from "@/components/ui/ChannelGrid";
 import ChannelIcon from "@/components/icons/ChannelIcon";
 import {
@@ -123,6 +127,9 @@ export default function TentangPage() {
         </div>
       </section>
 
+      {/* Masalah yang ingin kami selesaikan */}
+      <ProblemSection />
+
       {/* Visi & misi */}
       <section className="bg-brand-cream-warm">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
@@ -147,6 +154,9 @@ export default function TentangPage() {
           </ol>
         </div>
       </section>
+
+      {/* Peta penyebaran proyek + basis kantor */}
+      <PetaProyek />
 
       {/* LBAG */}
       <section className="bg-brand-cream">
@@ -260,6 +270,43 @@ export default function TentangPage() {
               Lihat posisi yang sedang dibuka
             </Link>
           </p>
+        </div>
+      </section>
+
+      {/* Tanya jawab + testimoni (testimoni otomatis tampil kalau datanya ada) */}
+      <FaqTestimonials />
+
+      {/* Event dan program yang pernah diikuti */}
+      <section className="bg-brand-cream-warm">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
+          <Reveal>
+            <SectionTitle
+              label="Event dan program"
+              title="Tempat kami belajar dan menguji ide."
+              subtitle="Bootcamp, inkubasi, kompetisi, dan hackathon yang pernah kami ikuti sejak 2018."
+            />
+          </Reveal>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {EVENTS_AND_PROGRAMS.map((e, i) => {
+              const year = e.note?.match(/\b(19|20)\d{2}\b/)?.[0];
+              return (
+                <Reveal key={e.name} delay={(i % 3) * 80}>
+                  <li className="flex h-full gap-4 rounded-3xl bg-white p-6 card-shadow">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-red/10 text-brand-red" aria-hidden="true">
+                      <Trophy />
+                    </span>
+                    <div>
+                      <p className="text-[16px] font-extrabold leading-snug text-brand-dark">{e.name}</p>
+                      {e.note && <p className="mt-1 text-[14px] leading-relaxed text-brand-gray">{e.note}</p>}
+                      {year && (
+                        <span className="mt-3 inline-flex rounded-full bg-brand-cream px-3 py-1 text-[11px] font-bold text-brand-dark">{year}</span>
+                      )}
+                    </div>
+                  </li>
+                </Reveal>
+              );
+            })}
+          </ul>
         </div>
       </section>
 

@@ -2,54 +2,47 @@
 
 import Link from "next/link";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
+import DuaLayanan from "@/components/home/DuaLayanan";
 import { STATS } from "@/data/projects";
-import { HERO, type BerandaId } from "@/data/beranda";
+import { HOME_INTRO } from "@/data/beranda";
 
 // Hero beranda dipertahankan (arahan: "awalannya memang bagus").
-// Satu komponen untuk dua beranda (Konstruksi dan Rent-to-Own), isinya dari src/data/beranda.ts.
-function HeroContent({ variant }: { variant: BerandaId }) {
-  const h = HERO[variant];
+// Setelah media terbuka, langsung muncul 2 gambar besar: Jasa Konstruksi dan Rent-to-Own (gaya tikalindustries.com).
+function HeroContent() {
   return (
-    <div className="mx-auto max-w-4xl bg-brand-cream px-5 pb-20 pt-16 text-center">
-      <p className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-red">{h.label}</p>
-      <h2 className="mx-auto mb-6 text-4xl font-black leading-tight text-brand-dark md:text-5xl lg:text-6xl">{h.title}</h2>
-      <p className="mx-auto mb-10 max-w-[520px] text-base leading-[1.7] text-brand-gray md:text-lg">{h.body}</p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <Link
-          href={h.primary.href}
-          className="inline-flex items-center gap-2 rounded-full bg-brand-red px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-xl"
-        >
-          {h.primary.label}
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" />
-          </svg>
-        </Link>
-        <Link
-          href={h.secondary.href}
-          className="inline-flex items-center gap-2 rounded-full border-2 border-brand-dark/15 px-8 py-[14px] text-sm font-semibold text-brand-dark transition-all hover:border-brand-dark hover:bg-brand-dark hover:text-white"
-        >
-          {h.secondary.label}
-        </Link>
+    <div className="w-full bg-brand-cream pb-20 pt-16">
+      <div className="mx-auto max-w-3xl px-5 text-center">
+        <p className="mb-5 text-xs font-bold uppercase tracking-widest text-brand-red">{HOME_INTRO.label}</p>
+        <h2 className="text-4xl font-black leading-tight text-brand-dark md:text-5xl lg:text-6xl">{HOME_INTRO.title}</h2>
+        <p className="mx-auto mt-5 max-w-[520px] text-base leading-[1.7] text-brand-gray md:text-lg">{HOME_INTRO.body}</p>
       </div>
-      <p className="mt-6 text-center text-xs tracking-wide text-brand-mute">
-        {STATS.projects}+ proyek selesai · {STATS.provinces} provinsi · sejak {STATS.since}
+
+      <div className="mt-12">
+        <DuaLayanan />
+      </div>
+
+      <p className="mt-10 px-5 text-center text-[13px] text-brand-gray">
+        {STATS.projects}+ proyek selesai · sejak {STATS.since} ·{" "}
+        <Link href="/tentang" className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
+          Kenali barumahID
+        </Link>
       </p>
     </div>
   );
 }
 
-export default function ScrollExpandHero({ variant = "konstruksi" }: { variant?: BerandaId }) {
+export default function ScrollExpandHero() {
   return (
     <ScrollExpandMedia
       mediaType="image"
-      mediaSrc={HERO[variant].mediaSrc}
+      mediaSrc="/images/hero-card.webp"
       bgImageSrc="/images/hero-kolase.webp"
       title="barumahID"
-      date={HERO[variant].tagline}
+      date="Sewa hari ini. Miliki hunian nantinya."
       scrollToExpand=""
       textBlend={false}
     >
-      <HeroContent variant={variant} />
+      <HeroContent />
     </ScrollExpandMedia>
   );
 }

@@ -10,6 +10,8 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Jabatan dan bio singkat tiap anggota tim | Draf | `src/data/company.ts` |
 | Foto tim | Pakai inisial | `src/data/company.ts` (`photo`) |
 | Kota proyek Sumedang | `verified: false`, tidak tampil di peta | `src/data/projects.ts` |
+| Judul proyek Cikarang | Ditulis umum "Analisa struktur bangunan" (jenis dikonfirmasi user, detail belum) | `src/data/projects.ts` |
+| "Analisa struktur jembatan" di daftar Padang | Mungkin proyek yang sama dengan Kota Kinabalu. Kalau sama, hapus dari Padang | `src/data/projects.ts` |
 | Lokasi proyek "Bangun rumah 2 lantai" | Dimasukkan ke Padang | `src/data/projects.ts` |
 | Beda isi paket Basic dan Plus selain harga dan durasi | Isi paket sama, beda di harga dan lama kerja | `src/data/pricing.ts` |
 | Link YouTube dan Facebook | `active: false`, tidak tampil | `src/data/site.ts` |

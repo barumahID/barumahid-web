@@ -25,8 +25,7 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 ## Struktur situs
 | Route | Isi |
 |---|---|
-| `/` | **Beranda Konstruksi** (tab 1). Tab beranda, hero scroll-expand, peta proyek + angka bukti (`#peta-proyek`), masalah, kartu 3 jasa (`#jasa`) ke `/layanan/constech`, marquee, FAQ, CTA penutup. |
-| `/rent-to-own` | **Beranda Rent-to-Own** (tab 2). UI sama dengan `/`: tab, hero, masalah, kartu 3 jalur (`#jalur-rto`) ke `/layanan/rto#<jalur>`, marquee, FAQ RTO, CTA. |
+| `/` | Beranda bersih gaya tikalindustries.com: hero scroll-expand, lalu langsung 2 gambar besar (`DuaLayanan`): Jasa Konstruksi ke `/layanan/constech` dan Rent-to-Own ke `/layanan/rto`. Penjelasan barumahID ada di `/tentang`. |
 | `/layanan` | Hub 3 layanan (RTO, ConsTech, Kemitraan). |
 | `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
 | `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
@@ -34,7 +33,7 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 | `/kemitraan` | Ekosistem dan 7 peran mitra. |
 | `/kemitraan/daftar/[peran]` | Form per peran, 7 halaman statis dari `src/data/roles.ts`. |
 | `/portofolio` | Grid portofolio dengan filter layanan. |
-| `/tentang` | Cerita, timeline, visi misi, 4 pilar, nilai BUILD, grup, tim, kanal resmi. |
+| `/tentang` | About barumahID: apa itu barumahID + PT (hero), cerita dan timeline, masalah yang ingin diselesaikan, visi misi, peta penyebaran proyek + kantor pusat Padang dan VO Tangerang (`#peta`), 4 pilar, nilai BUILD, grup, tim, tanya jawab/testimoni, event yang pernah diikuti, kanal resmi. |
 | `/kontak` | Kontak dan form pesan. |
 | `/masuk` | Pilih jalur: pelanggan atau mitra. |
 | `/rekrutmen` | Batch rekrutmen. Link form dari `NEXT_PUBLIC_FORM_REKRUTMEN`; kalau kosong tampil status tutup. |
@@ -43,18 +42,18 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 
 Redirect permanen di `next.config.ts`: `/rto`, `/program-rto`, `/ekosistem` ke `/layanan/rto`; `/services/*` ke `/layanan/constech`; `/mitra` ke `/kemitraan`; `/daftar` ke `/masuk`.
 
-SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `robots.ts`, `opengraph-image.jpg`, JSON-LD LocalBusiness (layout) dan FAQPage (beranda).
+SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `robots.ts`, `opengraph-image.jpg`, JSON-LD LocalBusiness (layout) dan FAQPage (`/tentang`, dari `FaqTestimonials`).
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
-- `beranda.ts`: tab beranda, isi hero, masalah, dan kartu foto untuk kedua beranda, plus kartu hub `/layanan`.
+- `beranda.ts`: intro beranda, 2 gambar besar (`DUA_LAYANAN`), dan kartu hub `/layanan`.
 - `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`.
 - `nav.ts`: menu utama dan dropdown Layanan.
-- `projects.ts`: kota proyek untuk peta, portofolio, `STATS`.
+- `projects.ts`: kota proyek untuk peta, portofolio, `STATS`. Kota luar negeri diberi `country` (mis. Kota Kinabalu, Malaysia) dan tidak dihitung di `STATS.provinces`; jumlah negara di `STATS.countries`.
 - `pricing.ts`: tier harga ConsTech (Basic, Plus, Pro per m²), isi paket, langkah order.
 - `rto.ts`: jalur RTO, langkah, kanal DP, keamanan dana, FAQ RTO.
 - `listings.ts`: listing RTO (kosong). `roles.ts`: 7 peran mitra. `masuk.ts`: pilihan di `/masuk`.
-- `company.ts`: isi halaman Tentang. `faq.ts`: FAQ beranda dan testimoni. `partners.ts`: marquee program dan unit grup.
+- `company.ts`: isi halaman Tentang. `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program yang pernah diikuti (`/tentang`).
 - `articles.ts`: artikel (kosong).
 - `indonesia-map.ts`: hasil generate `scripts/gen-indonesia-map.mjs`. Jangan diedit manual. Cara pakai ada di header script.
 
@@ -78,7 +77,8 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
 - `layout/Footer.tsx`, `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
 - `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `scroll-expansion-hero`.
-- `home/`: `BerandaTabs` (2 tab, menempel di bawah navbar, sembunyi saat gulir ke bawah), `PetaProyek` (peta + angka, pakai `ProjectMap`), `ServiceCards` (kartu foto, isinya lewat props dari `beranda.ts`), `ProblemSection` (`variant`), `FaqTestimonials` (`faq`). `sections/ScrollExpandHeroSection` juga punya `variant` (`konstruksi` / `rto`).
+- `home/`: `DuaLayanan` (2 gambar besar beranda, melebar saat disorot), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
+- `about/`: `PetaProyek` (peta + angka + kartu kantor, pakai `ProjectMap` dengan prop `offices`), `PillarCards`, `ValueLetters`.
 - `constech/` (`ProjectMap`, `PricingTiers`), `rto/` (`DPSimulator`, `ListingGrid`), `about/`, `portfolio/`.
 - `CountUp`: angka final dirender di server, animasi hanya kalau elemen di luar layar dan reduced motion tidak aktif. `Reveal`: animasi muncul, ada fallback `<noscript>` di layout.
 

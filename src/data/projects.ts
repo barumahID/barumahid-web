@@ -23,6 +23,8 @@ export interface ProjectCity {
   basis: "lokasi" | "klien";
   /** false = belum dikonfirmasi, tidak tampil di peta */
   verified: boolean;
+  /** Diisi kalau proyek di luar Indonesia. Tidak dihitung di STATS.provinces. */
+  country?: string;
   projects: { title: string; service: Service }[];
 }
 
@@ -129,6 +131,25 @@ export const PROJECT_CITIES: ProjectCity[] = [
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Desain drawing dermaga", service: "gambar" }],
+  },
+  {
+    // Dikonfirmasi user (Okt 2026). Jenis pekerjaan: analisa struktur. Judul proyek detail belum ada.
+    id: "cikarang",
+    name: "Cikarang",
+    province: "Jawa Barat",
+    basis: "lokasi",
+    verified: true,
+    projects: [{ title: "Analisa struktur bangunan", service: "struktur" }],
+  },
+  {
+    // Dikonfirmasi user (Okt 2026): folder arsip "Analisa Jembatan Kinibalu" = Kota Kinabalu, Sabah.
+    id: "kinabalu",
+    name: "Kota Kinabalu",
+    province: "Sabah, Malaysia",
+    basis: "lokasi",
+    verified: true,
+    country: "Malaysia",
+    projects: [{ title: "Analisa struktur jembatan", service: "struktur" }],
   },
   {
     // Di katalog tercatat modelling BIM ruas tol Cisumdawu. Perlu konfirmasi apakah dikerjakan
@@ -249,7 +270,9 @@ export const STATS = {
   // Ditampilkan "30+". Arsip Drive "04. barumahID Projects": 46 folder, jadi 43 setelah
   // dikurangi 2 folder From Other dan 1 renovasi kantor sendiri. Sengaja dibulatkan ke bawah.
   projects: 30,
-  provinces: new Set(verifiedCities().map((c) => c.province)).size,
+  // Provinsi Indonesia saja. Kota luar negeri (country terisi) dihitung terpisah di `countries`.
+  provinces: new Set(verifiedCities().filter((c) => !c.country).map((c) => c.province)).size,
   cities: verifiedCities().length,
+  countries: 1 + new Set(verifiedCities().flatMap((c) => (c.country ? [c.country] : []))).size,
   since: 2018,
 };

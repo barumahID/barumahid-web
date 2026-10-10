@@ -14,7 +14,13 @@ const SERVICE_DOT: Record<string, string> = {
   bangun: "bg-[#2D7A4F]",
 };
 
-export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
+export interface MapOffice {
+  cityId: string;
+  label: string;
+}
+
+// `offices`: titik kantor (mis. kantor pusat Padang, virtual office Tangerang), digambar sebagai cincin putih.
+export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCity[]; offices?: MapOffice[] }) {
   const placed = useMemo(() => cities.filter((c) => CITY_POINTS[c.id]), [cities]);
   const [selected, setSelected] = useState<string>(placed[0]?.id ?? "");
   const city = placed.find((c) => c.id === selected) ?? placed[0];
@@ -27,6 +33,9 @@ export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
 
   if (!city) return null;
   const pt = CITY_POINTS[city.id];
+  // Titik dekat tepi atas (mis. Kota Kinabalu): label ditaruh di bawah titik supaya tidak terpotong.
+  const labelY = pt.y < 40 ? pt.y + 12 : pt.y - 30;
+  const placedOffices = offices.filter((o) => CITY_POINTS[o.cityId]);
 
   return (
     <div>
@@ -40,6 +49,14 @@ export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
           >
             <path d={NEIGHBOR_PATH} fill="#1c1c1c" />
             <path d={INDONESIA_PATH} fill="#353535" stroke="#4d4d4d" strokeWidth="0.6" />
+            {placedOffices.map((o) => {
+              const p = CITY_POINTS[o.cityId];
+              return (
+                <circle key={o.cityId} cx={p.x} cy={p.y} r="12" fill="none" stroke="#ffffff" strokeWidth="2" strokeDasharray="3 2.5">
+                  <title>{o.label}</title>
+                </circle>
+              );
+            })}
             {placed.map((c) => {
               const p = CITY_POINTS[c.id];
               const active = c.id === city.id;
@@ -73,7 +90,7 @@ export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
             <g pointerEvents="none">
               <rect
                 x={Math.min(pt.x + 12, MAP_WIDTH - 170)}
-                y={pt.y - 30}
+                y={labelY}
                 width={Math.max(90, city.name.length * 10 + 24)}
                 height="26"
                 rx="13"
@@ -81,7 +98,7 @@ export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
               />
               <text
                 x={Math.min(pt.x + 12, MAP_WIDTH - 170) + 12}
-                y={pt.y - 12.5}
+                y={labelY + 17.5}
                 fontSize="14"
                 fontWeight="700"
                 fill="#141414"
@@ -91,9 +108,18 @@ export default function ProjectMap({ cities }: { cities: ProjectCity[] }) {
               </text>
             </g>
           </svg>
-          <p className="pointer-events-none absolute bottom-3 left-4 text-[11px] text-white/40">
-            Titik menunjukkan lokasi proyek atau kota klien.
-          </p>
+          <div className="pointer-events-none absolute bottom-3 left-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-white/45">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-brand-red" aria-hidden="true" />
+              Lokasi proyek atau kota klien
+            </span>
+            {placedOffices.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full border border-dashed border-white" aria-hidden="true" />
+                Kantor barumahID
+              </span>
+            )}
+          </div>
         </div>
 
       </div>
