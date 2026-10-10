@@ -67,6 +67,7 @@ export default function PetaProyek() {
                 href={a.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                title="Buka di Google Maps"
                 aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
                 className="group flex h-full gap-4 rounded-3xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm transition-colors hover:border-white/30 hover:bg-white/[0.1] md:p-7"
               >
@@ -79,13 +80,10 @@ export default function PetaProyek() {
                 <div>
                   <p className="text-[13px] font-bold tracking-wide text-brand-red">{a.label}</p>
                   {a.lines.map((l) => (
-                    <p key={l} className="mt-1 text-[15px] leading-relaxed text-white/85">
+                    <p key={l} className="mt-1 text-[15px] leading-relaxed text-white/85 group-hover:text-white">
                       {l}
                     </p>
                   ))}
-                  <p className="mt-2 text-[13px] font-semibold text-white/60 group-hover:text-white group-hover:underline">
-                    Lihat di Google Maps
-                  </p>
                 </div>
               </a>
             </Reveal>

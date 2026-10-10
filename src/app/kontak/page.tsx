@@ -64,7 +64,8 @@ export default function KontakPage() {
                     href={a.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group block hover:text-brand-dark"
+                    className="block transition-colors hover:text-brand-dark"
+                    title="Buka di Google Maps"
                     aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
                   >
                     {a.lines.map((l) => (
@@ -72,7 +73,6 @@ export default function KontakPage() {
                         {l}
                       </span>
                     ))}
-                    <span className="mt-1 block text-[13px] font-bold text-brand-red group-hover:underline">Lihat di Google Maps</span>
                   </a>
                 </address>
               </div>

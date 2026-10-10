@@ -214,7 +214,7 @@ textarea:focus-visible {
 .hero-orb { position: absolute; border-radius: 9999px; }
 .hero-orb-a {
   width: 48vmax; height: 48vmax; left: -14vmax; top: -16vmax;
-  background: radial-gradient(circle, rgba(197, 59, 59, 0.14), rgba(197, 59, 59, 0) 68%);
+  background: radial-gradient(circle, rgba(197, 59, 59, 0.1), rgba(197, 59, 59, 0) 68%);
   animation: orb-a 22s ease-in-out infinite alternate;
 }
 .hero-orb-b {
@@ -229,6 +229,14 @@ textarea:focus-visible {
   50% { transform: translateY(-10px); }
 }
 .hero-float { animation: float-y 7s ease-in-out infinite; }
+
+/* Pola titik halus (kartu roadmap beranda) */
+.pattern-dots {
+  background-image: radial-gradient(rgba(20, 20, 20, 0.08) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(135deg, #000, transparent 70%);
+  mask-image: linear-gradient(135deg, #000, transparent 70%);
+}
 
 .animate-marquee-slow { animation: marquee 60s linear infinite; }
 .animate-marquee-reverse { animation: marquee-reverse 48s linear infinite; }

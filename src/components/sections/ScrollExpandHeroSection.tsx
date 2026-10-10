@@ -4,20 +4,15 @@ import Link from "next/link";
 import DualScrollHero from "@/components/ui/dual-scroll-hero";
 import HeroBackdrop from "@/components/ui/hero-backdrop";
 import EventMarquee from "@/components/home/EventMarquee";
-import { STATS } from "@/data/projects";
+import HistoryRoadmap from "@/components/home/HistoryRoadmap";
 import { DUA_LAYANAN, HOME_ABOUT, HOME_HERO } from "@/data/beranda";
 
 // Beranda: halaman 1 = hero scroll-expand dua gambar (Jasa Konstruksi, Rent-to-Own).
-// Halaman 2 = deskripsi singkat barumahID, angka bukti, lalu grafis bergerak program/lomba yang diikuti.
+// Halaman 2 = deskripsi singkat barumahID + roadmap histori, lalu marquee logo event dan partner.
 function HomeAbout() {
-  const stats = [
-    { value: `${STATS.projects}+`, label: "Proyek selesai" },
-    { value: `${STATS.cities}`, label: "Kota" },
-    { value: `${STATS.since}`, label: "Mulai berkarya" },
-  ];
   return (
     <div className="w-full bg-brand-cream">
-      <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
+      <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
         <div className="lg:col-span-7">
           <p className="type-micro text-brand-red">{HOME_ABOUT.label}</p>
           <h2 className="mt-5 text-[clamp(1.9rem,4.2vw,3.2rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-brand-dark">
@@ -40,14 +35,9 @@ function HomeAbout() {
             </svg>
           </Link>
         </div>
-        <dl className="grid content-end gap-px self-end overflow-hidden rounded-3xl border border-brand-dark/10 bg-brand-dark/10 lg:col-span-5">
-          {stats.map((s) => (
-            <div key={s.label} className="flex items-baseline justify-between gap-4 bg-white px-6 py-5">
-              <dt className="text-[14px] font-semibold text-brand-gray">{s.label}</dt>
-              <dd className="text-[34px] font-black leading-none tracking-tight text-brand-dark">{s.value}</dd>
-            </div>
-          ))}
-        </dl>
+        <div className="lg:col-span-5">
+          <HistoryRoadmap />
+        </div>
       </div>
       <EventMarquee />
     </div>
@@ -60,7 +50,7 @@ export default function ScrollExpandHero() {
       panels={DUA_LAYANAN}
       title={HOME_HERO.title}
       tagline={HOME_HERO.tagline}
-      background={<HeroBackdrop image={HOME_HERO.background} logo={HOME_HERO.logoPt} />}
+      background={<HeroBackdrop image={HOME_HERO.background} />}
     >
       <HomeAbout />
     </DualScrollHero>

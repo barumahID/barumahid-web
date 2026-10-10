@@ -1,3 +1,5 @@
+import { STATS } from "./projects";
+
 // Isi beranda dan hub /layanan.
 // Arahan user (Okt 2026): beranda bersih seperti tikalindustries.com. Halaman 1 = hero scroll-expand dengan
 // DUA gambar (Jasa Konstruksi dan Rent-to-Own). Halaman 2 = deskripsi singkat barumahID + event yang diikuti.
@@ -5,21 +7,49 @@
 export const HOME_HERO = {
   title: "barumahID",
   tagline: "Platform pendamping kepemilikan rumah",
-  // Latar dari bahan user: kartu nama PT tanpa teks (no HP, alamat, email dihapus), sudah di-blur.
+  // Latar dari bahan user: kartu nama PT tanpa teks (no HP, alamat, email dihapus), di-blur,
+  // diwarnai ulang ke palet situs. Logo PT dipindah ke footer (arahan user).
   background: "/images/beranda/hero-bg.webp",
-  // Logo PT Inditek Bluprim Mahaksa, tampil samar di latar.
-  logoPt: { src: "/images/beranda/logo-pt.webp", w: 520, h: 268 },
 };
 
+// Halaman 2 beranda. Arahan user: barumahID bisnis yang sedang berkembang di lini ConsTech dan PropTech,
+// platform untuk mewujudkan proyek dan mendampingi kepemilikan rumah.
 export const HOME_ABOUT = {
   label: "Tentang barumahID",
-  title: "Satu tempat untuk membangun dan memiliki rumah.",
+  title: "Wujudkan proyekmu. Kami dampingi sampai punya rumah.",
   body: [
-    "barumahID adalah platform pendamping kepemilikan rumah dari PT Inditek Bluprim Mahaksa, berbasis di Padang sejak 2018.",
-    "Lewat ConsTech, tim insinyur kami mengerjakan gambar, analisa struktur, renovasi, dan bangun dengan biaya yang dihitung per item pekerjaan. Lewat program Rent-to-Own yang sedang kami siapkan, kami membuka jalan untuk memiliki rumah dari sewa.",
+    "barumahID adalah bisnis yang terus bertumbuh di dua lini, ConsTech dan PropTech. Kami jadi platform tempat proyekmu diwujudkan, sekaligus teman jalan menuju rumah milik sendiri.",
+    "Di ConsTech, insinyur kami mengerjakan gambar, analisa struktur, renovasi, dan bangun. Biayanya dihitung per item pekerjaan, jadi jelas dari awal. Di PropTech, kami sedang menyiapkan program Rent-to-Own: sewa hari ini, miliki hunian nantinya.",
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
+
+// Roadmap singkat di sebelah kanan "Tentang barumahID". Versi lengkap ada di TIMELINE (company.ts, /tentang).
+export interface HistoryStep {
+  period: string;
+  title: string;
+  body: string;
+  current?: boolean;
+}
+
+export const HOME_HISTORY: HistoryStep[] = [
+  {
+    period: "2018 – 2020",
+    title: "Mulai dari gambar dan hitungan",
+    body: "Jasa desain dan analisa struktur jadi pijakan pertama. Sambil jalan, kami ikut kompetisi dan program startup nasional.",
+  },
+  {
+    period: "2021 – 2023",
+    title: `${STATS.projects}+ proyek selesai`,
+    body: "Proyek desain, analisa struktur, renovasi, dan bangun tuntas di berbagai kota di Indonesia.",
+  },
+  {
+    period: "2024 – sekarang",
+    title: "Resmi jadi PT",
+    body: "PT Inditek Bluprim Mahaksa berdiri. barumahID tumbuh di dua lini: ConsTech dan PropTech.",
+    current: true,
+  },
+];
 
 export interface PhotoCard {
   href: string;

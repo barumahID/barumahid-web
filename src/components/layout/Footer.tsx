@@ -34,7 +34,6 @@ export default function Footer() {
             <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-white/65">
               Platform pendamping kepemilikan rumah. Bangun dengan benar, lalu miliki rumahnya.
             </p>
-            <p className="mt-2 text-[12px] text-white/40">{SITE.company}</p>
             <ul className="mt-6 flex flex-wrap gap-2" aria-label="Kanal resmi barumahID">
               {channels.map((c) => (
                 <li key={c.id}>
@@ -51,6 +50,17 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            {/* Logo PT: simbol saja, tulisan dirender pakai font situs supaya proporsional (arahan user) */}
+            <div className="mt-8 flex items-center gap-3.5 border-t border-white/10 pt-6">
+              <Image src="/brand/logo-pt-mark.webp" alt="" width={105} height={160} className="h-11 w-auto" />
+              <div className="leading-tight">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/40">Dinaungi oleh</p>
+                <p className="mt-1 text-[14px] font-bold text-white/90">{SITE.company}</p>
+                <p className="mt-0.5 text-[12px] text-white/45">
+                  make it. <span className="font-semibold text-white/60">Future.</span>
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-10 sm:grid-cols-3 lg:col-span-8">
@@ -115,6 +125,7 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group block transition-colors hover:text-white"
+                      title="Buka di Google Maps"
                       aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
                     >
                       <span className="block font-semibold text-white/70 group-hover:text-white">{a.label}</span>
@@ -123,9 +134,6 @@ export default function Footer() {
                           {line}
                         </span>
                       ))}
-                      <span className="mt-0.5 block text-[11.5px] font-semibold text-brand-red/90 group-hover:underline">
-                        Lihat di Google Maps
-                      </span>
                     </a>
                   </address>
                 ))}
