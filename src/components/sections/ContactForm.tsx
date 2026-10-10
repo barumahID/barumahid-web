@@ -1,17 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { submitLead, LEAD_ERROR_MESSAGE } from "@/lib/leads";
 
 export default function ContactForm() {
   const [form, setForm] = useState({ nama: "", email: "", hp: "", keperluan: "RTO", pesan: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[Kontak]", form);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setForm({ nama: "", email: "", hp: "", keperluan: "RTO", pesan: "" });
+    setSending(true);
+    setError(false);
+    try {
+      await submitLead("kontak", form);
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 3000);
+      setForm({ nama: "", email: "", hp: "", keperluan: "RTO", pesan: "" });
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   if (submitted) {
@@ -55,9 +66,12 @@ export default function ContactForm() {
         <label htmlFor="k-pesan" className="mb-1.5 block text-xs font-semibold text-brand-dark">Pesan</label>
         <textarea id="k-pesan" rows={4} required value={form.pesan} onChange={(e) => setForm({ ...form, pesan: e.target.value })} className="w-full rounded-lg border-2 border-brand-dark/10 px-4 py-3 text-sm transition focus:border-brand-red focus:ring-4 focus:ring-brand-red/10" placeholder="Tulis pesan kamu..." />
       </div>
-      <button type="submit" className="rounded-lg bg-brand-red px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/20 transition hover:bg-brand-red-dark hover:scale-[1.02]">
-        Kirim Pesan
+      <button type="submit" disabled={sending} className="rounded-lg bg-brand-red px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/20 transition hover:bg-brand-red-dark hover:scale-[1.02] disabled:cursor-wait disabled:opacity-60">
+        {sending ? "Mengirim..." : "Kirim Pesan"}
       </button>
+      {error && (
+        <p role="alert" className="text-sm font-medium text-brand-red">{LEAD_ERROR_MESSAGE}</p>
+      )}
     </form>
   );
 }
