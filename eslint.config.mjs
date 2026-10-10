@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Script bawaan skill Claude Code, bukan kode website.
+    ".claude/**",
   ]),
 ]);
 
