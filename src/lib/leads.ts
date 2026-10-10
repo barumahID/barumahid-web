@@ -1,7 +1,9 @@
 // Skema semua form website barumahID.
-// Nama field (`name`) SAMA PERSIS dengan judul kolom di Google Sheet "barumahID — CRM Master",
-// supaya Apps Script bisa menulis baris baru dengan mencocokkan header. Lihat docs/backend/README.md.
 // File ini dipakai bersama oleh form (client) dan API route /api/leads (server).
+// Penyimpanan: tabel Supabase `barumahid_leads` (utama) dan, kalau env-nya diisi,
+// Google Sheet CRM Master lewat Apps Script. Lihat docs/backend/README.md.
+// Nama field (`name`) SAMA PERSIS dengan judul kolom di sheet CRM Master,
+// supaya Apps Script bisa menulis baris baru dengan mencocokkan header.
 
 export type LeadRole =
   | "konsultasi"
@@ -837,6 +839,54 @@ export function leadToWhatsAppText(role: LeadRole, values: Record<string, string
     .filter((f) => values[f.name])
     .map((f) => `${f.label}: ${values[f.name]}`);
   return [`Halo barumahID, saya isi form "${def.title}" di website tapi gagal terkirim. Ini datanya:`, ...lines].join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Penyimpanan utama: tabel Supabase `barumahid_leads`.
+// Kolom `jenis` dibatasi CHECK constraint di database: customer | mitra | developer | kontak.
+// Form website lebih rinci (10 jenis), jadi jenis aslinya disimpan di `data.form`.
+// ---------------------------------------------------------------------------
+
+export type SupabaseJenis = "customer" | "mitra" | "developer" | "kontak";
+
+const SUPABASE_MAP: Record<LeadRole, { jenis: SupabaseJenis; nama: string[] }> = {
+  konsultasi: { jenis: "customer", nama: ["Nama"] },
+  "customer-rto": { jenis: "customer", nama: ["Nama"] },
+  "penyedia-kos": { jenis: "mitra", nama: ["Nama"] },
+  developer: { jenis: "developer", nama: ["Developer", "PIC"] },
+  kontraktor: { jenis: "mitra", nama: ["Nama"] },
+  "tenaga-kerja": { jenis: "mitra", nama: ["Nama"] },
+  supplier: { jenis: "mitra", nama: ["Nama Usaha", "PIC"] },
+  projectlink: { jenis: "mitra", nama: ["Nama"] },
+  knowledges: { jenis: "mitra", nama: ["Institusi", "PIC"] },
+  pesan: { jenis: "kontak", nama: ["Nama"] },
+};
+
+export interface SupabaseLeadRow {
+  jenis: SupabaseJenis;
+  nama: string;
+  kontak: string;
+  kota: string | null;
+  data: Record<string, string>;
+  sumber: string | null;
+}
+
+/** Ubah isian form yang sudah divalidasi jadi satu baris tabel `barumahid_leads`. */
+export function toSupabaseRow(role: LeadRole, values: Record<string, string>, page: string): SupabaseLeadRow {
+  const def = FORMS[role];
+  const map = SUPABASE_MAP[role];
+  const nama = map.nama
+    .map((k) => values[k])
+    .filter(Boolean)
+    .join(" / ");
+  return {
+    jenis: map.jenis,
+    nama: nama.slice(0, 1000),
+    kontak: (values.WA || values.Email || "").slice(0, 1000),
+    kota: values.Kota ? values.Kota.slice(0, 1000) : null,
+    data: { form: role, judul_form: def.title, sheet_crm: def.sheet, ...values, ...(def.fixed ?? {}) },
+    sumber: page ? page.slice(0, 1000) : null,
+  };
 }
 
 export interface LeadPayload {
