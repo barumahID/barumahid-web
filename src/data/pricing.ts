@@ -1,0 +1,70 @@
+// Harga resmi jasa gambar dan struktur, sesuai pricelist "How to Order" Jururancang (Juli 2026)
+// dan PRD Website v1. Ubah di sini saja, semua halaman ikut berubah.
+
+export interface Tier {
+  id: "basic" | "plus" | "pro";
+  name: string;
+  maxDays: number;
+  gambar: number; // Rp per m²
+  struktur: number; // Rp per m²
+  gambarExtra?: string;
+  strukturExtra?: string;
+}
+
+export const TIERS: Tier[] = [
+  { id: "basic", name: "Basic", maxDays: 7, gambar: 15_000, struktur: 18_000 },
+  { id: "plus", name: "Plus", maxDays: 10, gambar: 20_000, struktur: 25_000 },
+  {
+    id: "pro",
+    name: "Pro",
+    maxDays: 14,
+    gambar: 30_000,
+    struktur: 35_000,
+    gambarExtra: "Layout MEP dan RAB",
+    strukturExtra: "Gambar DED dan RAB struktur",
+  },
+];
+
+export const GAMBAR_INCLUDES = [
+  "Survei lokasi dan konsultasi kebutuhan",
+  "Denah lantai",
+  "Gambar 3D eksterior",
+  "Gambar arsitektur",
+  "Gambar struktur",
+];
+
+export const STRUKTUR_INCLUDES = [
+  "Perhitungan struktur berbasis SNI dengan ETABS atau SAP2000",
+  "Dimensi kolom, balok, pelat, dan pondasi",
+  "Penulangan atau pembesian",
+];
+
+export const PRICE_NOTES = [
+  "Harga per m² luas bangunan, menyesuaikan kerumitan proyek dan disepakati bersama di awal.",
+  "Jasa gambar dan struktur dikerjakan Jururancang Engineering Mahaksa, mitra teknis barumahID.",
+  "Konsultasi pertama gratis.",
+];
+
+export const ORDER_STEPS = [
+  { title: "Kirim DM atau WhatsApp", body: "Ceritakan proyekmu: lokasi, luas bangunan, dan gambar yang dibutuhkan." },
+  { title: "Konsultasi dan penawaran", body: "Kami pahami kebutuhanmu, lalu kirim penawaran harga dan jadwal." },
+  { title: "Deal dan mulai dikerjakan", body: "Setelah sepakat, gambar dikerjakan sesuai paket dan batas waktu." },
+];
+
+export const BUILD_STEPS = [
+  { title: "Konsultasi", body: "Gratis. Kami dengarkan kebutuhan dan anggaranmu." },
+  { title: "Survei lokasi", body: "Tim cek kondisi lapangan dan ukur kebutuhan pekerjaan." },
+  { title: "Penawaran dan RAB", body: "Biaya dihitung per item pekerjaan dengan AHSP dan harga satuan daerah." },
+  { title: "Kontrak", body: "Lingkup, harga, jadwal, dan termin pembayaran disepakati tertulis." },
+  { title: "Pengerjaan", body: "Dikerjakan bersama mitra mandor, dengan laporan progres berkala." },
+  { title: "Serah terima", body: "Hasil dicek bersama, lalu masuk masa garansi pekerjaan." },
+];
+
+export function formatRupiah(n: number): string {
+  return "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(n));
+}
+
+/** Rp15.000 -> "15rb" untuk label ringkas */
+export function formatRibu(n: number): string {
+  return `${Math.round(n / 1000)}rb`;
+}

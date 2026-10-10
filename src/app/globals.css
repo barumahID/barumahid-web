@@ -29,6 +29,10 @@ html {
   scroll-behavior: smooth;
   font-feature-settings: "ss01", "cv11";
 }
+/* Navbar fixed 68px: anchor tidak tertutup navbar */
+[id] {
+  scroll-margin-top: 88px;
+}
 body {
   overflow-x: clip;
 }
@@ -146,12 +150,56 @@ textarea:focus-visible {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.7; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+.animate-ping-soft { animation: ping-soft 2.2s cubic-bezier(0, 0, 0.2, 1) infinite; }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.9); }
 }
 
 /* --- UTILITIES --- */
+/* Grid halus di latar gelap */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+}
+.card-shadow {
+  box-shadow: 0 1px 2px rgba(20, 20, 20, 0.04), 0 12px 32px -18px rgba(20, 20, 20, 0.22);
+}
+.tilt-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.tilt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(20, 20, 20, 0.05), 0 24px 48px -20px rgba(20, 20, 20, 0.3);
+}
+.animate-marquee-slow { animation: marquee 60s linear infinite; }
+.animate-marquee-reverse { animation: marquee-reverse 48s linear infinite; }
+.marquee-pause:hover .animate-marquee,
+.marquee-pause:hover .animate-marquee-slow,
+.marquee-pause:hover .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+/* Fade tepi untuk deretan logo */
+.edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+/* Scroll horizontal tanpa scrollbar (kartu di mobile) */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 .animate-hero-zoom { animation: hero-zoom 8s ease-in-out infinite; }
 .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-marquee { animation: marquee 40s linear infinite; }
@@ -160,7 +208,7 @@ textarea:focus-visible {
 .hairline { border-color: rgba(20, 20, 20, 0.08); }
 .hairline-strong { border-color: rgba(20, 20, 20, 0.14); }
 
-/* Reveal — subtle fade-up when in viewport */
+/* Reveal - subtle fade-up when in viewport */
 .reveal {
   opacity: 0;
   transform: translateY(16px);
@@ -172,7 +220,7 @@ textarea:focus-visible {
   transform: translateY(0);
 }
 
-/* Text gradient — restrained editorial */
+/* Text gradient - restrained editorial */
 .text-gradient-red {
   background: linear-gradient(135deg, #C53B3B 0%, #E85555 100%);
   -webkit-background-clip: text;
@@ -181,7 +229,7 @@ textarea:focus-visible {
   color: transparent;
 }
 
-/* Editorial link — inline hover underline */
+/* Editorial link - inline hover underline */
 .link-editorial {
   position: relative;
   display: inline-flex;
@@ -205,7 +253,7 @@ textarea:focus-visible {
   transform-origin: left;
 }
 
-/* Row hover — Tikal "Pick Your Fit" pattern */
+/* Row hover - Tikal "Pick Your Fit" pattern */
 .row-hover {
   transition: background-color 0.3s ease, padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -233,8 +281,15 @@ textarea:focus-visible {
     transition: none;
   }
   .animate-marquee,
+  .animate-marquee-slow,
+  .animate-marquee-reverse,
   .animate-pulse-dot,
+  .animate-ping-soft,
+  .animate-hero-zoom,
   .animate-fade-up {
     animation: none;
+  }
+  .tilt-card:hover {
+    transform: none;
   }
 }

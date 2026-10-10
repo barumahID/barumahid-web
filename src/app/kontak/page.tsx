@@ -1,77 +1,85 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/Reveal";
-import Section from "@/components/ui/Section";
-import SectionLabel from "@/components/ui/SectionLabel";
-import ContactForm from "@/components/sections/ContactForm";
-import { EMAIL, WA_LINK1, WA_LINK2, IG_URL, LINKEDIN_URL, HQ_ADDRESS, VO_ADDRESS } from "@/constants";
+import PageHero from "@/components/ui/PageHero";
+import LeadForm from "@/components/forms/LeadForm";
+import ChannelGrid from "@/components/ui/ChannelGrid";
+import ButtonLink from "@/components/ui/ButtonLink";
+import { ADDRESSES, EMAIL, WA_ADMIN_1_LABEL, WA_ADMIN_2, WA_ADMIN_2_LABEL, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Kontak",
-  description: "Hubungi barumahID — email, WhatsApp, Instagram, atau kirim pesan langsung dari website.",
+  description: "Hubungi barumahID lewat WhatsApp, email, atau kirim pesan langsung dari website. Kantor pusat di Padang.",
+  alternates: { canonical: "/kontak" },
 };
 
 export default function KontakPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-dark text-white">
-        <div className="absolute inset-0 hero-grid" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <Reveal>
-            <SectionLabel dark>Kontak</SectionLabel>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
-              Hubungi kami
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/60">
-              Tim barumahID siap membantu — kontak kami via WhatsApp, email, atau isi form di bawah.
-            </p>
-          </Reveal>
+      <PageHero
+        label="Kontak"
+        title="Ngobrol dulu, baru putuskan."
+        subtitle={<p>Admin kami membalas di jam kerja, biasanya di hari yang sama. Paling cepat lewat WhatsApp.</p>}
+        size="sm"
+      >
+        <ButtonLink href={waLink("Halo barumahID, saya mau tanya.")} variant="whatsapp">
+          Chat WhatsApp
+        </ButtonLink>
+      </PageHero>
+
+      <section className="bg-brand-cream">
+        <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-12 lg:px-14">
+          <div className="lg:col-span-7">
+            <LeadForm role="pesan" tone="card" />
+          </div>
+          <aside className="space-y-8 lg:col-span-5">
+            <div>
+              <h2 className="text-[19px] font-extrabold text-brand-dark">Hubungi langsung</h2>
+              <ul className="mt-4 space-y-2 text-[15px]">
+                <li>
+                  <a href={waLink()} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-dark hover:text-brand-red">
+                    WhatsApp Admin 1: {WA_ADMIN_1_LABEL}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={waLink(undefined, WA_ADMIN_2)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-brand-dark hover:text-brand-red"
+                  >
+                    WhatsApp Admin 2: {WA_ADMIN_2_LABEL}
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${EMAIL}`} className="font-semibold text-brand-dark hover:text-brand-red">
+                    {EMAIL}
+                  </a>
+                </li>
+              </ul>
+            </div>
+            {[ADDRESSES.hq, ADDRESSES.vo].map((a) => (
+              <div key={a.label}>
+                <h2 className="text-[19px] font-extrabold text-brand-dark">{a.label}</h2>
+                <address className="mt-3 not-italic text-[15px] leading-relaxed text-brand-gray">
+                  {a.lines.map((l) => (
+                    <span key={l} className="block">
+                      {l}
+                    </span>
+                  ))}
+                </address>
+              </div>
+            ))}
+          </aside>
         </div>
       </section>
 
-      <Section background="white">
-        <div className="grid gap-12 lg:grid-cols-2">
-          <Reveal>
-            <h2 className="text-2xl font-extrabold text-brand-dark">Kirim Pesan</h2>
-            <div className="mt-6">
-              <ContactForm />
-            </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-lg font-extrabold text-brand-dark">Kantor Pusat</h3>
-                <p className="mt-2 text-sm text-brand-gray">{HQ_ADDRESS}</p>
-              </div>
-              <div>
-                <h3 className="text-lg font-extrabold text-brand-dark">Virtual Office</h3>
-                <p className="mt-2 text-sm text-brand-gray">{VO_ADDRESS}</p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-lg font-extrabold text-brand-dark">Hubungi Langsung</h3>
-                <p className="text-sm text-brand-gray">
-                  <a href={`mailto:${EMAIL}`} className="hover:text-brand-red">{EMAIL}</a>
-                </p>
-                <p className="text-sm text-brand-gray">
-                  Admin WA 1: <a href={WA_LINK1} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-brand-red">+62 851-5788-3292</a>
-                </p>
-                <p className="text-sm text-brand-gray">
-                  Admin WA 2: <a href={WA_LINK2} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-brand-red">+62 896-3641-0565</a>
-                </p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-lg font-extrabold text-brand-dark">Sosial Media</h3>
-                <p className="text-sm text-brand-gray">
-                  Instagram: <a href={IG_URL} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-brand-red">@barumahid</a>
-                </p>
-                <p className="text-sm text-brand-gray">
-                  LinkedIn: <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-brand-red">@barumahID</a>
-                </p>
-              </div>
-            </div>
-          </Reveal>
+      <section className="bg-brand-cream-warm">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
+          <h2 className="text-[clamp(1.6rem,3vw,2.3rem)] font-extrabold tracking-tight text-brand-dark">Kanal resmi barumahID</h2>
+          <div className="mt-8">
+            <ChannelGrid />
+          </div>
         </div>
-      </Section>
+      </section>
     </>
   );
 }

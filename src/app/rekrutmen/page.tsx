@@ -1,86 +1,116 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/Reveal";
-import Section from "@/components/ui/Section";
-import SectionLabel from "@/components/ui/SectionLabel";
-import { FORM_REKRUTMEN } from "@/constants";
+import Link from "next/link";
+import PageHero from "@/components/ui/PageHero";
+import ButtonLink from "@/components/ui/ButtonLink";
+import { EMAIL } from "@/data/site";
 
 export const metadata: Metadata = {
-  title: "Rekrutmen",
-  description: "Bergabung dengan tim barumahID — posisi terbuka di marketing, administrasi, engineering, arsitektur, dan desain.",
+  title: "Karier",
+  description: "Bergabung dengan tim barumahID di Padang. Lihat posisi yang dibuka dan cara melamar.",
+  alternates: { canonical: "/rekrutmen" },
 };
 
-const positions = [
-  { title: "Marketing Specialist", dept: "Marketing", location: "Padang / Remote", type: "Full-time" },
-  { title: "Customer Administration", dept: "Operations", location: "Padang", type: "Full-time" },
-  { title: "AI Engineer", dept: "Engineering", location: "Remote", type: "Full-time" },
-  { title: "BIM Modeller", dept: "Engineering", location: "Padang / Remote", type: "Full-time" },
-  { title: "Arsitek", dept: "Design", location: "Padang", type: "Full-time" },
-  { title: "Desainer Interior & Eksterior", dept: "Design", location: "Padang / Remote", type: "Full-time" },
-];
+// Halaman dibangun ulang tiap jam supaya status buka/tutup mengikuti tanggal.
+export const revalidate = 3600;
 
-const DEADLINE = "31 Juli 2026";
-const deadlinePassed = new Date() > new Date("2026-07-31T23:59:59+07:00");
+// Batch rekrutmen. Tambah batch baru di sini, cukup ubah tanggal tutup dan link form.
+const BATCH = {
+  name: "Rekrutmen Juli 2026",
+  closesAt: "2026-07-31T23:59:59+07:00",
+  closesLabel: "31 Juli 2026",
+  formUrl: process.env.NEXT_PUBLIC_FORM_REKRUTMEN || "",
+  positions: [
+    { title: "Marketing Specialist", dept: "Marketing", location: "Padang atau remote" },
+    { title: "Customer Administration", dept: "Operasional", location: "Padang" },
+    { title: "AI Engineer", dept: "Teknologi", location: "Remote" },
+    { title: "BIM Modeller", dept: "Engineering", location: "Padang atau remote" },
+    { title: "Arsitek", dept: "Desain", location: "Padang" },
+    { title: "Desainer Interior dan Eksterior", dept: "Desain", location: "Padang atau remote" },
+  ],
+};
 
 export default function RekrutmenPage() {
+  const open = new Date() <= new Date(BATCH.closesAt);
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-dark text-white">
-        <div className="absolute inset-0 hero-grid" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <Reveal>
-            <SectionLabel dark>Karir</SectionLabel>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
-              Bangun masa depan perumahan Indonesia
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/60">
-              Bergabung dengan tim barumahID dan bantu jutaan orang punya rumah.
+      <PageHero
+        label="Karier"
+        title="Ikut membangun jalan orang punya rumah."
+        subtitle={
+          <p>
+            Tim kami kecil dan bergerak cepat. Kami mencari orang yang mau belajar di lapangan, jujur soal angka, dan
+            betah mengurus detail.
+          </p>
+        }
+        size="sm"
+      />
+
+      <section className="bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-24 lg:px-14">
+          <div
+            className={`rounded-3xl p-6 md:p-8 ${open ? "bg-brand-red text-white" : "border border-brand-dark/10 bg-white text-brand-dark"}`}
+          >
+            <p className="text-[13px] font-semibold uppercase tracking-[0.16em] opacity-70">{BATCH.name}</p>
+            <p className="mt-2 text-[22px] font-extrabold">
+              {open ? `Dibuka sampai ${BATCH.closesLabel}` : `Sudah ditutup pada ${BATCH.closesLabel}`}
             </p>
-          </Reveal>
-        </div>
-      </section>
+            <p className={`mt-2 max-w-2xl text-[15px] leading-relaxed ${open ? "text-white/85" : "text-brand-gray"}`}>
+              {open
+                ? "Pilih posisi di bawah, lalu isi formulir lamaran."
+                : "Terima kasih untuk semua pelamar. Batch berikutnya kami umumkan di Instagram @barumahid dan halaman ini."}
+            </p>
+          </div>
 
-      {/* Banner */}
-      {!deadlinePassed && (
-        <div className="bg-brand-red py-3 text-center text-sm font-bold text-white">
-          Rekrutmen Aktif — Deadline {DEADLINE}
-        </div>
-      )}
-
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Posisi Terbuka</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            {deadlinePassed ? "Posisi Ditutup" : "6 posisi tersedia"}
+          <h2 className="mt-14 text-[clamp(1.5rem,2.8vw,2.1rem)] font-extrabold tracking-tight text-brand-dark">
+            {open ? "Posisi yang dibuka" : "Posisi di batch terakhir"}
           </h2>
-        </Reveal>
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {positions.map((p, i) => (
-            <Reveal key={p.title} delay={i * 80}>
-              <div className={`flex h-full flex-col gap-3 rounded-xl border border-brand-dark/8 bg-white p-6 card-shadow ${deadlinePassed ? "opacity-60" : "tilt-card"}`}>
-                <div className="flex items-start justify-between">
-                  <span className="rounded-full bg-brand-red/10 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-red">
-                    {p.dept}
-                  </span>
-                  <span className="text-[10px] font-semibold text-brand-gray">{p.type}</span>
-                </div>
-                <h3 className="text-base font-extrabold text-brand-dark">{p.title}</h3>
-                <p className="text-xs text-brand-gray">{p.location}</p>
-                {!deadlinePassed && (
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {BATCH.positions.map((p) => (
+              <li key={p.title} className={`rounded-2xl border border-brand-dark/10 bg-white p-5 ${open ? "" : "opacity-70"}`}>
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red">{p.dept}</p>
+                <p className="mt-2 text-[17px] font-extrabold text-brand-dark">{p.title}</p>
+                <p className="mt-1 text-[13px] text-brand-gray">{p.location}</p>
+                {open && BATCH.formUrl && (
                   <a
-                    href={FORM_REKRUTMEN !== "#" ? FORM_REKRUTMEN : "#"}
-                    target={FORM_REKRUTMEN !== "#" ? "_blank" : undefined}
-                    rel={FORM_REKRUTMEN !== "#" ? "noopener noreferrer" : undefined}
-                    className="mt-auto rounded-lg bg-brand-dark px-5 py-2.5 text-center text-xs font-bold text-white transition hover:bg-brand-gray"
+                    href={BATCH.formUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex rounded-full bg-brand-dark px-4 py-2 text-[13px] font-bold text-white hover:bg-brand-red"
                   >
-                    Lamar Sekarang
+                    Lamar posisi ini
                   </a>
                 )}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl bg-brand-dark p-7 text-white">
+              <p className="text-[19px] font-extrabold">Belum ada posisi yang cocok?</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-white/70">
+                Kirim CV dan portofolio ke email kami dengan subjek &quot;Lamaran umum&quot;. Kami simpan untuk batch berikutnya.
+              </p>
+              <div className="mt-5">
+                <ButtonLink href={`mailto:${EMAIL}?subject=Lamaran%20umum`} variant="light">
+                  Kirim CV lewat email
+                </ButtonLink>
               </div>
-            </Reveal>
-          ))}
+            </div>
+            <div className="rounded-3xl border border-brand-dark/10 bg-white p-7">
+              <p className="text-[19px] font-extrabold text-brand-dark">Lebih suka kerja per proyek?</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-brand-gray">
+                Arsitek, drafter, estimator, dan modeller bisa gabung sebagai freelancer lewat mitrabarumahID Projectlink.
+              </p>
+              <Link
+                href="/kemitraan/daftar/projectlink"
+                className="mt-5 inline-flex items-center gap-2 text-[14px] font-bold text-brand-red hover:text-brand-red-dark"
+              >
+                Daftar Projectlink →
+              </Link>
+            </div>
+          </div>
         </div>
-      </Section>
+      </section>
     </>
   );
 }

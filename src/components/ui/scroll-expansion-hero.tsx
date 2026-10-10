@@ -22,7 +22,6 @@ interface ScrollExpandMediaProps {
 }
 
 const ScrollExpandMedia = ({
-  mediaType = "video",
   mediaSrc,
   bgImageSrc,
   title,
@@ -39,14 +38,17 @@ const ScrollExpandMedia = ({
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Reset animasi kalau jenis media berganti.
-  const [prevMediaType, setPrevMediaType] = useState(mediaType);
-  if (mediaType !== prevMediaType) {
-    setPrevMediaType(mediaType);
-    setScrollProgress(0);
-    setShowContent(false);
-    setMediaFullyExpanded(false);
-  }
+  // Buka penuh langsung kalau halaman dibuka dengan anchor (#faq dll) atau pengguna memilih kurangi animasi.
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!window.location.hash && !reduce) return;
+    const id = requestAnimationFrame(() => {
+      setScrollProgress(1);
+      setShowContent(true);
+      setMediaFullyExpanded(true);
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -107,6 +109,20 @@ const ScrollExpandMedia = ({
       setTouchStartY(0);
     };
 
+    // Pengguna keyboard (Page Down, panah, spasi, End) langsung dibuka penuh,
+    // supaya tidak terkunci di atas halaman.
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (mediaFullyExpanded) return;
+      const keys = ["ArrowDown", "PageDown", " ", "Spacebar", "End"];
+      const target = e.target as HTMLElement | null;
+      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if (keys.includes(e.key)) {
+        setScrollProgress(1);
+        setMediaFullyExpanded(true);
+        setShowContent(true);
+      }
+    };
+
     const handleScroll = () => {
       if (!mediaFullyExpanded) {
         window.scrollTo(0, 0);
@@ -118,8 +134,10 @@ const ScrollExpandMedia = ({
     window.addEventListener("touchstart", handleTouchStart, { passive: false });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("touchstart", handleTouchStart);
@@ -159,14 +177,14 @@ const ScrollExpandMedia = ({
           >
             <Image
               src={bgImageSrc}
-              alt="Background"
+              alt=""
               width={1920}
-              height={1080}
-              className="h-screen w-screen"
+              height={960}
+              className="animate-hero-zoom h-screen w-screen"
               style={{ objectFit: "cover", objectPosition: "center" }}
               priority
             />
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/70" />
           </motion.div>
 
           <div className="container relative z-10 mx-auto flex flex-col items-center justify-start">
@@ -201,7 +219,7 @@ const ScrollExpandMedia = ({
                 <div className="relative z-10 mt-4 flex flex-col items-center text-center transition-none">
                   {date && (
                     <p
-                      className="text-sm font-semibold tracking-wide text-brand-red"
+                      className="text-[15px] font-bold tracking-wide text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.6)] md:text-base"
                       style={{
                         transform: `translateX(-${textTranslateX}vw)`,
                       }}

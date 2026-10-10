@@ -1,27 +1,23 @@
 import ScrollExpandHero from "@/components/sections/ScrollExpandHeroSection";
-import PickYourFit from "@/components/sections/PickYourFit";
-import ProblemSection from "@/components/sections/ProblemSection";
-import RTOExplainer from "@/components/sections/RTOExplainer";
-import DPAccelerator from "@/components/sections/DPAccelerator";
-import ConsTechSection from "@/components/sections/ConsTechSection";
-import TrackRecord from "@/components/sections/TrackRecord";
-import PersonaCards from "@/components/sections/PersonaCards";
-import LeadCaptureSection from "@/components/sections/LeadCaptureSection";
-import FAQSection from "@/components/sections/FAQSection";
+import ProblemSection from "@/components/home/ProblemSection";
+import ServiceCards from "@/components/home/ServiceCards";
+import ProofStats from "@/components/home/ProofStats";
+import LogoMarquee from "@/components/home/LogoMarquee";
+import FaqTestimonials from "@/components/home/FaqTestimonials";
+import ClosingCta from "@/components/home/ClosingCta";
 
+// Beranda = etalase. Tugasnya memilah pengunjung ke tiga layanan dalam sekali gulir (PRD Website v1).
+// Urutan: Hero, Masalah, Tiga layanan, Bukti angka, Logo bergerak, Testimoni + FAQ, Ajakan penutup.
 export default function Home() {
   return (
     <>
       <ScrollExpandHero />
-      <PickYourFit />
       <ProblemSection />
-      <RTOExplainer />
-      <DPAccelerator />
-      <ConsTechSection />
-      <TrackRecord />
-      <PersonaCards />
-      <LeadCaptureSection />
-      <FAQSection />
+      <ServiceCards />
+      <ProofStats />
+      <LogoMarquee />
+      <FaqTestimonials />
+      <ClosingCta />
     </>
   );
 }

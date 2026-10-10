@@ -1,167 +1,279 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import Section from "@/components/ui/Section";
-import SectionLabel from "@/components/ui/SectionLabel";
-import { EMAIL, WA_LINK1, IG_URL, LINKEDIN_URL, HQ_ADDRESS, VO_ADDRESS } from "@/constants";
+import PageHero from "@/components/ui/PageHero";
+import PillarCards from "@/components/about/PillarCards";
+import ValueLetters from "@/components/about/ValueLetters";
+import ChannelGrid from "@/components/ui/ChannelGrid";
+import ChannelIcon from "@/components/icons/ChannelIcon";
+import {
+  ABOUT_HERO,
+  GROUP_SUBTITLE,
+  GROUP_TITLE,
+  GROUP_UNITS,
+  MISSIONS,
+  MOTTO,
+  PILLARS,
+  PILLARS_SUBTITLE,
+  PILLARS_TITLE,
+  STORY,
+  STORY_TITLE,
+  TEAM,
+  TEAM_SUBTITLE,
+  TEAM_TITLE,
+  TIMELINE,
+  VALUES,
+  VALUES_SUBTITLE,
+  VALUES_TITLE,
+  VISION,
+} from "@/data/company";
+import { STATS } from "@/data/projects";
 
 export const metadata: Metadata = {
-  title: "Tentang",
-  description: "barumahID (PT Inditek Bluprim Mahaksa) — Platform Pendamping Kepemilikan Rumah dari Padang, Sumatera Barat.",
+  title: { absolute: "Tentang Kami | PT Inditek Bluprim Mahaksa, di balik barumahID" },
+  description:
+    "PT Inditek Bluprim Mahaksa, perusahaan konstruksi dan teknologi properti dari Padang di balik barumahID. Sejak 2018, 30+ proyek selesai.",
+  alternates: { canonical: "/tentang" },
 };
 
-const timeline = [
-  { year: "2018", title: "Brand Lahir", desc: "Perusahaan lahir dari pengalaman lapangan konstruksi — melihat langsung betapa sulitnya memiliki rumah bagi pekerja Indonesia." },
-  { year: "2024", title: "PT Resmi Berdiri", desc: "PT. Inditek Bluprim Mahaksa (IBM) didirikan secara formal pada 9 Januari 2024." },
-  { year: "2026", title: "Full-time & Pivot", desc: "Tim beralih full-time dan fokus mengembangkan platform pendamping kepemilikan rumah." },
-];
+function Trophy() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" />
+      <path d="M17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4" />
+    </svg>
+  );
+}
 
-const pillars = [
-  { title: "ConsTech", desc: "Layanan konstruksi profesional dengan pendekatan Lean, BIM, AI, dan Green Construction.", color: "border-brand-red" },
-  { title: "PropTech", desc: "Program Rent-to-Own yang mendampingi perjalanan dari penyewa menjadi pemilik.", color: "border-brand-red" },
-];
-
-const values = [
-  { title: "Transparan", desc: "RAB terbuka, fee jelas, proses terukur." },
-  { title: "Berbasis Lokal", desc: "Memahami konteks dan kebutuhan pasar Indonesia dari Sumatera." },
-  { title: "Inklusif", desc: "Membuka jalur kepemilikan rumah untuk semua kondisi finansial." },
-  { title: "Berkelanjutan", desc: "Pendekatan hijau dan responsible dalam setiap layanan." },
-];
+function SectionTitle({ label, title, subtitle, dark = false }: { label: string; title: string; subtitle?: string; dark?: boolean }) {
+  return (
+    <div className="max-w-3xl">
+      <p className="type-micro text-brand-red">{label}</p>
+      <h2
+        className={`mt-5 text-[clamp(1.8rem,3.8vw,2.9rem)] font-extrabold leading-[1.08] tracking-[-0.02em] ${
+          dark ? "text-white" : "text-brand-dark"
+        }`}
+      >
+        {title}
+      </h2>
+      {subtitle && <p className={`mt-4 text-[16px] leading-relaxed ${dark ? "text-white/65" : "text-brand-gray"}`}>{subtitle}</p>}
+    </div>
+  );
+}
 
 export default function TentangPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-dark text-white">
-        <div className="absolute inset-0 hero-grid" />
-        <div className="relative mx-auto max-w-[1200px] px-6 py-16 sm:py-24">
-          <Reveal>
-            <SectionLabel dark>Tentang Kami</SectionLabel>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-              Dibangun dari frustasi lapangan, bukan riset pasar.
-            </h1>
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        label={ABOUT_HERO.label}
+        title={ABOUT_HERO.title}
+        subtitle={<p>{ABOUT_HERO.subtitle}</p>}
+        image="/images/proyek/bangun-rumah-2-lantai-padang-2.webp"
+        size="lg"
+      >
+        <ul className="flex flex-wrap gap-x-8 gap-y-3 text-[14px] font-semibold text-white/85">
+          <li>
+            <span className="text-2xl font-black text-white">{STATS.projects}+</span> proyek selesai
+          </li>
+          <li>
+            Berjalan sejak <span className="text-2xl font-black text-white">2018</span>
+          </li>
+          <li>
+            PT resmi <span className="text-2xl font-black text-white">2024</span>
+          </li>
+        </ul>
+      </PageHero>
 
-      {/* Origin Story + Timeline */}
-      <Section background="white">
-        <div className="grid gap-12 lg:grid-cols-5">
-          <div className="lg:col-span-2">
+      {/* Cerita kami */}
+      <section className="bg-brand-cream">
+        <div className="mx-auto grid max-w-[1280px] gap-14 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:px-14">
+          <div className="lg:col-span-7">
             <Reveal>
-              <SectionLabel>Cerita Kami</SectionLabel>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-                Dari lapangan ke platform
-              </h2>
+              <SectionTitle label="Cerita kami" title={STORY_TITLE} />
             </Reveal>
-          </div>
-          <div className="lg:col-span-3">
-            <div className="space-y-8 border-l-2 border-brand-red/20 pl-8">
-              {timeline.map((t, i) => (
-                <Reveal key={t.year} delay={i * 120}>
-                  <div className="relative">
-                    <span className="absolute -left-[41px] flex h-5 w-5 items-center justify-center rounded-full bg-brand-red">
-                      <span className="h-2 w-2 rounded-full bg-white" />
-                    </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-red">{t.year}</span>
-                    <h3 className="mt-1 text-lg font-extrabold text-brand-dark">{t.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-brand-gray">{t.desc}</p>
-                  </div>
+            <div className="mt-8 space-y-5">
+              {STORY.map((para, i) => (
+                <Reveal key={i} delay={i * 60}>
+                  <p className="max-w-2xl text-[16.5px] leading-[1.75] text-brand-dark/80">{para}</p>
                 </Reveal>
               ))}
             </div>
           </div>
-        </div>
-      </Section>
-
-      {/* Misi */}
-      <Section background="cream">
-        <Reveal>
-          <div className="mx-auto max-w-2xl text-center">
-            <SectionLabel>Misi</SectionLabel>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-              &ldquo;Mendampingi setiap perjalanan kepemilikan rumah, dari kondisi finansial apapun.&rdquo;
-            </h2>
+          <div className="lg:col-span-5">
+            <Reveal>
+              <ol className="relative space-y-7 border-l-2 border-brand-red/25 pl-7 lg:mt-24">
+                {TIMELINE.map((m) => (
+                  <li key={m.year} className="relative">
+                    <span
+                      className={`absolute -left-[39px] top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full ${
+                        m.award ? "bg-brand-red text-white" : "border-2 border-brand-red bg-brand-cream"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {m.award && <Trophy />}
+                    </span>
+                    <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">{m.year}</p>
+                    <p className="mt-1 text-[17px] font-extrabold text-brand-dark">{m.title}</p>
+                    <p className="mt-1 text-[14px] leading-relaxed text-brand-gray">{m.body}</p>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
           </div>
-        </Reveal>
-      </Section>
-
-      {/* 2 Pilar */}
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Pilar Bisnis</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-            ConsTech &middot; PropTech
-          </h2>
-        </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {pillars.map((p, i) => (
-            <Reveal key={p.title} delay={i * 100}>
-              <div className={`flex h-full flex-col gap-3 rounded-xl border-t-4 bg-white p-7 card-shadow ${p.color}`}>
-                <h3 className="text-xl font-extrabold text-brand-dark">{p.title}</h3>
-                <p className="text-sm leading-relaxed text-brand-gray">{p.desc}</p>
-              </div>
-            </Reveal>
-          ))}
         </div>
-      </Section>
+      </section>
 
-      {/* Values */}
-      <Section background="cream">
-        <Reveal>
-          <SectionLabel>Nilai</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">Yang kami pegang</h2>
-        </Reveal>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {values.map((v, i) => (
-            <Reveal key={v.title} delay={i * 80}>
-              <div className="rounded-xl border border-brand-dark/8 bg-white p-6 card-shadow">
-                <h3 className="text-base font-extrabold text-brand-dark">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-brand-gray">{v.desc}</p>
-              </div>
-            </Reveal>
-          ))}
+      {/* Visi & misi */}
+      <section className="bg-brand-cream-warm">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <p className="type-micro text-brand-red">Visi</p>
+            <blockquote className="mt-6 max-w-4xl text-[clamp(1.7rem,3.8vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.02em] text-brand-dark">
+              “{VISION}”
+            </blockquote>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="type-micro mt-16 text-brand-red">Misi</p>
+          </Reveal>
+          <ol className="mt-6 grid gap-4 md:grid-cols-2">
+            {MISSIONS.map((m, i) => (
+              <Reveal key={i} delay={i * 80}>
+                <li className="flex h-full gap-5 rounded-3xl bg-white p-6 card-shadow md:p-7">
+                  <span className="text-[34px] font-black leading-none text-brand-red/80">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-[15.5px] leading-relaxed text-brand-dark/85">{m}</p>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
         </div>
-      </Section>
+      </section>
 
-      {/* Dual Brand */}
-      <Section background="white">
-        <Reveal>
-          <SectionLabel>Dual Brand</SectionLabel>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">IBM &amp; barumahID</h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-brand-gray">
-            <strong className="text-brand-dark">PT. Inditek Bluprim Mahaksa (IBM)</strong> adalah entitas legal
-            perusahaan. <strong className="text-brand-red">barumahID</strong> adalah brand konsumer yang dihadirkan untuk
-            publik — platform pendamping kepemilikan rumah untuk masyarakat Indonesia.
+      {/* LBAG */}
+      <section className="bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <SectionTitle label="Empat pilar LBAG" title={PILLARS_TITLE} subtitle={PILLARS_SUBTITLE} />
+          </Reveal>
+          <div className="mt-12">
+            <PillarCards pillars={PILLARS} />
+          </div>
+        </div>
+      </section>
+
+      {/* BUILD */}
+      <section className="relative isolate overflow-hidden bg-brand-dark text-white">
+        <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <SectionTitle label="Nilai kami" title={VALUES_TITLE} subtitle={VALUES_SUBTITLE} dark />
+          </Reveal>
+          <div className="mt-12">
+            <ValueLetters values={VALUES} />
+          </div>
+          <p className="mt-10 border-t border-white/10 pt-6 text-[14px] text-white/55">
+            Motto kami: <span className="font-bold italic text-white">{MOTTO}</span>
           </p>
-        </Reveal>
-      </Section>
+        </div>
+      </section>
 
-      {/* Contact card */}
-      <Section background="cream">
-        <Reveal>
-          <div className="rounded-xl border border-brand-dark/8 bg-white p-8">
-            <h3 className="text-lg font-extrabold text-brand-dark">Kontak</h3>
-            <div className="mt-4 grid gap-4 text-sm text-brand-gray sm:grid-cols-2">
-              <div>
-                <p className="font-semibold text-brand-dark">HQ</p>
-                <p>{HQ_ADDRESS}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-brand-dark">Virtual Office</p>
-                <p>{VO_ADDRESS}</p>
-              </div>
-              <div>
-                <p><a href={`mailto:${EMAIL}`} className="hover:text-brand-red">{EMAIL}</a></p>
-                <p><a href={WA_LINK1} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red">+62 851-5788-3292</a></p>
-              </div>
-              <div>
-                <p><a href={IG_URL} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red">@barumahid</a></p>
-                <p><a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red">LinkedIn: @barumahID</a></p>
+      {/* Grup usaha */}
+      <section className="bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <SectionTitle label="Grup usaha" title={GROUP_TITLE} subtitle={GROUP_SUBTITLE} />
+          </Reveal>
+          <Reveal delay={100}>
+            <div className="mt-12">
+              {GROUP_UNITS.filter((u) => u.status === "induk").map((u) => (
+                <div key={u.name} className="mx-auto max-w-md rounded-3xl bg-brand-dark p-6 text-center text-white">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{u.role}</p>
+                  <p className="mt-2 text-[20px] font-extrabold">{u.name}</p>
+                  <p className="mt-2 text-[14px] leading-relaxed text-white/65">{u.body}</p>
+                </div>
+              ))}
+              <div className="mx-auto h-8 w-px bg-brand-dark/25" aria-hidden="true" />
+              <div className="relative mx-auto grid max-w-3xl gap-4 md:grid-cols-2">
+                <div className="absolute -top-0 left-1/4 right-1/4 hidden h-px bg-brand-dark/25 md:block" aria-hidden="true" />
+                {GROUP_UNITS.filter((u) => u.status !== "induk").map((u) => (
+                  <div
+                    key={u.name}
+                    className={`relative rounded-3xl border bg-white p-6 card-shadow md:mt-8 ${
+                      u.status === "pengembangan" ? "opacity-60" : ""
+                    } ${u.name === "barumahID" ? "border-brand-red" : "border-brand-dark/10"}`}
+                  >
+                    <span className="absolute -top-8 left-1/2 hidden h-8 w-px bg-brand-dark/25 md:block" aria-hidden="true" />
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{u.role}</p>
+                    <p className="mt-2 text-[19px] font-extrabold text-brand-dark">{u.name}</p>
+                    <p className="mt-2 text-[14px] leading-relaxed text-brand-gray">{u.body}</p>
+                    <p
+                      className={`mt-4 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
+                        u.status === "aktif" ? "bg-credit/10 text-credit" : "bg-brand-dark/5 text-brand-gray"
+                      }`}
+                    >
+                      {u.statusLabel}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Tim */}
+      <section className="bg-brand-cream-warm">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <SectionTitle label="Tim" title={TEAM_TITLE} subtitle={TEAM_SUBTITLE} />
+          </Reveal>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {TEAM.map((t, i) => (
+              <Reveal key={t.name} delay={i * 80}>
+                <article className="flex h-full flex-col rounded-3xl bg-white p-6 card-shadow">
+                  <div
+                    className="flex aspect-[4/5] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-brand-dark to-[#2b2b2b] text-[44px] font-black tracking-tight text-white/90"
+                    aria-hidden="true"
+                  >
+                    {t.initials}
+                  </div>
+                  <p className="mt-5 text-[17px] font-extrabold leading-snug text-brand-dark">{t.name}</p>
+                  <p className="mt-1 text-[13px] font-semibold text-brand-red">{t.role}</p>
+                  <p className="mt-3 text-[14px] leading-relaxed text-brand-gray">{t.bio}</p>
+                  {t.linkedin && (
+                    <a
+                      href={t.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`LinkedIn ${t.name}`}
+                      className="mt-auto inline-flex h-10 w-10 items-center justify-center self-start rounded-full border border-brand-dark/15 text-brand-dark transition-colors hover:border-brand-red hover:text-brand-red"
+                    >
+                      <ChannelIcon id="linkedin" size={16} />
+                    </a>
+                  )}
+                </article>
+              </Reveal>
+            ))}
           </div>
-        </Reveal>
-      </Section>
+          <p className="mt-10 text-[15px] text-brand-dark">
+            Mau ikut membangun?{" "}
+            <Link href="/rekrutmen" className="font-bold text-brand-red underline underline-offset-4 hover:text-brand-red-dark">
+              Lihat posisi yang sedang dibuka
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Kanal */}
+      <section className="bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
+          <Reveal>
+            <SectionTitle label="Kanal barumahID" title="Ikuti dan hubungi kami." subtitle="Pilih kanal yang paling nyaman buat kamu." />
+          </Reveal>
+          <div className="mt-10">
+            <ChannelGrid />
+          </div>
+        </div>
+      </section>
     </>
   );
 }
