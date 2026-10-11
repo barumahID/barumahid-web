@@ -41,7 +41,7 @@ export const BARUMAHID_INTRO = {
   ],
   innovation: {
     label: "Inovasi unggulan",
-    body: "Kami ingin menemani kamu di setiap langkah menuju hunian sendiri. Mulai dari sewa, pelan-pelan mengumpulkan DP, sampai akhirnya rumah itu jadi milikmu. Programnya sedang kami siapkan, segera hadir.",
+    body: "Kami ingin menemani kamu di setiap langkah menuju hunian sendiri. Mulai dari sewa, pelan-pelan mengumpulkan DP, sampai akhirnya rumah itu jadi milikmu.",
   },
 };
 

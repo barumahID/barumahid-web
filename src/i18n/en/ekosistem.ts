@@ -65,7 +65,7 @@ export const EKOSISTEM: Record<string, string> = {
   ),
   [B.innovation.label]: "Flagship innovation",
   [B.innovation.body]:
-    "We want to walk with you every step of the way to a home of your own. From renting, to slowly building up your down payment, until the home is finally yours. The program is being prepared and coming soon.",
+    "We want to walk with you every step of the way to a home of your own. From renting, to slowly building up your down payment, until the home is finally yours.",
 
   // Masalah
   [M.label]: "Common problems",
