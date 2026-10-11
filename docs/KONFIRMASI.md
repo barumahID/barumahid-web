@@ -24,7 +24,8 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Sketsa dari kanvas "Ceritakan proyekmu" | Belum ikut terkirim bersama form (skema form dan sheet CRM belum punya kolomnya). Pengunjung bisa mengunduh PNG lalu mengirim lewat WhatsApp. Kalau mau dikirim otomatis, perlu kolom baru di form dan CRM | `src/components/constech/DrawingCanvas.tsx`, `src/lib/leads.ts` |
 | Website Jururancang | Belum ada, tampil "Website segera hadir" | `src/data/site.ts` (`JURURANCANG.website`) |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |
-| Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/app/rekrutmen/page.tsx` (`BATCH`) |
+| Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/data/karier.ts` (`BATCH`) |
+| Status dan periode Magang Arsitektur | Brosur tidak menyebut periode atau durasi. Halaman tampil "Menerima lamaran" (`MAGANG.open = true`) sampai ada kabar ditutup | `src/data/karier.ts` (`MAGANG`) |
 
 ## Teknis
 
