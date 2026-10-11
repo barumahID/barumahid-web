@@ -12,7 +12,7 @@ import ClosingCta from "@/components/home/ClosingCta";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
-import { CONTECH_FAQ, CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN } from "@/data/contech";
+import { CONTECH_FAQ, CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -223,21 +223,37 @@ export default function ContechPage() {
             </p>
           </div>
           <div className="mt-10 grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+            <div className="flex flex-col lg:col-span-7">
               <DrawingCanvas />
               <p className="mt-3 text-[13px] text-white/55">
                 Sketsa tersimpan di browsermu. Unduh lewat tombol panah bawah, lalu kirimkan ke admin WhatsApp kami setelah mengisi data.
               </p>
-              {/* FAQ singkat supaya kolom kiri tidak kosong di samping form */}
-              <div className="mt-10">
+              {/* FAQ singkat supaya kolom kiri tidak kosong. FAQ dan daftar "Setelah kamu kirim" sama-sama menempel
+                  di dasar baris, jadi ujung bawahnya selalu sejajar (info tambahan form dibuka atau tidak). */}
+              <div className="mt-10 lg:mt-auto lg:pt-10">
                 <p className="type-micro text-brand-red">Yang sering ditanyakan</p>
                 <div className="mt-3">
                   <AccordionFAQ items={CONTECH_FAQ} compact dark />
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-5">
+            {/* Form, lalu langkah setelah kirim yang menempel di bawah supaya sejajar dengan akhir FAQ */}
+            <div className="flex flex-col lg:col-span-5">
               <LeadForm role="konsultasi" tone="card" compact />
+              <div className="mt-10 lg:mt-auto lg:pt-10">
+                <p className="type-micro text-brand-red">Setelah kamu kirim</p>
+                <ol className="mt-3 border-t border-white/15">
+                  {SETELAH_KIRIM.map((s, i) => (
+                    <li key={s.title} className="flex gap-4 border-b border-white/15 py-3.5">
+                      <span className="pt-0.5 text-[13px] font-black text-brand-red">{String(i + 1).padStart(2, "0")}</span>
+                      <span>
+                        <span className="block text-[15px] font-semibold leading-snug text-white md:text-[16px]">{s.title}</span>
+                        <span className="mt-1 block text-[13.5px] leading-relaxed text-white/60">{s.body}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
           </div>
         </div>

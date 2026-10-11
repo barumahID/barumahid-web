@@ -5,7 +5,7 @@
 // 4. Gambar dan modelling + desain dan analisa struktur bersama partner Jururancang: karya (geser otomatis)
 //    dan paket harga yang ringkas.
 import { STATS } from "./projects";
-import { TIERS, formatRupiah } from "./pricing";
+import { BUILD_STEPS, TIERS, formatRupiah } from "./pricing";
 
 export const CONTECH_HERO = {
   label: "Jasa General Kontraktor",
@@ -122,4 +122,12 @@ export const CONTECH_FAQ = [
     question: "Proyekku di luar Padang, bisa?",
     answer: `Proyek kami sudah tersebar di ${WILAYAH}. Ceritakan lokasi proyekmu, admin kami cek dulu apakah bisa dikerjakan.`,
   },
+];
+
+// Daftar "Setelah kamu kirim" di bawah form konsultasi (arahan user: sejajar dengan FAQ di sebelahnya).
+// Isinya dari pesan sukses form konsultasi dan alur kerja BUILD_STEPS, tanpa janji baru.
+export const SETELAH_KIRIM = [
+  { title: "Kami balas lewat WhatsApp", body: "Di jam kerja, biasanya di hari yang sama. Kalau ada sketsa, kirim sekalian di chat." },
+  BUILD_STEPS[1],
+  BUILD_STEPS[2],
 ];
