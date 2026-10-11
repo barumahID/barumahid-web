@@ -27,8 +27,8 @@ export const EKOSISTEM: Record<string, string> = {
   // Hero
   [H.label]: "The barumahID ecosystem",
   ...pairs(H.body, [
-    "We are a construction company officially established on January 9, 2024. Day to day, we handle drawing and modelling, renovation and construction, all the way to structural design and analysis.",
-    "We work as a general contractor and a construction consultant. We love trying new ways of working, and our compass is called LBAG: Lean Construction, BIM, AI and AR/VR, and Green Construction. We believe these four concepts will disrupt Indonesia's construction business ecosystem for the better in the years ahead.",
+    "A construction company established on January 9, 2024. We provide drawing & modelling, renovation & construction, and structural design & analysis.",
+    "Focused on serving as a general contractor and construction consultant, the company consistently adapts to technological developments through the LBAG concept: Lean Construction, Building Information Modeling (BIM), Artificial Intelligence and Augmented and Virtual Reality (AI and AR/VR), and Green Construction. We believe these four concepts will disrupt Indonesia's construction business ecosystem for the better in the years ahead.",
   ]),
   "Renovasi & Bangun Konstruksi": "Renovation & Construction",
   ...pairs(

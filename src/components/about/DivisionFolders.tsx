@@ -23,11 +23,11 @@ function Card({ u, color, selected, onSelect }: { u: Unit; color: string; select
       }`}
     >
       <span
-        className={`flex h-11 w-11 items-center justify-center overflow-hidden rounded-full ${u.logo ? "bg-white" : "bg-[#0B0B0F]"}`}
-        style={u.logo ? undefined : { border: `1px solid rgba(${color},0.6)` }}
+        className={`flex h-11 w-11 items-center justify-center overflow-hidden rounded-full ${u.logo ? "" : "bg-[#0B0B0F]"}`}
+        style={u.logo ? { background: u.logoBg ?? "#FFFFFF" } : { border: `1px solid rgba(${color},0.6)` }}
       >
         {u.logo ? (
-          <Image src={u.logo} alt="" width={64} height={64} className="h-[72%] w-[72%] object-contain" />
+          <Image src={u.logo} alt="" width={80} height={80} className="h-[80%] w-[80%] object-contain" />
         ) : (
           <span className="text-[11px] font-black" style={{ color: `rgb(${color})` }}>
             {u.initials}

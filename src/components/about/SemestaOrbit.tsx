@@ -6,7 +6,7 @@ import { useReducedMotion } from "framer-motion";
 import { DIVISIONS, type DivisionId, type Unit } from "@/data/semesta";
 import { useT } from "@/i18n/LangProvider";
 
-// Semesta Mahaksa: inti PT berupa bola partikel bercahaya (terinspirasi "Selene Particle Moon") dengan simbol PT,
+// Astro Mahaksa: inti PT berupa bola partikel bercahaya (terinspirasi "Selene Particle Moon") dengan simbol PT,
 // dikelilingi tiga cincin orbit miring, satu per divisi (INDITEK, BLUPRIM, MAHAKSA), seperti orbit atom.
 // Unit usaha berupa logo yang bergerak di cincinnya, tersambung ke inti lewat garis cahaya berisi partikel
 // mengalir (terinspirasi "SphereNetwork"). Dibuat ulang sendiri dengan canvas 2D + DOM, warna barumahID.
@@ -359,12 +359,12 @@ export default function SemestaOrbit({
               {/* Logo, atau inisial kalau logonya belum ada */}
               <span
                 className={`absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full transition-shadow ${
-                  u.logo ? "bg-white" : "bg-[#16161B]"
+                  u.logo ? "" : "bg-[#16161B]"
                 } ${isSel ? "shadow-[0_0_0_3px_rgba(255,255,255,0.9)]" : "group-hover:shadow-[0_0_0_2px_rgba(255,255,255,0.6)]"}`}
-                style={{ width: size, height: size, border: u.logo ? undefined : `1px solid rgba(${col},0.6)` }}
+                style={{ width: size, height: size, background: u.logo ? (u.logoBg ?? "#FFFFFF") : undefined, border: u.logo ? undefined : `1px solid rgba(${col},0.6)` }}
               >
                 {u.logo ? (
-                  <Image src={u.logo} alt="" width={80} height={80} className="h-[72%] w-[72%] object-contain" />
+                  <Image src={u.logo} alt="" width={96} height={96} className="h-[80%] w-[80%] object-contain" />
                 ) : (
                   <span className="text-[11px] font-black tracking-tight" style={{ color: `rgb(${col})` }}>
                     {u.initials}

@@ -1,6 +1,6 @@
 import { DIVISIONS, SEMESTA, UNITS } from "@/data/semesta";
 
-// Terjemahan Inggris: bagian "Semesta Mahaksa" (src/data/semesta.ts). Kunci diambil dari data.
+// Terjemahan Inggris: bagian "Astro Mahaksa" (src/data/semesta.ts). Kunci diambil dari data.
 
 const body: Record<string, string> = {
   barumahid:
@@ -26,7 +26,7 @@ const focus: Record<string, string> = {
 };
 
 export const SEMESTA_EN: Record<string, string> = {
-  [SEMESTA.label]: "The Mahaksa universe",
+  [SEMESTA.label]: "Astro Mahaksa",
   [SEMESTA.title]: "One core, three orbits. This is our dream for the future.",
   [SEMESTA.intro]:
     "PT Inditek Bluprim Mahaksa has three divisions, just like its name: Inditek for innovation and technology, Bluprim for brands and services, Mahaksa for construction and property. Some are already running, others are ideas we have tried before and are ready to build again. We write the numbers honestly, based on where each one stands today.",

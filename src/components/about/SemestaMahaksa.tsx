@@ -4,10 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import SemestaOrbit from "./SemestaOrbit";
 import DivisionFolders from "./DivisionFolders";
+import LightStreaks from "@/components/ui/LightStreaks";
 import { DIVISIONS, SEMESTA, UNITS } from "@/data/semesta";
 import { useT } from "@/i18n/LangProvider";
 
-// Bagian "Semesta Mahaksa" di halaman Ekosistem (menggantikan "Grup usaha", arahan user Okt 2026), mengikuti
+// Bagian "Astro Mahaksa" di halaman Ekosistem (menggantikan "Grup usaha", arahan user Okt 2026), mengikuti
 // "Architecture Mahaksa Group": PT di pusat, tiga divisi INDITEK, BLUPRIM, MAHAKSA.
 // Kiri: cerita singkat dan detail unit yang dipilih. Kanan: orbit. Bawah: tiga map divisi berisi kartu unit.
 export default function SemestaMahaksa() {
@@ -18,16 +19,9 @@ export default function SemestaMahaksa() {
   const running = unit.status === "berjalan";
 
   return (
-    <section id="semesta" className="relative isolate overflow-hidden bg-[#0B0B0F] text-white">
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
-        }}
-        aria-hidden="true"
-      />
+    <section id="astro" className="relative isolate overflow-hidden bg-[#0B0B0F] text-white">
+      {/* Latar garis cahaya yang menyatu ke inti orbit (arahan user: ganti grid, referensi Light Streak BG) */}
+      <LightStreaks className="-z-10" />
       <div className="pointer-events-none absolute left-[62%] top-[40%] -z-10 h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-red/10 blur-3xl" aria-hidden="true" />
 
       <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
@@ -52,11 +46,11 @@ export default function SemestaMahaksa() {
             <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm" aria-live="polite">
               <div className="flex items-center gap-4">
                 <span
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ${unit.logo ? "bg-white" : "bg-[#0B0B0F]"}`}
-                  style={unit.logo ? undefined : { border: `1px solid rgba(${div.color},0.6)` }}
+                  className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ${unit.logo ? "" : "bg-[#0B0B0F]"}`}
+                  style={unit.logo ? { background: unit.logoBg ?? "#FFFFFF" } : { border: `1px solid rgba(${div.color},0.6)` }}
                 >
                   {unit.logo ? (
-                    <Image src={unit.logo} alt="" width={80} height={80} className="h-[72%] w-[72%] object-contain" />
+                    <Image src={unit.logo} alt="" width={96} height={96} className="h-[80%] w-[80%] object-contain" />
                   ) : (
                     <span className="text-[13px] font-black" style={{ color: `rgb(${div.color})` }}>
                       {unit.initials}

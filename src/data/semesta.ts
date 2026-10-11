@@ -1,11 +1,12 @@
-// "Semesta Mahaksa": unit usaha di bawah PT Inditek Bluprim Mahaksa, tampil sebagai orbit di halaman Ekosistem.
+// "Astro Mahaksa" (dulu Semesta Mahaksa, nama dari user Okt 2026): unit usaha di bawah PT Inditek Bluprim Mahaksa,
+// tampil sebagai orbit di halaman Ekosistem.
 // Sumber: "Architecture Mahaksa Group" dan cerita dari user (Okt 2026). Tiga divisi sesuai nama PT:
 // INDITEK (inovasi & teknologi), BLUPRIM (brand & layanan), MAHAKSA (konstruksi & properti).
 // Progres ditulis apa adanya: barumahID 100%, Jururancang 44%, Piatu Tim 14% (berjalan), unit lain 4% (ide yang
 // pernah dicoba dan siap dibangun lagi). Istilah "gurita bisnis" sengaja tidak dipakai.
 // Cerita unit yang pernah gagal ditulis positif dan jujur, tanpa detail yang menyudutkan pihak lain.
-// Logo: baru barumahID, Jururancang, dan Piatu Tim (public/images/semesta). Unit lain tampil sebagai inisial sampai
-// logonya dikirim user.
+// Logo di public/images/semesta (simbolnya saja). Logo berlatar gelap memakai `logoBg` sebagai warna lingkaran.
+// `initials` dipakai kalau suatu saat ada unit baru tanpa logo.
 
 export type DivisionId = "inditek" | "bluprim" | "mahaksa";
 
@@ -30,11 +31,12 @@ export interface Unit {
   progress: number;
   body: string;
   logo?: string;
+  logoBg?: string;
   initials: string;
 }
 
 export const SEMESTA = {
-  label: "Semesta Mahaksa",
+  label: "Astro Mahaksa",
   title: "Satu inti, tiga orbit. Ini mimpi kami ke depan.",
   intro:
     "PT Inditek Bluprim Mahaksa punya tiga divisi, sesuai namanya: Inditek untuk inovasi dan teknologi, Bluprim untuk brand dan layanan, Mahaksa untuk konstruksi dan properti. Sebagian sudah berjalan, sebagian masih ide yang pernah kami coba dan siap kami bangun lagi. Angkanya kami tulis jujur, sesuai progres hari ini.",
@@ -79,6 +81,8 @@ export const UNITS: Unit[] = [
     division: "inditek",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/betools.png",
+    logoBg: "#010f28",
     body: "Retail perkakas dan kebutuhan konstruksi, semacam toko bangunan. Berawal dari ide alat pelindung diri \"Safety All in One\" yang pernah kami bawa ke lomba inovasi.",
     initials: "BT",
   },
@@ -88,6 +92,8 @@ export const UNITS: Unit[] = [
     division: "inditek",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/protonlabs.png",
+    logoBg: "#3e1008",
     body: "Riset dan pengembangan teknologi serta material. Kami pernah meneliti beton ramah lingkungan, beton tepat mutu, beton mutu tinggi, dan beton ringan, juga penghitung kendaraan dengan sensor gerak dan YOLO.",
     initials: "PL",
   },
@@ -97,6 +103,8 @@ export const UNITS: Unit[] = [
     division: "inditek",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/homematery.png",
+    logoBg: "#162336",
     body: "Menjual produk hasil inovasi ProtonLabs, seperti bata ringan, paving blok, dan roster. Risetnya sudah ada, tinggal dikembangkan jadi produk.",
     initials: "HM",
   },
@@ -106,6 +114,7 @@ export const UNITS: Unit[] = [
     division: "bluprim",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/simplee.png",
     body: "Brand fashion muslim yang minimalis dan modern. Pernah kami jalankan, pelajarannya jadi bekal untuk mencoba lagi.",
     initials: "SP",
   },
@@ -115,6 +124,7 @@ export const UNITS: Unit[] = [
     division: "bluprim",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/nasikotak.png",
     body: "Brand F&B dengan konsep makanan praktis dan berkualitas. Resepnya sudah diuji coba lewat skema waralaba, tinggal menunggu waktu yang pas untuk dijual.",
     initials: "NK",
   },
@@ -124,6 +134,7 @@ export const UNITS: Unit[] = [
     division: "bluprim",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/anta-fruchte.png",
     body: "Jajanan buah yang segar, sehat, dan modern. Berawal dari hobi jajan buah potong di pinggir jalan, lalu jadi proyek kewirausahaan yang dapat nilai A.",
     initials: "AF",
   },
@@ -133,6 +144,7 @@ export const UNITS: Unit[] = [
     division: "bluprim",
     status: "ide",
     progress: 4,
+    logo: "/images/semesta/mahamukena.png",
     body: "Busana muslim wanita yang premium dan elegan. Pernah kami jual, pengalaman pahitnya jadi pelajaran berharga untuk langkah berikutnya.",
     initials: "MM",
   },

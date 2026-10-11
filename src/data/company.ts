@@ -1,6 +1,7 @@
 // Konten halaman Ekosistem (/tentang). Arahan dan bahan dari user (Okt 2026): profil PT, visi misi, LBAG,
 // serta tiga infografis (About us, Masalah yang sering terjadi, Keunggulan kami). Copy dibuat santai dan hangat
-// (arahan user: humanize, cozy), esensinya tetap.
+// (arahan user: humanize, cozy), esensinya tetap. Kecuali hero profil PT: paragraf pertama versi awal, paragraf kedua
+// formal (arahan user).
 // Jangan pakai singkatan IBM untuk PT Inditek Bluprim Mahaksa (bentrok dengan merek IBM).
 // RTO masih pre-launch: copy tidak boleh mengklaim program sudah berjalan.
 
@@ -8,8 +9,8 @@ export const EKOSISTEM_HERO = {
   label: "Ekosistem barumahID",
   title: "PT Inditek Bluprim Mahaksa",
   body: [
-    "Kami perusahaan konstruksi yang resmi berdiri pada 9 Januari 2024. Sehari-hari kami mengerjakan gambar dan modelling, renovasi dan bangun, sampai desain dan analisa struktur.",
-    "Posisi kami general kontraktor sekaligus konsultan konstruksi. Kami senang mencoba cara baru, dan pegangan kami namanya LBAG: Lean Construction, BIM, AI dan AR/VR, serta Green Construction. Kami percaya, empat konsep ini akan mendisrupsi ekosistem bisnis konstruksi di Indonesia jadi lebih baik di masa mendatang.",
+    "Perusahaan konstruksi yang berdiri sejak 9 Januari 2024. Kami mengerjakan gambar & modelling, renovasi & bangun konstruksi, serta desain & analisa struktur.",
+    "Berfokus sebagai general kontraktor dan konsultan konstruksi, perusahaan secara konsisten mengadaptasi perkembangan teknologi melalui konsep LBAG, yaitu Lean Construction, Building Information Modeling (BIM), Artificial Intelligence serta Augmented dan Virtual Reality (AI dan AR/VR), dan Green Construction. Kami meyakini keempat konsep ini akan mendisrupsi ekosistem bisnis konstruksi di Indonesia menjadi lebih baik di masa mendatang.",
   ],
   services: [
     { label: "Gambar & Modelling", href: "/layanan/contech#harga" },
@@ -168,4 +169,4 @@ export const VALUES: Value[] = [
 
 export const MOTTO = "Make it. Future.";
 
-// Grup usaha diganti "Semesta Mahaksa" (src/data/semesta.ts).
+// Grup usaha diganti "Astro Mahaksa" (src/data/semesta.ts).

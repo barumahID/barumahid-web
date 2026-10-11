@@ -23,7 +23,7 @@ import {
 import { alternates, pageLang } from "@/i18n/server";
 
 // Halaman Ekosistem (dulu "Tentang", alamat tetap /tentang). Arahan user Okt 2026: profil PT di hero dengan foto
-// kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG dan BUILD, Semesta Mahaksa (orbit
+// kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG dan BUILD, Astro Mahaksa (orbit
 // unit usaha), dan tanya jawab. Cerita/timeline, peta proyek, tim, event, dan kanal dihapus.
 
 type Props = { params: Promise<{ lang: string }> };
@@ -272,7 +272,7 @@ export default async function EkosistemPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 7. Semesta Mahaksa: unit usaha di bawah PT dalam orbit, dengan progres masing-masing */}
+      {/* 7. Astro Mahaksa: unit usaha di bawah PT dalam orbit, dengan progres masing-masing */}
       <SemestaMahaksa />
 
       {/* 8. Tanya jawab (testimoni otomatis tampil kalau datanya ada) */}
