@@ -20,7 +20,7 @@ export const HOME_ABOUT = {
   title: "Wujudkan proyekmu, kami dampingi hingga miliki hunian.",
   body: [
     "barumahID adalah platform properti yang menyatukan dua layanan: jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Mulai dari merancang dan membangun rumah, sampai akhirnya punya hunian sendiri, kami temani di setiap langkahnya.",
-    `Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP belum cukup? Lewat program Rent-to-Own barumahID, kamu sewa huniannya dulu, dan ${Math.round(RTO_RATE * 100)}% dari sewa bulananmu otomatis dicatat jadi saldo DP.`,
+    `Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP (Down Payment) belum cukup? Lewat program Rent-to-Own barumahID, kamu sewa huniannya dulu, dan ${Math.round(RTO_RATE * 100)}% dari sewa bulananmu otomatis dicatat jadi saldo DP.`,
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
