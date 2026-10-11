@@ -2,9 +2,6 @@ import {
   BARUMAHID_INTRO as B,
   CARA_KERJA as C,
   EKOSISTEM_HERO as H,
-  GROUP_SUBTITLE,
-  GROUP_TITLE,
-  GROUP_UNITS,
   KEUNGGULAN as K,
   MASALAH as M,
   MISSIONS,
@@ -187,28 +184,6 @@ export const EKOSISTEM: Record<string, string> = {
     ],
   ),
   "Motto kami:": "Our motto:",
-
-  // Grup usaha (menunggu revisi user)
-  "Grup usaha": "Business group",
-  [GROUP_TITLE]: "One group, one direction.",
-  [GROUP_SUBTITLE]:
-    "barumahID is part of Mahaksa Grup under PT Inditek Bluprim Mahaksa. Each unit has its own role, with one shared goal: building homes and opening access to own them.",
-  ...pairs(
-    GROUP_UNITS.map((u) => u.role),
-    ["Holding company", "Home ownership support platform", "Planning consultant"],
-  ),
-  ...pairs(
-    GROUP_UNITS.map((u) => u.body),
-    [
-      "The legal entity and holding company for all Mahaksa Grup units.",
-      "Construction services through ConTech, a path to ownership through Rent-to-Own.",
-      "A planning, design, and structural analysis consultant. The technical partner for all barumahID drawing and structural work.",
-    ],
-  ),
-  ...pairs(
-    GROUP_UNITS.map((u) => u.statusLabel),
-    ["Holding", "Active", "Active since August 7, 2026"],
-  ),
 
   // Tanya jawab umum (src/data/faq.ts)
   "Kata mereka": "What they say",

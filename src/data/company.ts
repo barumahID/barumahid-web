@@ -168,39 +168,4 @@ export const VALUES: Value[] = [
 
 export const MOTTO = "Make it. Future.";
 
-export interface GroupUnit {
-  name: string;
-  role: string;
-  body: string;
-  status: "induk" | "aktif" | "pengembangan";
-  statusLabel: string;
-}
-
-// Grup usaha: menunggu revisi user (rencananya jadi globe cabang bisnis). Isi di bawah belum diubah.
-export const GROUP_TITLE = "Satu grup, satu arah.";
-export const GROUP_SUBTITLE =
-  "barumahID adalah bagian dari Mahaksa Grup di bawah PT Inditek Bluprim Mahaksa. Tiap unit punya peran sendiri, tujuannya sama: membangun hunian dan membuka akses untuk memilikinya.";
-
-export const GROUP_UNITS: GroupUnit[] = [
-  {
-    name: "PT Inditek Bluprim Mahaksa",
-    role: "Induk usaha",
-    body: "Badan hukum dan induk usaha yang menaungi semua unit Mahaksa Grup.",
-    status: "induk",
-    statusLabel: "Induk",
-  },
-  {
-    name: "barumahID",
-    role: "Platform pendamping kepemilikan rumah",
-    body: "Jasa konstruksi lewat ConTech, jalan kepemilikan lewat Rent-to-Own.",
-    status: "aktif",
-    statusLabel: "Aktif",
-  },
-  {
-    name: "Jururancang Engineering Mahaksa",
-    role: "Konsultan perencanaan",
-    body: "Konsultan perencanaan, desain, dan analisa struktur. Mitra teknis semua pekerjaan gambar dan struktur barumahID.",
-    status: "aktif",
-    statusLabel: "Aktif sejak 7 Agustus 2026",
-  },
-];
+// Grup usaha diganti "Semesta Mahaksa" (src/data/semesta.ts).

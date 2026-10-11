@@ -5,14 +5,13 @@ import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import LetterShowcase from "@/components/about/LetterShowcase";
 import LineIcon from "@/components/about/LineIcon";
+import SemestaMahaksa from "@/components/about/SemestaMahaksa";
+import DotGrid from "@/components/ui/DotGrid";
 import FaqTestimonials from "@/components/home/FaqTestimonials";
 import {
   BARUMAHID_INTRO,
   CARA_KERJA,
   EKOSISTEM_HERO,
-  GROUP_SUBTITLE,
-  GROUP_TITLE,
-  GROUP_UNITS,
   KEUNGGULAN,
   MASALAH,
   MISSIONS,
@@ -24,8 +23,8 @@ import {
 import { alternates, pageLang } from "@/i18n/server";
 
 // Halaman Ekosistem (dulu "Tentang", alamat tetap /tentang). Arahan user Okt 2026: profil PT di hero dengan foto
-// kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG, BUILD, grup usaha (menunggu
-// revisi), dan tanya jawab. Cerita/timeline, peta proyek, tim, event, dan kanal dihapus.
+// kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG dan BUILD, Semesta Mahaksa (orbit
+// unit usaha), dan tanya jawab. Cerita/timeline, peta proyek, tim, event, dan kanal dihapus.
 
 type Props = { params: Promise<{ lang: string }> };
 
@@ -248,7 +247,8 @@ export default async function EkosistemPage({ params }: Props) {
 
       {/* 6. LBAG dan BUILD dalam satu bagian (arahan user: satu halaman, proporsional, tetap beranimasi) */}
       <section className="relative isolate overflow-hidden bg-brand-dark text-white">
-        <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
+        {/* Latar titik interaktif (arahan user: ganti grid dengan Dot Grid) */}
+        <DotGrid className="-z-10" />
         <div className="pointer-events-none absolute -right-40 -top-40 -z-10 h-[420px] w-[420px] rounded-full bg-brand-red/20 blur-3xl" aria-hidden="true" />
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
           <Reveal>
@@ -272,49 +272,8 @@ export default async function EkosistemPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 7. Grup usaha (menunggu revisi user) */}
-      <section className="bg-brand-cream">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <Reveal>
-            <SectionTitle label={t("Grup usaha")} title={t(GROUP_TITLE)} subtitle={t(GROUP_SUBTITLE)} />
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="mt-12">
-              {GROUP_UNITS.filter((u) => u.status === "induk").map((u) => (
-                <div key={u.name} className="mx-auto max-w-md rounded-3xl bg-brand-dark p-6 text-center text-white">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{t(u.role)}</p>
-                  <p className="mt-2 text-[20px] font-extrabold">{u.name}</p>
-                  <p className="mt-2 text-[14px] leading-relaxed text-white/65">{t(u.body)}</p>
-                </div>
-              ))}
-              <div className="mx-auto h-8 w-px bg-brand-dark/25" aria-hidden="true" />
-              <div className="relative mx-auto grid max-w-3xl gap-4 md:grid-cols-2">
-                <div className="absolute -top-0 left-1/4 right-1/4 hidden h-px bg-brand-dark/25 md:block" aria-hidden="true" />
-                {GROUP_UNITS.filter((u) => u.status !== "induk").map((u) => (
-                  <div
-                    key={u.name}
-                    className={`relative rounded-3xl border bg-white p-6 card-shadow md:mt-8 ${
-                      u.status === "pengembangan" ? "opacity-60" : ""
-                    } ${u.name === "barumahID" ? "border-brand-red" : "border-brand-dark/10"}`}
-                  >
-                    <span className="absolute -top-8 left-1/2 hidden h-8 w-px bg-brand-dark/25 md:block" aria-hidden="true" />
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{t(u.role)}</p>
-                    <p className="mt-2 text-[19px] font-extrabold text-brand-dark">{u.name}</p>
-                    <p className="mt-2 text-[14px] leading-relaxed text-brand-gray">{t(u.body)}</p>
-                    <p
-                      className={`mt-4 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
-                        u.status === "aktif" ? "bg-credit/10 text-credit" : "bg-brand-dark/5 text-brand-gray"
-                      }`}
-                    >
-                      {t(u.statusLabel)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* 7. Semesta Mahaksa: unit usaha di bawah PT dalam orbit, dengan progres masing-masing */}
+      <SemestaMahaksa />
 
       {/* 8. Tanya jawab (testimoni otomatis tampil kalau datanya ada) */}
       <FaqTestimonials lang={lang} />

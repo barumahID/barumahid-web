@@ -3,11 +3,13 @@ import { BERANDA } from "./beranda";
 import { CONTECH } from "./contech";
 import { FORMS_EN } from "./forms";
 import { EKOSISTEM } from "./ekosistem";
+import { SEMESTA_EN } from "./semesta";
 
 // Kamus Indonesia -> Inggris. Kuncinya teks Indonesia persis seperti di kode/data (lihat src/i18n/t.ts).
 export const EN: Record<string, string> = {
   ...FORMS_EN,
   ...EKOSISTEM,
+  ...SEMESTA_EN,
   ...BERANDA,
   ...CONTECH,
   ...COMMON,
