@@ -16,10 +16,10 @@ export const HOME_HERO = {
 export const HOME_ABOUT = {
   label: "Tentang barumahID",
   // Ditulis dari sudut pandang calon klien: sekali baca langsung paham barumahID itu apa dan bisa bantu apa.
-  title: "Wujudkan proyekmu, kami dampingi hingga miliki rumah.",
+  title: "Wujudkan proyekmu, kami dampingi hingga miliki hunian.",
   body: [
-    "barumahID adalah platform yang menyatukan jasa konstruksi (ConTech) dan jalan menuju kepemilikan rumah (PropTech). Satu tempat untuk membangun, merenovasi, sampai punya rumah sendiri.",
-    "Butuh gambar, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang jelas sejak awal. Ingin punya rumah tapi DP belum cukup? Lewat program Rent-to-Own yang sedang kami siapkan, kamu bisa sewa sambil mengumpulkan DP.",
+    "barumahID adalah platform properti yang menyatukan dua layanan: jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Dari merancang, membangun, dan merenovasi, sampai punya hunian sendiri, semuanya ada di satu tempat.",
+    "Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP belum cukup? Lewat program Rent-to-Own barumahID, kamu bisa sewa sambil mengumpulkan DP sedikit demi sedikit.",
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };

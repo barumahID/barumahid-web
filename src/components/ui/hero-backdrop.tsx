@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import {
   MotionConfig,
   motion,
@@ -12,9 +13,11 @@ import {
 
 // Latar hero beranda (arahan user Okt 2026): terang dan bersih seperti versi awal. Lekukan pita dari
 // referensi merah hanya tampil sebagai bayangan lembut bernada merah-cokelat, merahnya tidak menonjol,
-// tanpa kilau berkedip. Ditambah grid blueprint tipis dan anyaman garis samar di bawah.
-// Gerak: bayangan melayang pelan, garis mengalir pelan, parallax ikut kursor. Semua vektor (SVG).
+// tanpa kilau berkedip, tanpa grid. Gedung samar (dari latar awal) di tepi kanan, memudar ke tengah supaya tidak
+// menabrak judul dan panel. Anyaman garis samar di bawah.
+// Gerak: bayangan dan gedung melayang pelan, garis mengalir pelan, parallax ikut kursor.
 const SHADOW = "#7A2A26";
+const BUILDING_MASK = "radial-gradient(ellipse 95% 85% at 100% 45%, #000 35%, transparent 78%)";
 
 // Anyaman garis di bawah: tiap garis sedikit bergeser, membentuk permukaan yang melengkung.
 const MESH = Array.from({ length: 40 }, (_, i) => {
@@ -38,6 +41,7 @@ export default function HeroBackdrop() {
   const rightX = useTransform(sx, (v) => v * -22);
   const shadowY = useTransform(sy, (v) => v * 14);
   const meshX = useTransform(sx, (v) => v * -10);
+  const buildingX = useTransform(sx, (v) => v * -14);
 
   // Parallax hanya untuk mouse (bukan layar sentuh) dan kalau pengguna tidak memilih kurangi animasi.
   useEffect(() => {
@@ -55,7 +59,22 @@ export default function HeroBackdrop() {
       <div className="absolute inset-0 overflow-hidden bg-brand-cream">
         {/* Cahaya lembut di tengah */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_38%,rgba(255,255,255,0.75),rgba(255,255,255,0)_70%)]" />
-        <div className="hero-grid-light absolute inset-0" />
+
+        {/* Gedung samar di tepi kanan (laptop) atau pojok kanan bawah (HP), memudar ke arah tengah */}
+        <motion.div
+          className="absolute bottom-0 right-0 h-[28%] w-[52vw] md:h-full md:w-[30vw] md:max-w-[460px]"
+          style={{ x: buildingX }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div
+            className="building-drift relative h-full w-full opacity-60 mix-blend-multiply"
+            style={{ maskImage: BUILDING_MASK, WebkitMaskImage: BUILDING_MASK }}
+          >
+            <Image src="/images/beranda/gedung.webp" alt="" fill sizes="(min-width: 768px) 30vw, 52vw" className="object-cover object-left-top" />
+          </div>
+        </motion.div>
 
         {/* Anyaman garis samar di bawah */}
         <motion.div className="absolute inset-x-[-4%] bottom-0 h-[52%]" style={{ x: meshX }}>
