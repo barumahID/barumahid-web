@@ -5,29 +5,14 @@ import PageHero from "@/components/ui/PageHero";
 import ButtonLink from "@/components/ui/ButtonLink";
 import ProjectGlobe, { type GlobeOffice } from "@/components/constech/ProjectGlobe";
 import PricingTerrace from "@/components/constech/PricingTerrace";
+import KaryaStrip from "@/components/constech/KaryaStrip";
 import DrawingCanvas from "@/components/constech/DrawingCanvas";
-import SphereCarousel from "@/components/portfolio/SphereCarousel";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
-import ChannelIcon from "@/components/icons/ChannelIcon";
-import ImageCorridor from "@/components/constech/ImageCorridor";
-import SplitCompare from "@/components/constech/SplitCompare";
-import StackingSlider from "@/components/constech/StackingSlider";
-import TechExploded from "@/components/constech/anim/TechExploded";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
-import {
-  COMPARE_PAIRS,
-  CONTECH_HERO,
-  CONTECH_REACH,
-  GAMBAR_STRUKTUR,
-  KARYA_STRUKTUR,
-  KORIDOR_KONSTRUKSI,
-  PORTOFOLIO_JASA,
-  PORTOFOLIO_PILIHAN,
-  RENOVASI_BANGUN,
-} from "@/data/contech";
-import { ADDRESSES, JURURANCANG, waLink } from "@/data/site";
+import { CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN } from "@/data/contech";
+import { ADDRESSES, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Jasa General Kontraktor: Renovasi, Bangun, Gambar, dan Analisa Struktur",
@@ -63,7 +48,6 @@ function SectionHead({ label, title, dark = false }: { label: string; title: str
 
 export default function ContechPage() {
   const cities = verifiedCities();
-  const partnerWa = waLink("Halo Jururancang, saya dari website barumahID. Saya mau tanya jasa gambar atau analisa struktur.", JURURANCANG.wa);
   return (
     <>
       {/* 1. Hero: 4 foto saat konstruksi berganti pelan */}
@@ -82,10 +66,10 @@ export default function ContechPage() {
         </ButtonLink>
       </PageHero>
 
-      {/* 2. Jejak proyek: peta + Base dan VO, wilayah, angka per lini jasa */}
+      {/* 2. Jejak proyek: globe + Base dan VO, wilayah, angka per lini jasa */}
       <section id="peta" className="relative isolate overflow-hidden bg-brand-dark text-white">
         <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-24 lg:px-14">
           <Reveal>
             <SectionHead label={CONTECH_REACH.label} title={CONTECH_REACH.title} dark />
             <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] font-semibold text-white/80 md:text-[17px]">
@@ -113,10 +97,6 @@ export default function ContechPage() {
           <div className="mt-10">
             <ProjectGlobe cities={cities} offices={OFFICES} />
           </div>
-          {/* Visual 3D sinematik menggantikan daftar kota dan panel proyek */}
-          <Reveal className="mt-6">
-            <TechExploded />
-          </Reveal>
         </div>
       </section>
 
@@ -131,9 +111,26 @@ export default function ContechPage() {
               <p className="text-[16.5px] leading-relaxed text-brand-gray">{RENOVASI_BANGUN.body}</p>
             </Reveal>
           </div>
-          <Reveal className="mt-10">
-            <ImageCorridor images={KORIDOR_KONSTRUKSI} label="Galeri foto proyek konstruksi barumahID yang bergerak seperti lorong" />
-          </Reveal>
+
+          {/* 4 foto konstruksi, ukuran sama */}
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {FOTO_RENOVASI.map((f, i) => (
+              <Reveal key={f.src} delay={i * 70}>
+                <figure className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-brand-dark/5">
+                  <Image
+                    src={f.src}
+                    alt={f.alt}
+                    fill
+                    sizes="(min-width: 1280px) 290px, (min-width: 768px) 25vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-12 text-[12.5px] font-semibold text-white md:px-4 md:pb-4 md:text-[14px]">
+                    {f.caption}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
 
           {/* Paket: cakupan pekerjaan, harga dihitung per item (AHSP) */}
           <div className="mt-12 grid gap-4 md:grid-cols-3">
@@ -194,129 +191,21 @@ export default function ContechPage() {
 
       {/* 4. Gambar & modelling + desain & analisa struktur, bersama partner Jururancang */}
       <section id="harga" className="bg-brand-cream-warm">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-            <Reveal className="lg:col-span-5">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-14">
+            <Reveal className="lg:col-span-7">
               <SectionHead label={GAMBAR_STRUKTUR.label} title={GAMBAR_STRUKTUR.title} />
-              <p className="mt-6 text-[16.5px] leading-relaxed text-brand-gray">{GAMBAR_STRUKTUR.body}</p>
             </Reveal>
-            <Reveal className="lg:col-span-7" delay={80}>
-              <SplitCompare pairs={COMPARE_PAIRS} />
+            <Reveal className="lg:col-span-5" delay={80}>
+              <p className="text-[16.5px] leading-relaxed text-brand-gray">{GAMBAR_STRUKTUR.body}</p>
             </Reveal>
           </div>
-          <Reveal className="mt-14">
-            <p className="type-micro text-brand-red">Karya desain dan analisa struktur</p>
-            <div className="mt-5">
-              <StackingSlider slides={KARYA_STRUKTUR} />
-            </div>
+          <Reveal className="mt-10">
+            <KaryaStrip items={KARYA} label="Karya desain rumah dan analisa struktur" />
           </Reveal>
-
-          {/* Judul paket harga: logo dan kontak partner */}
-          <Reveal>
-            <div className="mt-12 rounded-3xl border border-brand-dark/10 bg-white p-6 md:p-7">
-              <div className="flex items-center gap-5">
-                <Image src={JURURANCANG.logo.src} alt={`Logo ${JURURANCANG.name}`} width={JURURANCANG.logo.w} height={JURURANCANG.logo.h} className="h-16 w-auto md:h-20" />
-                <div>
-                  <p className="type-micro text-brand-red">{GAMBAR_STRUKTUR.partnerTitle}</p>
-                  <h3 className="mt-2 text-[20px] font-extrabold tracking-tight text-brand-dark md:text-[24px]">{JURURANCANG.name}</h3>
-                </div>
-              </div>
-              <ul className="mt-6 flex flex-wrap gap-2 border-t border-brand-dark/10 pt-6">
-                <li className="max-w-full">
-                  <a
-                    href={`mailto:${JURURANCANG.email}`}
-                    className="inline-flex max-w-full items-center gap-2 rounded-full border border-brand-dark/15 px-4 py-2.5 text-[13px] font-semibold text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
-                  >
-                    <span className="shrink-0">
-                      <ChannelIcon id="email" size={16} />
-                    </span>
-                    {/* Email panjang boleh terlipat di HP supaya tidak keluar dari kartu */}
-                    <span className="min-w-0 break-all">{JURURANCANG.email}</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={partnerWa}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-brand-dark/15 px-4 py-2.5 text-[13px] font-semibold text-brand-dark transition-colors hover:border-[#1FA855] hover:bg-[#1FA855] hover:text-white"
-                  >
-                    <ChannelIcon id="whatsapp" size={16} />
-                    WA Admin {JURURANCANG.waLabel}
-                  </a>
-                </li>
-                <li>
-                  {JURURANCANG.website ? (
-                    <a
-                      href={JURURANCANG.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-brand-dark/15 px-4 py-2.5 text-[13px] font-semibold text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
-                    >
-                      <GlobeIcon />
-                      Website
-                    </a>
-                  ) : (
-                    <span className="inline-flex cursor-default items-center gap-2 rounded-full border border-dashed border-brand-dark/20 px-4 py-2.5 text-[13px] font-semibold text-brand-mute">
-                      <GlobeIcon />
-                      Website segera hadir
-                    </span>
-                  )}
-                </li>
-                <li>
-                  <a
-                    href={JURURANCANG.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-brand-dark/15 px-4 py-2.5 text-[13px] font-semibold text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
-                  >
-                    <ChannelIcon id="instagram" size={16} />
-                    {JURURANCANG.igHandle}
-                  </a>
-                </li>
-              </ul>
-            </div>
+          <Reveal className="mt-8">
+            <PricingTerrace partnerTitle={GAMBAR_STRUKTUR.partnerTitle} />
           </Reveal>
-
-          <Reveal className="mt-6">
-            <PricingTerrace />
-          </Reveal>
-
-          {/* Terakhir dan terpisah: ajakan chat admin WhatsApp */}
-          <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-3xl bg-brand-dark p-6 text-white sm:flex-row sm:items-center md:px-8">
-            <div>
-              <p className="text-[18px] font-extrabold tracking-tight">Lebih nyaman lewat WhatsApp?</p>
-              <p className="mt-1 text-[14px] text-white/65">Tanya paket, harga, atau kebutuhan proyekmu. Admin kami siap membantu.</p>
-            </div>
-            <a
-              href={waLink("Halo barumahID, saya mau tanya paket jasa gambar atau analisa struktur.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#1FA855] px-6 py-3.5 text-[14px] font-bold text-white transition-colors hover:bg-[#178a45]"
-            >
-              <ChannelIcon id="whatsapp" size={18} />
-              Chat admin WhatsApp
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Portofolio pilihan */}
-      <section id="portofolio" className="bg-brand-cream">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <Reveal>
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div className="max-w-2xl">
-                <p className="type-micro text-brand-red">Portofolio pilihan</p>
-                <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.9rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-brand-dark">
-                  Karya nyata, bukan gambar contoh.
-                </h2>
-              </div>
-            </div>
-          </Reveal>
-          <div className="mt-10">
-            <SphereCarousel items={PORTOFOLIO_PILIHAN} services={PORTOFOLIO_JASA} />
-          </div>
         </div>
       </section>
 
@@ -355,14 +244,5 @@ export default function ContechPage() {
         secondaryHref="#harga"
       />
     </>
-  );
-}
-
-function GlobeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z" />
-    </svg>
   );
 }
