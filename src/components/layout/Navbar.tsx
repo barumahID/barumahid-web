@@ -1,192 +1,362 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { WA_LINK1 } from "@/constants";
+import { useEffect, useRef, useState } from "react";
+import Link from "@/i18n/Link";
+import { LANG_COOKIE, localizePath, stripLang, type Lang } from "@/i18n/config";
+import { useLang, useT } from "@/i18n/LangProvider";
+import { NAV_ITEMS, SERVICE_LINKS } from "@/data/nav";
+import { MASUK_OPTIONS } from "@/data/masuk";
+import { waLink } from "@/data/site";
+import ChannelIcon from "@/components/icons/ChannelIcon";
+import NewsPanel from "./NewsPanel";
 
-const navItems = [
-  { href: "/", label: "Beranda" },
-  { href: "/tentang", label: "Tentang" },
-  { href: "/ekosistem", label: "Ekosistem" },
-];
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+      aria-hidden="true"
+    >
+      <path d="M4 6l4 4 4-4" />
+    </svg>
+  );
+}
+
+function useDismiss(open: boolean, close: () => void) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, close]);
+  return ref;
+}
+
+// Tombol bahasa ID/EN di pojok kanan atas (arahan user Okt 2026). Link biasa ke halaman yang sama di bahasa lain,
+// pilihan disimpan di cookie supaya kunjungan berikutnya langsung ke bahasa itu (lihat src/proxy.ts).
+function rememberLang(to: Lang) {
+  document.cookie = `${LANG_COOKIE}=${to}; path=/; max-age=31536000; samesite=lax`;
+}
+
+function LangSwitch({ solid, path }: { solid: boolean; path: string }) {
+  const lang = useLang();
+  const t = useT();
+  return (
+    <div
+      className={`flex h-10 items-center rounded-full border p-1 text-[12px] font-bold ${solid ? "border-brand-dark/15" : "border-white/25"}`}
+      role="group"
+      aria-label={t("Pilih bahasa")}
+    >
+      {(["id", "en"] as const).map((l) =>
+        l === lang ? (
+          <span
+            key={l}
+            aria-current="true"
+            className={`flex h-full items-center rounded-full px-2.5 ${solid ? "bg-brand-dark text-white" : "bg-white text-brand-dark"}`}
+          >
+            {l.toUpperCase()}
+          </span>
+        ) : (
+          <a
+            key={l}
+            href={localizePath(l, path)}
+            hrefLang={l}
+            lang={l}
+            onClick={() => rememberLang(l)}
+            aria-label={l === "en" ? "English" : "Bahasa Indonesia"}
+            className={`flex h-full items-center rounded-full px-2.5 transition-colors ${solid ? "text-brand-dark/60 hover:text-brand-dark" : "text-white/70 hover:text-white"}`}
+          >
+            {l.toUpperCase()}
+          </a>
+        ),
+      )}
+    </div>
+  );
+}
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const t = useT();
+  const pathname = stripLang(usePathname());
   const [scrolled, setScrolled] = useState(false);
-
-  const isSegmentPage = ["/services", "/rto", "/mitra", "/ekosistem"].some(
-    (p) => pathname.startsWith(p),
-  );
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [masukOpen, setMasukOpen] = useState(false);
+  const closeService = () => setServiceOpen(false);
+  const closeMasuk = () => setMasukOpen(false);
+  const serviceRef = useDismiss(serviceOpen, closeService);
+  // Hover membuka menu. Klik tepat setelah hover jangan menutupnya lagi (bug klasik hover + toggle).
+  const hoverOpenedAt = useRef(0);
+  const masukRef = useDismiss(masukOpen, closeMasuk);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Tutup menu mobile saat pindah halaman.
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
-    setOpen(false);
+  // Tutup semua menu saat pindah halaman (pola "reset state saat prop berubah", tanpa effect).
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (pathname !== prevPath) {
+    setPrevPath(pathname);
+    setMobileOpen(false);
+    setServiceOpen(false);
+    setMasukOpen(false);
   }
 
-  if (isSegmentPage) return null;
+  // Kunci scroll body saat menu mobile terbuka.
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  // Beranda pakai hero berlatar terang, jadi navbar selalu solid di sana supaya teksnya terbaca.
+  const solid = scrolled || mobileOpen || pathname === "/";
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+  const serviceActive = SERVICE_LINKS.some((s) => isActive(s.href)) || pathname === "/layanan";
+  const waHalo = waLink(t("Halo barumahID, saya ingin konsultasi."));
+
+  const linkCls = (active: boolean) =>
+    `rounded-full px-3.5 py-2 text-[13.5px] font-semibold tracking-tight transition-colors duration-200 ${
+      solid
+        ? active
+          ? "text-brand-red"
+          : "text-brand-dark/75 hover:text-brand-dark"
+        : active
+          ? "text-white"
+          : "text-white/70 hover:text-white"
+    }`;
 
   return (
+    <>
     <header
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/90 shadow-sm backdrop-blur-xl"
-          : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
+        solid ? "bg-white/95 shadow-[0_1px_0_rgba(20,20,20,0.08)] backdrop-blur-xl" : "bg-gradient-to-b from-black/45 to-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 md:px-10 lg:px-14 py-3.5">
-        {/* Logo + brand name */}
-        <Link href="/" className="flex items-center gap-2.5" aria-label="barumahID Beranda">
+      <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between gap-4 px-5 md:px-10 lg:px-14">
+        <Link href="/" className="flex shrink-0 items-center" aria-label={t("barumahID, ke beranda")}>
           <Image
-            src="/Logo_Fix_barumahID.png"
+            src={solid ? "/brand/logo-mark-red.png" : "/brand/logo-mark-white.png"}
             alt="barumahID"
-            width={160}
-            height={48}
-            style={{ width: "auto", height: 48 }}
+            width={427}
+            height={250}
             priority
+            className="h-10 w-auto"
           />
-          <span className={`text-lg font-bold tracking-tight transition-colors duration-300 ${
-            scrolled ? "text-brand-dark" : "text-white"
-          }`}>
-            barumah<span className="text-brand-red">ID</span>
-          </span>
         </Link>
 
-        {/* Desktop nav — centered */}
-        <nav className="hidden absolute left-1/2 -translate-x-1/2 items-center gap-7 lg:flex">
-          {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            return (
-              <Link
+        {/* Desktop */}
+        <nav className="hidden items-center gap-1 lg:flex" aria-label={t("Menu utama")}>
+          {NAV_ITEMS.map((item) =>
+            item.children ? (
+              <div
                 key={item.href}
-                href={item.href}
-                className={`text-[13px] font-medium tracking-wide transition-colors duration-200 ${
-                  active
-                    ? scrolled ? "text-brand-dark" : "text-white"
-                    : scrolled
-                      ? "text-brand-gray hover:text-brand-dark"
-                      : "text-white/60 hover:text-white"
-                }`}
+                ref={serviceRef}
+                className="relative"
+                onMouseEnter={() => {
+                  hoverOpenedAt.current = Date.now();
+                  setServiceOpen(true);
+                }}
+                onMouseLeave={() => setServiceOpen(false)}
               >
-                {item.label}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (Date.now() - hoverOpenedAt.current < 700) return;
+                    setServiceOpen((o) => !o);
+                  }}
+                  aria-expanded={serviceOpen}
+                  aria-haspopup="true"
+                  className={`${linkCls(serviceActive)} inline-flex items-center gap-1.5`}
+                >
+                  {t(item.label)}
+                  <Chevron open={serviceOpen} />
+                </button>
+                <div
+                  className={`absolute left-1/2 top-full w-[480px] -translate-x-1/2 pt-3 transition-all duration-200 ${
+                    serviceOpen ? "visible opacity-100" : "invisible -translate-y-1 opacity-0"
+                  }`}
+                >
+                  <div className="grid gap-1 rounded-2xl border border-brand-dark/10 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(20,20,20,0.35)]">
+                    {item.children.map((c) => (
+                      <Link
+                        key={c.href}
+                        href={c.href}
+                        className={`group flex items-start gap-4 rounded-xl p-4 transition-colors hover:bg-brand-cream ${
+                          isActive(c.href) ? "bg-brand-cream" : ""
+                        }`}
+                      >
+                        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-brand-red" aria-hidden="true" />
+                        <span>
+                          <span className="block text-[15px] font-bold text-brand-dark group-hover:text-brand-red">{t(c.label)}</span>
+                          <span className="mt-0.5 block text-[13px] leading-snug text-brand-gray">{t(c.description)}</span>
+                          <span className="mt-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">
+                            {t(c.audience)}
+                          </span>
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link key={item.href} href={item.href} className={linkCls(isActive(item.href))}>
+                {t(item.label)}
               </Link>
-            );
-          })}
+            ),
+          )}
         </nav>
 
-        {/* Right CTAs */}
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-2 lg:flex">
+          <NewsPanel solid={solid} />
+          <LangSwitch solid={solid} path={pathname} />
           <a
-            href={`${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin konsultasi.")}`}
+            href={waHalo}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 ${
-              scrolled
-                ? "border-brand-line text-brand-gray hover:bg-brand-dark hover:text-white hover:border-brand-dark"
-                : "border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
+            aria-label={t("Chat WhatsApp barumahID")}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+              solid
+                ? "border-brand-dark/15 text-brand-dark hover:border-[#1f9d55] hover:bg-[#1f9d55] hover:text-white"
+                : "border-white/25 text-white hover:bg-white/15"
             }`}
-            aria-label="WhatsApp barumahID"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
+            <ChannelIcon id="whatsapp" size={17} />
           </a>
-          <Link
-            href="/kontak"
-            className={`text-[13px] font-medium transition-colors duration-200 ${
-              scrolled
-                ? "text-brand-gray hover:text-brand-dark"
-                : "text-white/60 hover:text-white"
-            }`}
-          >
-            Kontak
-          </Link>
-          <Link
-            href="/daftar"
-            className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-medium transition-all duration-200 ${
-              scrolled
-                ? "bg-brand-dark text-white hover:bg-brand-red"
-                : "bg-white/15 text-white backdrop-blur-sm hover:bg-white/25"
-            }`}
-          >
-            Mulai
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="transition-transform duration-200 group-hover:translate-x-0.5">
-              <path d="M3 8h10M9 4l4 4-4 4" />
-            </svg>
-          </Link>
+          <div ref={masukRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMasukOpen((o) => !o)}
+              aria-expanded={masukOpen}
+              aria-haspopup="true"
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-bold transition-colors ${
+                solid ? "bg-brand-dark text-white hover:bg-brand-red" : "bg-white text-brand-dark hover:bg-brand-cream"
+              }`}
+            >
+              {t("Masuk")}
+              <Chevron open={masukOpen} />
+            </button>
+            <div
+              className={`absolute right-0 top-full w-[320px] pt-3 transition-all duration-200 ${
+                masukOpen ? "visible opacity-100" : "invisible -translate-y-1 opacity-0"
+              }`}
+            >
+              <div className="rounded-2xl border border-brand-dark/10 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(20,20,20,0.35)]">
+                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">{t("Masuk sebagai")}</p>
+                {MASUK_OPTIONS.map((o) => (
+                  <Link
+                    key={o.label}
+                    href={o.href}
+                    className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-brand-dark hover:bg-brand-cream hover:text-brand-red"
+                  >
+                    {t(o.label)}
+                    <span className="text-[12px] font-medium text-brand-mute">{t(o.hint)}</span>
+                  </Link>
+                ))}
+                <p className="mx-3 mb-2 mt-2 border-t border-brand-dark/10 pt-3 text-[12px] leading-relaxed text-brand-gray">
+                  {t("Mitra dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className={`flex h-10 w-10 items-center justify-center lg:hidden transition-colors ${
-            scrolled ? "text-brand-dark" : "text-white"
-          }`}
-          aria-label="Toggle menu"
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            {open ? <path d="M5 5l10 10M15 5L5 15" /> : <path d="M3 7h14M3 13h14" />}
-          </svg>
-        </button>
+        {/* Mobile: tombol bahasa tetap di pojok kanan atas, di samping tombol menu */}
+        <div className="flex items-center gap-1.5 lg:hidden">
+          <NewsPanel solid={solid} />
+          <LangSwitch solid={solid} path={pathname} />
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            className={`flex h-11 w-11 items-center justify-center rounded-full ${solid ? "text-brand-dark" : "text-white"}`}
+            aria-label={mobileOpen ? t("Tutup menu") : t("Buka menu")}
+            aria-expanded={mobileOpen}
+          >
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              {mobileOpen ? <path d="M5 5l10 10M15 5L5 15" /> : <path d="M3 6.5h14M3 13.5h14" />}
+            </svg>
+          </button>
+        </div>
       </div>
 
+    </header>
       {/* Mobile menu */}
       <div
-        className={`overflow-hidden transition-all duration-300 lg:hidden ${
-          open ? "max-h-[600px] border-t bg-white/95 backdrop-blur-xl" : "max-h-0"
+        className={`fixed inset-x-0 bottom-0 top-[68px] z-40 overflow-y-auto bg-white transition-[opacity,visibility] duration-200 lg:hidden ${
+          mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
-        <nav className="mx-auto flex max-w-[1280px] flex-col px-6 md:px-10 py-6">
-          {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            return (
+        <nav className="px-5 pb-10 pt-2" aria-label={t("Menu mobile")}>
+          {NAV_ITEMS.map((item) =>
+            item.children ? (
+              <div key={item.href} className="border-b border-brand-dark/10 py-4">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{t(item.label)}</p>
+                <div className="mt-2 grid gap-1">
+                  {item.children.map((c) => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      className={`rounded-xl px-3 py-3 ${isActive(c.href) ? "bg-brand-cream" : "active:bg-brand-cream"}`}
+                    >
+                      <span className={`block text-[17px] font-bold ${isActive(c.href) ? "text-brand-red" : "text-brand-dark"}`}>{t(c.label)}</span>
+                      <span className="block text-[13px] text-brand-gray">{t(c.description)}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`border-b hairline py-4 text-base transition-colors ${
-                  active ? "text-brand-dark font-semibold" : "text-brand-gray hover:text-brand-dark"
+                className={`block border-b border-brand-dark/10 py-4 text-[17px] font-bold ${
+                  isActive(item.href) ? "text-brand-red" : "text-brand-dark"
                 }`}
               >
-                {item.label}
+                {t(item.label)}
               </Link>
-            );
-          })}
-          <div className="mt-6 flex flex-col gap-3">
+            ),
+          )}
+          <Link href="/kontak" className="block border-b border-brand-dark/10 py-4 text-[17px] font-bold text-brand-dark">
+            {t("Kontak")}
+          </Link>
+          <div className="mt-6 grid gap-3">
+            <Link href="/masuk" className="rounded-full bg-brand-dark px-5 py-3.5 text-center text-[15px] font-bold text-white">
+              {t("Masuk sebagai mitra atau pelanggan")}
+            </Link>
             <a
-              href={`${WA_LINK1}?text=${encodeURIComponent("Halo barumahID, saya ingin konsultasi.")}`}
+              href={waHalo}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border hairline-strong px-5 py-3 text-center text-sm font-medium text-brand-dark"
+              className="flex items-center justify-center gap-2 rounded-full border border-brand-dark/15 px-5 py-3.5 text-[15px] font-bold text-brand-dark"
             >
-              +62 851-5788-3292
+              <ChannelIcon id="whatsapp" size={17} />
+              {t("Chat WhatsApp")}
             </a>
-            <Link
-              href="/daftar"
-              className="rounded-full bg-brand-dark px-5 py-3 text-center text-sm font-medium text-white"
-            >
-              Mulai
-            </Link>
           </div>
         </nav>
       </div>
-    </header>
+    </>
   );
 }

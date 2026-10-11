@@ -1,69 +1,146 @@
 @AGENTS.md
 
-# barumahID — Website
+# barumahID: Website
 
-## Brand
-- Nama: **barumahID**, badan hukum **PT Inditek Bluprim Mahaksa**.
-- Domain bisnis: ConsTech + PropTech + GreenTech, berbasis Padang.
-- Tagline utama (hero): "Sewa hari ini. Miliki hunian nantinya."
-- Tagline jasa (LBAG/ConsTech): "Proyekmu, Dibikin Mudah Aja."
+Website resmi barumahID (PT Inditek Bluprim Mahaksa). Next.js 16 App Router, multi-halaman.
 
-## Warna (Tailwind v4 theme tokens, didefinisikan di `@theme` di `src/app/globals.css`)
-| Token | Hex | Contoh class |
-|---|---|---|
-| Merah (aksen utama) | #C53B3B | `bg-brand-red` / `text-brand-red` |
-| Merah gelap (hover) | #A02E2E | `bg-brand-red-dark` |
-| Gelap | #141414 | `bg-brand-dark` / `text-brand-dark` |
-| Ink | #1A1A1A | `text-brand-ink` |
-| Abu | #6B6B6B | `text-brand-gray` |
-| Abu muda | #9A9A9A | `text-brand-mute` |
-| Krem (background body) | #F5F2ED | `bg-brand-cream` |
-| Terang | #FAFAF7 | `bg-brand-light` |
+Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**. Dua dokumen itu ada di Claude Docs milik Japoe (founder) dan sengaja tidak disalin ke repo, karena repo ini publik. Kalau butuh detail yang tidak ada di file ini, tanya user. Jangan mengarang.
 
-Warna segmen: `credit` #2D7A4F, `build` #C25E20, `buy-blue` #1A5C9A. Tipografi pakai utility custom (`type-h1`, `type-h3`, `type-body`, `type-small`, `type-micro`) dan garis `hairline` / `hairline-strong`, juga di `globals.css`.
+## Aturan konten (wajib)
+- **Tidak ada data dummy.** Kalau datanya belum ada, tampilkan empty state atau sembunyikan section. Jangan isi contoh.
+  - `TESTIMONIALS = []` di `src/data/faq.ts`: section testimoni otomatis hilang, tinggal FAQ.
+  - `LISTINGS = []` di `src/data/listings.ts`: grid listing tampil empty state dan ajakan daftar.
+  - `ARTICLES = []` di `src/data/articles.ts`: menu Artikel disembunyikan, `/artikel` noindex.
+- **Angka statistik** hanya dari `STATS` di `src/data/projects.ts`. Jangan menulis angka langsung di komponen.
+- **Peta proyek** hanya menampilkan kota `verified: true`. Basis `"klien"` artinya kliennya berbasis di kota itu, bukan lokasi proyek.
+- **Nama dan logo klien** tidak tampil tanpa izin tertulis. Judul proyek ditulis generik, misalnya "Desain dan analisa struktur shelter".
+- Proyek "From Other" (dikerjakan pihak lain) tidak masuk portofolio maupun statistik.
+- **Bank atau lembaga pembiayaan** (misalnya BTN) tidak boleh disebut mitra sebelum ada perjanjian tertulis.
+- Jangan pakai singkatan "IBM" untuk PT Inditek Bluprim Mahaksa.
+- **Program RTO masih pre-launch.** Siap Bangun = "Inti program", Siap Beli = "Segera". Copy RTO tidak boleh mengklaim program sudah berjalan atau sudah ada transaksi. 25% dari sewa bulanan dicatat jadi saldo DP (`RTO_RATE` di `src/data/rto.ts`).
+- **Gaya bahasa:** santai seperti ngobrol, kalimat pendek, bahasa Indonesia sehari-hari. Tanpa em dash (—) di tengah kalimat. Hindari kata "implikasi", "signifikan", "terkuantifikasi".
+- **Kontak resmi** ada di `src/data/site.ts`: WA admin 1 dan 2, email, alamat (`ADDRESSES`: "Base barumahID" di Padang dan "VO" di Alam Sutera, masing-masing dengan `mapsUrl` ke Google Maps), kanal sosial. Ini data asli, bukan placeholder. Jangan diganti tanpa konfirmasi. Kanal tanpa link (`active: false`) tidak ditampilkan.
+- Hal yang masih menunggu jawaban user ada di `docs/KONFIRMASI.md`. Kalau sudah dijawab, ubah datanya lalu hapus barisnya.
 
-## Font
-Montserrat (via `next/font/google`), di-load di `src/app/layout.tsx`, jadi default `font-sans`.
-
-## Struktur situs (multi-halaman, App Router)
-Layout global (`src/app/layout.tsx`): `ScrollProgress` + `layout/Navbar` + `layout/Footer`. Menu utama: Beranda, Tentang, Ekosistem, Kontak, CTA "Mulai" → `/daftar`.
-
+## Struktur situs
 | Route | Isi |
 |---|---|
-| `/` | Beranda: `ScrollExpandHeroSection` → `PickYourFit` → `ProblemSection` → `RTOExplainer` → `DPAccelerator` → `ConsTechSection` → `TrackRecord` → `PersonaCards` → `LeadCaptureSection` (`#daftar`) → `FAQSection` (semua di `src/components/sections/`) |
-| `/rto` | Program Rent-to-Own + `RTOSimulator` (kalkulator DP). Pakai `SegmentNavbar`. |
-| `/services` | Layanan ConsTech LBAG + pricing tiers. Sub-halaman: `/services/jasa-gambar`, `/services/analisa-struktur`, `/services/renovasi` (fee 8–14%). |
-| `/mitra` | Kemitraan (mitrabarumahID Construction / Projectlink / mitra hunian). |
-| `/ekosistem` | Graph 3D ekosistem (`EkosistemGraph`, pakai `three`). |
-| `/tentang`, `/rekrutmen` | Profil perusahaan, lowongan. |
-| `/daftar` | Halaman daftar → `LeadCaptureSection` + CTA WhatsApp. |
-| `/kontak` | Info kontak + `ContactForm`. |
-| `/layanan`, `/portofolio` → redirect `/services`; `/program-rto` → redirect `/rto` | |
+| `/` | Beranda bersih gaya tikalindustries.com. Halaman 1: hero scroll-expand berisi **dua gambar** (Jasa Konstruksi ke `/layanan/contech`, Rent-to-Own ke `/layanan/rto`) di atas latar beranimasi (`HeroBackdrop`: krem terang tanpa grid, lekukan pita jadi bayangan lembut merah-cokelat yang melayang, gedung samar dari latar awal di tepi kanan (`beranda/gedung.webp`, memudar ke tengah supaya tidak menabrak judul dan panel), anyaman garis samar di bawah, parallax kursor; merah sengaja tidak menonjol dan tanpa kilau, arahan user). Foto panel Jasa Konstruksi: `proyek/rumah-selesai-malam.webp` (proyek selesai, malam hari), titik fokus lewat `focus` di `DUA_LAYANAN`. Tagline hero: "Wujudkan proyekmu. Miliki hunian nantinya." (di HP tiap kalimat satu baris), membesar penuh saat digulir. Halaman 2: deskripsi barumahID (ConTech + PropTech) dengan roadmap histori beranimasi di kanan, lalu marquee logo event dan partner (logo saja). Penjelasan lengkap ada di `/tentang`. |
+| `/layanan` | Hub 2 layanan (ConTech, RTO). Tidak ditautkan dari menu ("Lihat semua layanan" dihapus, arahan user Okt 2026). |
+| `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
+| `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
+| `/layanan/contech` | Jasa General Kontraktor. Urutan: hero 4 foto saat konstruksi yang berganti pelan; jejak proyek (`#peta`: wilayah satu baris, angka per lini jasa dari `STATS.byService`, globe titik interaktif `ProjectGlobe`: saat dibuka langsung fokus ke seluruh Indonesia (zoom menyesuaikan lebar layar), diam sampai pengguna menggeser atau zoom (tombol/Ctrl+scroll/dua jari), penanda proyek + cincin Base/VO tanpa tulisan); renovasi dan bangun sebagai layanan unggulan (`#renovasi`: copy singkat + 4 foto konstruksi berukuran sama (survey pengukuran, pembesian, saluran, pasangan batu kali; pilihan user), cakupan, cara hitung AHSP, alur kerja); gambar & modelling + desain & analisa struktur bersama partner Jururancang (`#harga`: copy + `KaryaStrip` 4 desain rumah dan 4 analisa struktur yang bergeser sendiri dan bisa digeser, lalu `PricingTerrace` ringkas: logo dan kontak partner, satu pilihan paket Basic/Plus/Pro untuk dua jasa, simulasi "Harga per m²" atau "Estimasi total" dari luas bangunan, ajakan chat admin WhatsApp); "Ceritakan proyekmu" (`#konsultasi`): kanvas sketsa `DrawingCanvas` di kiri (mouse, pen, atau jari) dengan FAQ singkat `CONTECH_FAQ` di bawahnya, form konsultasi di kanan; lalu `#formulir-klien`: 3 Google Form klien E2E sesuai tahap proyek (F01 survei kebutuhan, F02 pemesanan, F03 feedback NPS; `FORM_KLIEN`). Tidak ada lagi bagian portofolio terpisah (karya sudah tampil di tiap jasa). Setiap foto di halaman ini hanya dipakai di satu tempat (arahan user). Isi teks dan daftar foto di `src/data/contech.ts`. |
+| `/kemitraan` | **Kemitraan** (menu sendiri, tidak lagi di bawah Layanan). Arahan user Okt 2026: tampilan solid, profesional, formal ("Anda"), huruf tidak terlalu besar. Konsep baru: lini bisnis barumahID fokus ke Jasa Konstruksi dan Rent-to-Own. Tiga jalur (`#jalur`): Mitra Jasa Konstruksi (dulu mitrabarumahID Konstruksi, masih aktif: tenaga kerja, kontraktor & mandor, supplier & vendor), Freelancer & Fresh Graduate (dulu Projectlink dan Knowledges, sekarang dilebur ke Jururancang, tombol WA admin Jururancang), Mitra Rent-to-Own (dulu Kosanesia: penyedia kos dan developer mitra; pra-peluncuran). Hero berlatar foto mitra di lapangan yang berganti pelan (sudah diburamkan di file: `public/images/kemitraan/latar-*.webp`). Lalu formulir (`#formulir`, Google Form resmi: pendaftaran dan umpan balik mitra; form penyewa/pelanggan RTO F11-F13 sengaja tidak di sini, akan dipindah ke halaman RTO), alur kemitraan + tombol Portal, FAQ. Konteks perubahan dari empat mitrabarumahID tidak ditampilkan (arahan user). Isi di `src/data/kemitraan.ts`. Form per peran di situs (`/kemitraan/daftar/*`) sudah dihapus. |
+| `/tentang` | **Profil** (menu "Profil", EN "About Us"; dulu "Tentang", lalu "Ekosistem"; alamat tetap /tentang karena /ekosistem dipakai redirect lama ke RTO). Urutan: hero profil PT Inditek Bluprim Mahaksa (paragraf pertama versi awal, paragraf kedua formal; arahan user) di atas 4 foto kegiatan kompetisi (`public/images/ekosistem`, berganti pelan) dengan chip 3 layanan; barumahID itu apa, dengan tiga lini di kanan (End to End Services, Kemitraan, Rent To Own) dan catatan inovasi unggulan di bawah Rent To Own; masalah yang sering terjadi (4); keunggulan (10, RTO ditandai "Segera"); visi misi; "Cara kami bekerja": LBAG dan BUILD dalam satu bagian (`LetterShowcase`, huruf berganti otomatis saat terlihat) di atas latar titik interaktif `DotGrid`; "Astro Mahaksa" (`#astro`, nama dari user, pengganti grup usaha, istilah "gurita bisnis" sengaja tidak dipakai; komponen masih bernama `Semesta*`) di atas latar garis cahaya `LightStreaks`: orbit `SemestaOrbit` mengikuti "Architecture Mahaksa Group" (inti PT + tiga cincin divisi INDITEK, BLUPRIM, MAHAKSA, logo unit di `public/images/semesta` dengan cincin progres, barumahID tampil lengkap dengan tulisannya (`wide`, jangan dipotong), logo berlatar gelap memakai `logoBg`, nama muncul saat disorot) dan tiga map divisi `DivisionFolders` berisi kartu unit; data dan progres di `src/data/semesta.ts`; tanya jawab. Cerita/timeline, peta, tim, event, dan kanal sudah dihapus (arahan user Okt 2026). Isi di `src/data/company.ts`. |
+| `/kontak` | Kontak dan form pesan. |
+| `/masuk` | Pilih jalur: pelanggan ke form layanan, mitra dan tim barumahID ke Portal. |
+| `/portal` | **Portal barumahID** (di luar rute bahasa, root layout sendiri di `src/app/portal`, noindex). Masuk (`/portal`), buat akun mitra (`/portal/daftar`), lupa dan atur ulang kata sandi (`/portal/lupa`, `/portal/sandi-baru`), tujuan tautan email (`/portal/auth/callback`). `/portal/dashboard`: tim (admin/tim) melihat dua bagian (arahan user Okt 2026): **Struktur Organisasi** (bawaan, `?bagian=struktur`: bagan `OrgChart` beranimasi mengikuti bagan "Organisasi Kami", klik kartu untuk jobdesk dan personil, daftar tim; status personil Aktif/Nonaktif/Ditunda diubah admin) dan **Dashboard** (`?bagian=dashboard&tab=...`) dengan sub tab: ringkasan (termasuk login terakhir), formulir masuk (jawaban Google Form; verifikasi mitra langsung dari jawaban form pendaftaran), mitra + ubah status, developer RTO (data perusahaan lengkap + link dokumen Drive sebagai bukti kerja sama), akun portal (login terakhir, formulir yang cocok, verifikasi = hubungkan ke data mitra, ubah peran dan undang anggota tim khusus admin) ; mitra melihat status verifikasi, data mitra yang tercatat (setelah diverifikasi), formulir dan kontak. |
+| `/rekrutmen` | **Karier** (copy profesional memakai "Anda", arahan user; gaya mengacu template Framer "Social Media Studio"). Urutan: hero gelap `TalentField` (kerumunan dari atas, cincin sinyal dari kursor mewarnai orang yang terjangkau) dengan judul bersorot merah dan chip 01-04; pita bidang berjalan; (01) Magang Arsitektur dari brosur user (`#magang`: brosur sebagai poster, deskripsi, tanggung jawab, kualifikasi, cara melamar lewat email); (02) Rekrutmen berkala (`#rekrutmen`: status batch dan daftar posisi bernomor, link form dari `NEXT_PUBLIC_FORM_REKRUTMEN`, kalau kosong atau lewat tanggal tampil tutup); (03) Jalur lain: freelancer Jururancang Team (`#freelance`, tombol WA admin Jururancang) dan lamaran umum (`#lamaran-umum`); penutup merah berisi email, Instagram, WA admin. Isi di `src/data/karier.ts`. |
+| `/kebijakan-privasi` | DRAF v1 mengacu UU PDP. Perlu review hukum sebelum dianggap final. |
+| `/artikel`, `/artikel/[slug]` | Siap dipakai, kosong untuk sekarang. |
 
-Komponen sisa desain lama (one-page) yang **tidak dipakai** di halaman mana pun: `Header`, `Hero`, `Footer` (root), `LeadForms` + `forms/*`, `Marquee`, `PageHero`, `sections/HeroLanding`, `sections/PathwayCards`, `sections/EcosystemPreview`, `sections/EcosystemSimulator`, `ui/Button`, `ui/Card`, `ui/StatCard`.
+Redirect permanen di `next.config.ts`: `/rto`, `/program-rto`, `/ekosistem` ke `/layanan/rto`; `/portofolio` (halaman dihapus) ke `/layanan/contech`; `/services/*` dan `/layanan/constech` (nama lama, sebelum ConsTech diganti ConTech) ke `/layanan/contech`; `/mitra` ke `/kemitraan`; `/kemitraan/daftar/*` (form per peran lama) ke `/kemitraan#formulir`; `/daftar` ke `/masuk`.
 
-## Lead capture (form → Supabase)
-- Semua form submit lewat `submitLead(jenis, data)` di `src/lib/leads.ts` → `POST /api/leads` (`src/app/api/leads/route.ts`) → insert ke tabel Supabase `public.barumahid_leads`.
-- `jenis`: `customer` | `mitra` | `developer` | `kontak`. Route menormalkan kolom `nama`, `kontak` (wa/hp/email), `kota`; semua field asli disimpan di kolom `data` (jsonb), plus `sumber` (path halaman) dan `status` (default `baru`).
-- Form aktif: `LeadCaptureSection` (beranda & `/daftar`, 3 tab: customer/mitra/developer — Nama, WA, Kota) dan `ContactForm` (`/kontak` — Nama, Email, HP, Keperluan, Pesan). `LeadForms` + `forms/*` juga tersambung tapi tidak dipakai.
-- Supabase project: **`barumahid-web`** — khusus barumahID (URL-nya di env `SUPABASE_URL`). Jangan pakai project Supabase lain untuk website ini.
-- Keamanan: route pakai publishable key; RLS + grant hanya mengizinkan role `anon` **INSERT** (kolom jenis/nama/kontak/kota/data/sumber). Publik tidak bisa membaca lead. Baca/kelola lead lewat dashboard Supabase (Table Editor) atau SQL.
-- Env (lokal di `.env.local`, tidak di-commit; di Vercel sudah di-set untuk Production/Preview/Development):
-  - `SUPABASE_URL`
-  - `SUPABASE_PUBLISHABLE_KEY`
-- Link Google Form opsional (tombol "Isi form lengkap →"): `NEXT_PUBLIC_FORM_CUSTOMER_RTO`, `NEXT_PUBLIC_FORM_MITRA_HUNIAN`, `NEXT_PUBLIC_FORM_DEVELOPER`, `NEXT_PUBLIC_FORM_REKRUTMEN` (default `#` = tombol disembunyikan).
+SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts` (halaman yang sudah diterjemahkan ikut versi /en + hreflang), `robots.ts`, `public/opengraph-image.jpg` (dipasang di metadata layout), JSON-LD LocalBusiness (layout) dan FAQPage (`/tentang`, dari `FaqTestimonials`).
 
-## Kontak resmi
-Semua di `src/constants/index.ts`: WA admin `+62 851-5788-3292` (WA_ADMIN1) & `+62 896-3641-0565` (WA_ADMIN2), email `barumahid@gmail.com`, Instagram `@barumahid`, LinkedIn, alamat HQ Padang & virtual office Alam Sutera. Ini data asli dari user, bukan placeholder — jangan diganti tanpa konfirmasi.
+## Bahasa (ID/EN)
+Arahan user Okt 2026: tombol ID/EN di pojok kanan atas navbar, untuk semua halaman. Terjemahan ditulis manual, dikerjakan bertahap.
+- Semua halaman ada di `src/app/[lang]/` (layout utama juga di sana, `<html lang>` ikut bahasa). Dua bahasa dibangun statis.
+- `src/proxy.ts`: alamat tanpa awalan (`/tentang`) ditulis ulang ke `/id/...` tanpa mengubah URL; `/id/...` dialihkan ke alamat tanpa awalan; `/en/...` = bahasa Inggris. Cookie `barumahid-lang=en` (diisi tombol EN) mengarahkan kunjungan berikutnya ke `/en`.
+- Teks Indonesia tetap sumber utama (data dan komponen). Terjemahan di `src/i18n/en/*.ts`, kuncinya teks Indonesia persis. Komponen server: `pageLang(params)` dari `src/i18n/server.ts` lalu `t("...")`; komponen client: `useT()`. Variabel ditulis `{nama}`. **Kalau teks Indonesia diubah, ubah juga kuncinya di kamus**, kalau tidak versi Inggris kembali ke teks Indonesia. Di mode dev, teks yang belum ada terjemahannya dicatat di console ("[i18n] belum diterjemahkan").
+- Link internal pakai `@/i18n/Link` (bukan `next/link`), otomatis diberi awalan /en. Pakai `alternates(lang, path)` untuk canonical + hreflang di `generateMetadata`.
+- Nilai pilihan form yang dikirim tetap bahasa Indonesia (dicocokkan dengan CRM); yang diterjemahkan hanya teks tampil.
+- `TRANSLATED_PATHS` di `src/i18n/en/index.ts` = halaman yang sudah selesai (sekarang `/`, `/layanan/contech`, `/tentang`, `/rekrutmen`, `/kemitraan`). Halaman lain di /en tampil bahasa Indonesia dengan pemberitahuan kecil (`TranslationNotice`). Setelah halaman diterjemahkan, tambahkan rutenya di sana.
+- Alamat lama di `next.config.ts` juga punya versi /en. Alamat yang tidak ada ditangani `[lang]/[...rest]` (404 di dalam layout bahasa).
 
-## Program RTO = pre-launch
-Program RTO belum berjalan (channel ditandai "Segera Hadir"). Semua copy RTO (`/rto`, `RTOExplainer`, `DPAccelerator`, FAQ) harus menghindari klaim "sudah berjalan" / "sudah ada transaksi" — jangan ubah tanpa instruksi eksplisit dari user.
+## Data konten (`src/data/`)
+Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
+- `beranda.ts`: judul, tagline, dan subline hero (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
+- `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`, kontak partner `JURURANCANG` (email, WA admin, Instagram; `website` diisi kalau situsnya sudah tayang).
+- `contech.ts`: teks halaman `/layanan/contech` (hero dan fotonya, wilayah proyek, renovasi dan bangun, gambar dan struktur).
+- `nav.ts`: menu utama dan dropdown Layanan.
+- `projects.ts`: kota proyek untuk peta, portofolio, `STATS`. Kota luar negeri diberi `country` (mis. Kota Kinabalu, Malaysia) dan tidak dihitung di `STATS.provinces`; jumlah negara di `STATS.countries`.
+- `pricing.ts`: tier harga ConTech (Basic, Plus, Pro per m²), isi paket, langkah order.
+- `rto.ts`: jalur RTO, langkah, kanal DP, keamanan dana, FAQ RTO.
+- `listings.ts`: listing RTO (kosong). `masuk.ts`: pilihan di `/masuk` dan menu Masuk.
+- `google-forms.ts`: link responden Google Form resmi (F01-F05, F08, F09, F11-F19; sudah dicek terbuka tanpa login). Jangan pakai link edit. Form Projectlink/Knowledges (F06, F07, F10) tidak dipakai karena lini itu pindah ke Jururancang.
+- `kemitraan.ts`: isi halaman Kemitraan (jalur, formulir per jalur, penyesuaian struktur, alur, galeri, FAQ).
+- `company.ts`: isi halaman Profil (`EKOSISTEM_HERO`, `BARUMAHID_INTRO`, `MASALAH`, `KEUNGGULAN`, visi misi, `PILLARS` LBAG, `VALUES` BUILD, grup usaha). `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program (`EVENTS_AND_PROGRAMS`) dan partner (`PARTNERS`). Semua yang punya `logo` ({src, w, h}, file di `/public/logos/`) ikut di marquee beranda (`MARQUEE_LOGOS`).
+- `karier.ts`: isi halaman Karier (hero, Magang Arsitektur, `BATCH` rekrutmen, freelancer Jururancang, lamaran umum).
+- `articles.ts`: artikel (kosong).
+
+## Form dan lead
+- Skema semua form: `src/lib/leads.ts` (`FORMS`, 10 peran). Nama field sama dengan judul kolom di Google Sheet CRM Master.
+- Komponen: `src/components/forms/LeadForm.tsx`. Validasi browser dan server pakai fungsi yang sama (`validateLead`). Ada checkbox persetujuan (link ke kebijakan privasi), honeypot `company_website`, dan Turnstile opsional.
+- `POST /api/leads` menyimpan ke:
+  1. **Supabase**, tabel `public.barumahid_leads` (utama). `toSupabaseRow()` memetakan 10 peran ke kolom `jenis` (`customer`, `mitra`, `developer`, `kontak`; dibatasi CHECK di database). Peran asli ada di `data.form`, semua isian di `data`. Publishable key hanya boleh INSERT (RLS), publik tidak bisa membaca lead. Baca dan kelola lead lewat dashboard Supabase.
+  2. **Google Sheet CRM Master** lewat Apps Script (opsional, aktif kalau env-nya diisi). Fungsinya: baris masuk ke sheet kerja tim dan notifikasi email atau WA. Setup di `docs/backend/README.md`.
+- Dianggap berhasil kalau minimal satu tujuan menerima data. Kalau semua gagal atau belum dikonfigurasi, form menampilkan tombol "Kirim lewat WhatsApp" dengan isian yang sudah disiapkan, jadi data pengunjung tidak hilang.
+- Env (lokal di `.env.local`, di Vercel per environment, jangan pernah di-commit):
+  - `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` (sudah di-set di Vercel untuk Production, Preview, Development)
+  - `LEADS_WEBHOOK_URL`, `LEADS_WEBHOOK_SECRET` (opsional, Apps Script)
+  - `TURNSTILE_SECRET_KEY` dan `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (opsional, anti-spam)
+  - `NEXT_PUBLIC_FORM_REKRUTMEN` (opsional)
+- Supabase project khusus website: **`barumahid-web`**. Jangan pakai project Supabase lain.
+- Log server tidak boleh memuat data pribadi pengisi form.
+- Preview Vercel menulis ke tabel yang sama dengan production. Kalau mengetes form, isi nama dengan "TEST", lalu hapus barisnya dari dashboard.
+
+## Portal (Supabase Auth)
+- Login email + kata sandi lewat Supabase Auth di project `barumahid-web`, hanya dengan publishable key dari server (server action dan `src/proxy.ts` yang menyegarkan sesi untuk `/portal`). Klien: `src/lib/supabase/server.ts`; sesi: `src/lib/portal-session.ts` (server saja); tipe dan label: `src/lib/portal.ts` (aman untuk client).
+- Tabel `portal_profiles`, `portal_org_levels`, `portal_team`, `portal_mitra` dengan RLS: anon tidak punya akses, admin/tim membaca semua, mitra hanya baris miliknya. Akun baru otomatis berperan `mitra` (trigger). Peran tim/admin hanya lewat fungsi `portal_set_role` oleh admin; admin pertama diberikan manual setelah akunnya dibuat.
+- Isi struktur organisasi, jobdesk, personil, mitra, dan developer (dari Job Desk.pdf dan company profile developer) hanya ada di database. **Jangan pernah disalin ke repo** (repo publik, berisi nama dan nomor telepon). SQL skema juga tidak di-commit.
+- Admin/tim pertama lewat tabel undangan `portal_staff_invites`: email yang terdaftar di sana otomatis mendapat perannya setelah email akun dikonfirmasi (trigger). Admin bisa menambah undangan dari tab Akun.
+- Jawaban Google Form masuk ke `portal_form_submissions` lewat RPC `portal_ingest_form` (butuh kode rahasia di `portal_settings`, dikirim Apps Script yang dipasang di akun Google pemilik form). Skrip dan kode rahasianya tidak disimpan di repo. Riwayat login dari fungsi `portal_accounts` (khusus tim).
+- Pengaturan di dashboard Supabase (Authentication): Site URL dan Redirect URLs harus memuat domain situs dan preview (`/portal/auth/callback`). Email konfirmasi dan atur ulang kata sandi butuh SMTP sendiri kalau dikirim ke banyak mitra (SMTP bawaan Supabase sangat terbatas).
+
+## Komponen
+- `layout/Navbar.tsx`: dropdown Layanan dan Masuk, tombol Kabar (`NewsPanel`) dan ID/EN di pojok kanan atas. Panel menu HP dan panel Kabar dirender **di luar** `<header>` (menu HP di luar, Kabar lewat portal ke body), karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
+- Kabar terkini: `src/lib/berita.ts` mengambil RSS media terkurasi (Indonesia: Detik Finance, CNBC Indonesia, Okezone, SINDOnews, ANTARA, Republika, disaring kata kunci konstruksi/properti; dunia: Construction Dive, Global Construction Review, Construction News, The Guardian Housing, HousingWire), 7 hari terakhir, maksimal 8 per wilayah dan 3 per media, berita duka/kriminal dibuang. `GET /api/berita` di-cache 6 jam. Yang tampil hanya judul, media, waktu, dan link ke artikel asli.
+- `layout/Footer.tsx`: logo PT tampil di sini saja (komponen `brand/PtMark`: simbol saja, warna asli di latar terang, putih di latar gelap seperti logo barumahID; nama PT ditulis pakai font situs, bukan gambar logo utuh). Alamat bisa diklik langsung ke Google Maps, tanpa tombol tambahan (begitu juga di `/kontak` dan `/tentang`).
+- `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
+- `ui/`: `LightStreaks` (pengganti grid: garis diagonal tipis, sesekali kilatan cahaya pendek lewat; sengaja redup supaya tidak menabrak isi), `DotGrid` (latar titik canvas: titik dekat kursor membesar, menyala, dan mengorbit kecil; hanya animasi saat ada interaksi), `PageHero` (prop `slides` untuk beberapa foto yang berganti pelan, CSS saja), `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
+- `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `HistoryRoadmap` (roadmap beranda, animasi berurutan saat masuk layar), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `FaqTestimonials` (dipakai di `/tentang`, prop `lang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
+- `about/`: `SemestaOrbit` (canvas 2D: bola partikel inti + tiga cincin orbit miring + garis cahaya berisi partikel mengalir; logo unit sebagai DOM; intro partikel berkumpul; geser untuk memutar), `DivisionFolders` (map divisi, kartu menyebar seperti kipas saat disorot/diketuk), `SemestaMahaksa` (pembungkus bagian, panel detail unit), `LetterShowcase` (huruf LBAG/BUILD: sorot, fokus, atau ketuk untuk memilih; berganti otomatis dengan garis progres saat terlihat di layar; teks muncul lewat animasi CSS `.letter-in`), `LineIcon` (ikon garis halaman Ekosistem).
+- `constech/`: `ProjectGlobe` (canvas 2D, data `public/data/globe-dots.json` dari `scripts/gen-globe-dots.mjs`), `KaryaStrip` (gambar setinggi sama, lebar ikut rasio asli, bergeser sendiri, bisa digeser), `PricingTerrace` (kartu paket harga ringkas), `DrawingCanvas` (pointer events: mouse/trackpad, pen dengan tekanan dan ujung penghapus, jari; jari kedua dan telapak tangan saat pakai pen diabaikan; sketsa disimpan di localStorage pengunjung, belum ikut terkirim bersama form). Hormati reduced motion.
+- `rto/` (`DPSimulator`, `ListingGrid`).
+- `portal/Viz`: `CountUp` (angka menghitung naik), `Donut`, `Bars` untuk dashboard tim (tanpa library grafik; CSS `.bar-grow`, `.donut-in`). Ringkasan dashboard: kartu angka, perlu tindakan, aktivitas terbaru (formulir, akun, login, verifikasi), donut status tim dan mitra, batang mitra per jenis dan formulir per kelompok.
+- `portal/OrgChart`: bagan struktur organisasi (desktop: pohon 4 kolom, garis komando SVG `pathLength=1` tergambar berurutan + titik mengalir, garis pengawasan Komisaris putus-putus, Nilai & Prinsip di kanan; HP: daftar dengan garis penyambung). Kartu memakai `lg:self-start` supaya garis menempel ke kartu (bukan ke tinggi baris grid). Personil bertingkat lewat kolom `reports_to` (misalnya Supervisor di bawah Manajer). Posisi garis diukur dari offset layout supaya tidak meleset saat animasi. CSS `.org-node`, `.org-draw`, `.org-fade` di globals.css.
+- `portal/`: `AuthShell` (bingkai masuk/daftar), `AuthForms` (form masuk, daftar akun mitra, lupa dan kata sandi baru; `useActionState`), `PortalShell` (header portal, `SetupNotice`, `waHref`), `TeamDashboard` (tab ringkasan, struktur, tim, mitra, developer, akun), `MitraDashboard`.
+- `karier/TalentField`: latar hero Karier (canvas: orang dari atas berjalan pelan, cincin sinyal merah dari kursor atau muncul sendiri di HP, klik = cincin besar; hanya jalan saat terlihat, reduced motion diam).
+- `CountUp`: angka final dirender di server, animasi hanya kalau elemen di luar layar dan reduced motion tidak aktif. `Reveal`: animasi muncul, ada fallback `<noscript>` di layout.
+
+## Warna dan font
+Token Tailwind v4 di `@theme inline`, `src/app/globals.css`:
+
+| Token | Hex | Contoh class |
+|---|---|---|
+| Merah (aksen utama) | #C53B3B | `bg-brand-red`, `text-brand-red` |
+| Merah gelap (hover) | #A02E2E | `bg-brand-red-dark` |
+| Gelap | #141414 | `bg-brand-dark`, `text-brand-dark` |
+| Abu | #6B6B6B | `text-brand-gray` |
+| Abu muda | #9A9A9A | `text-brand-mute` |
+| Krem (body) | #F5F2ED | `bg-brand-cream` |
+| Krem hangat | #EFEAE1 | `bg-brand-cream-warm` |
+
+Warna segmen: `credit` #2D7A4F, `build` #C25E20, `buy-blue` #1A5C9A. Utility tipografi `type-display`, `type-h1` sampai `type-h3`, `type-body`, `type-small`, `type-micro`, dan garis `hairline`, juga di `globals.css`.
+
+Font: Montserrat lewat `next/font/google` di `src/app/[lang]/layout.tsx`, jadi default `font-sans`.
 
 ## Catatan teknis
-- Next.js 16.2 (App Router, Turbopack) + React 19 + Tailwind CSS v4 (config via `@theme` di CSS, tidak ada `tailwind.config.js`). Animasi: `framer-motion`; 3D: `three`.
-- Versi Next.js ini punya breaking changes dari training data model — cek `node_modules/next/dist/docs/` sebelum pakai API yang nggak familiar.
-- Deploy: Vercel project **`barumahid`** di team **barumahid's projects**, tersambung ke GitHub `barumahID/barumahid-web` — push ke `main` = deploy production, branch/PR lain = preview. Folder `.vercel` lokal menunjuk ke project lama di team lain — abaikan.
-- Repo GitHub ini **publik**: jangan commit ID internal, key, atau detail database ke file mana pun (termasuk CLAUDE.md).
-- **Windows + path panjang:** path folder project ini ±150 karakter dan `LongPathsEnabled = 0`, jadi **Turbopack gagal di laptop ini** (`next build`: "path length ... exceeds max length of filesystem"; `next dev`: panic "Next.js package not found" saat hot reload). Junction ke path pendek tidak membantu (Next resolve ke path asli). Solusi yang dipakai: **webpack untuk lokal** — `npm run dev` = `next dev --webpack`, `npm run build:local` = `next build --webpack`. Script `build` tetap Turbopack untuk Vercel (Linux, tidak kena batas path).
-- **Alur kerja dengan user:** user menjalankan `npm run dev` di panel Terminal aplikasi Claude (PowerShell) → Claude baca output-nya dengan `read_terminal`, cek tampilan di browser pane (`http://localhost:3000`, buka dengan `preview_start {url}` — jangan start server kedua di port yang sama). Kalau dev server belum jalan, jalankan dengan `run_in_terminal` (`npm run dev`) supaya user bisa lihat & stop sendiri.
-- Cek sebelum commit: `npx tsc --noEmit` dan `npm run lint`.
+- Next.js 16.2 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. Library `three` sudah dihapus.
+- Versi Next.js ini punya breaking changes dari data latih model. Cek `node_modules/next/dist/docs/` sebelum pakai API yang tidak familiar.
+- ESLint `react-hooks/set-state-in-effect`: untuk mereset state saat prop atau route berubah, simpan nilai sebelumnya di state lalu bandingkan saat render (contoh di `Navbar.tsx`). Jangan `setState` langsung di `useEffect`.
+- Folder `private/` (di-ignore git): file internal berisi kode rahasia, misalnya `private/barumahid-form-ke-portal.gs` (Apps Script pengirim jawaban Google Form ke Portal, dipasang di akun Google pemilik form). Jangan di-commit.
+- Bahan mentah dari user ada di folder `Picture/` (di-ignore git, jangan di-commit: berisi kartu nama dengan no HP dan logo pihak lain). Yang dipakai situs diolah dulu ke `public/` (latar transparan, trim, webp) dengan sharp dari `node_modules`.
+- Gambar proyek di `public/images/proyek/*.webp` (lebar maks 1600 px), tampilkan dengan `next/image`. Logo di `public/brand/`: `logo-mark-red.png` (merahnya disamakan dengan `brand-red` #C53B3B), `logo-mark-white.png`, `logo-icon-192/512.png` (ikon tanpa lingkaran). Logo tidak boleh pakai border lingkaran.
+- **Windows + path panjang:** path folder project ini sekitar 150 karakter dan `LongPathsEnabled = 0`, jadi **Turbopack gagal di laptop ini** (`next build`: "path length ... exceeds max length of filesystem"; `next dev`: panic "Next.js package not found" saat hot reload). Junction ke path pendek tidak membantu, karena Next resolve ke path asli. Solusinya **webpack untuk lokal**: `npm run dev` = `next dev --webpack`, `npm run build:local` = `next build --webpack`. Script `build` tetap Turbopack untuk Vercel (Linux, tidak kena batas path).
+- Build di lingkungan tanpa akses Google Fonts (sandbox tertutup): pakai `NEXT_FONT_GOOGLE_MOCKED_RESPONSES=<file mock>` dan `next build --webpack`. Di laptop dan Vercel tidak perlu.
+- **Alur kerja dengan user:** user menjalankan `npm run dev` di panel Terminal aplikasi Claude (PowerShell). Claude membaca output-nya dengan `read_terminal`, lalu cek tampilan di browser pane (`http://localhost:3000`, buka dengan `preview_start {url}`). Jangan start server kedua di port yang sama. Kalau dev server belum jalan, jalankan dengan `run_in_terminal` (`npm run dev`) supaya user bisa lihat dan stop sendiri.
+- Deploy: Vercel project **`barumahid`** di team **barumahid's projects**, tersambung ke GitHub `barumahID/barumahid-web`. Push ke `main` = deploy production. Branch atau PR lain = preview. Folder `.vercel` lokal menunjuk ke project lama di team lain, abaikan.
+- Repo GitHub ini **publik**: jangan commit ID internal, key, URL dokumen internal, atau detail database ke file mana pun (termasuk CLAUDE.md).
+- Satu tempat yang mengubah kode: Claude Code di laptop. Perubahan dari luar (misalnya sesi Claude di cloud) datang lewat branch dan PR, bukan langsung ke `main`.
+- Cek sebelum commit: `npx tsc --noEmit`, `npm run lint`, `npm run build:local`.
+
+## Status
+- Revamp fase 0 dan 1 (struktur baru sesuai PRD v1) dikerjakan di branch `revamp/fase-0-1`. Merge ke `main` lewat PR setelah dicek di preview Vercel.
+- Fase 2 (belum dikerjakan): status listing dari Google Sheet supaya admin bisa ubah tanpa deploy, artikel pertama, testimoni setelah ada izin, foto tim, halaman detail portofolio.

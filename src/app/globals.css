@@ -29,6 +29,10 @@ html {
   scroll-behavior: smooth;
   font-feature-settings: "ss01", "cv11";
 }
+/* Navbar fixed 68px: anchor tidak tertutup navbar */
+[id] {
+  scroll-margin-top: 88px;
+}
 body {
   overflow-x: clip;
 }
@@ -146,12 +150,162 @@ textarea:focus-visible {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.7; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+.animate-ping-soft { animation: ping-soft 2.2s cubic-bezier(0, 0, 0.2, 1) infinite; }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.9); }
 }
 
 /* --- UTILITIES --- */
+/* Grid halus di latar gelap */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+}
+.card-shadow {
+  box-shadow: 0 1px 2px rgba(20, 20, 20, 0.04), 0 12px 32px -18px rgba(20, 20, 20, 0.22);
+}
+.tilt-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.tilt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(20, 20, 20, 0.05), 0 24px 48px -20px rgba(20, 20, 20, 0.3);
+}
+/* Grid halus untuk latar terang (hero beranda) */
+.hero-grid-light {
+  background-image:
+    linear-gradient(rgba(20, 20, 20, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 20, 20, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at 50% 45%, black 25%, transparent 75%);
+}
+
+/* Hero halaman dengan beberapa foto (PageHero `slides`): crossfade + zoom pelan, 6 detik per foto.
+   Persentase di bawah untuk 4 foto (25% per foto). Durasi siklus dari variabel --slide-cycle. */
+@keyframes hero-slide {
+  0% { opacity: 0; transform: scale(1.04); }
+  4% { opacity: 1; }
+  25% { opacity: 1; }
+  29% { opacity: 0; transform: scale(1.12); }
+  100% { opacity: 0; transform: scale(1.12); }
+}
+.hero-slide {
+  opacity: 0;
+  animation: hero-slide var(--slide-cycle, 24s) linear infinite both;
+}
+/* Garis progres huruf LBAG/BUILD (LetterShowcase) */
+@keyframes letter-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes letter-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.letter-in { animation: letter-in 0.32s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .letter-in { animation: none; }
+}
+@keyframes hero-slide-bar {
+  0% { transform: scaleX(0); }
+  25% { transform: scaleX(1); }
+  25.01%, 100% { transform: scaleX(0); }
+}
+.hero-slide-bar {
+  transform: scaleX(0);
+  animation: hero-slide-bar var(--slide-cycle, 24s) linear infinite both;
+}
+
+/* Bagan struktur organisasi Portal (OrgChart): kartu muncul berurutan, garis komando tergambar, garis pengawasan memudar masuk */
+@keyframes org-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.org-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: org-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes org-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.org-fade {
+  opacity: 0;
+  animation: org-fade 0.8s ease forwards;
+}
+.org-node { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Dashboard Portal: batang tumbuh dan donut masuk */
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.bar-grow { transform-origin: left; animation: bar-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes donut-in {
+  from { opacity: 0; transform: scale(0.85) rotate(-40deg); }
+  to { opacity: 1; transform: none; }
+}
+.donut-in { animation: donut-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Latar hero beranda (HeroBackdrop): bayangan pita melayang, gedung samar, anyaman garis mengalir */
+@keyframes ribbon-a {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to { transform: translate(-2%, 2.5%) rotate(-2deg); }
+}
+@keyframes ribbon-b {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to { transform: translate(2%, -2%) rotate(2deg); }
+}
+.ribbon-float-a { animation: ribbon-a 13s ease-in-out infinite alternate; transform-origin: 0% 50%; }
+.ribbon-float-b { animation: ribbon-b 15s ease-in-out infinite alternate; transform-origin: 100% 50%; }
+@keyframes building-drift {
+  from { transform: scale(1) translateY(0); }
+  to { transform: scale(1.05) translateY(-1.5%); }
+}
+.building-drift { animation: building-drift 24s ease-in-out infinite alternate; transform-origin: 100% 50%; }
+@keyframes mesh-drift {
+  from { transform: translateX(0) scaleY(1); }
+  to { transform: translateX(-2.5%) scaleY(1.1); }
+}
+.mesh-drift { animation: mesh-drift 16s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+
+/* Pola titik halus (kartu roadmap beranda) */
+.pattern-dots {
+  background-image: radial-gradient(rgba(20, 20, 20, 0.08) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(135deg, #000, transparent 70%);
+  mask-image: linear-gradient(135deg, #000, transparent 70%);
+}
+
+.animate-marquee-slow { animation: marquee 60s linear infinite; }
+.animate-marquee-reverse { animation: marquee-reverse 48s linear infinite; }
+.marquee-pause:hover .animate-marquee,
+.marquee-pause:hover .animate-marquee-slow,
+.marquee-pause:hover .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+/* Fade tepi untuk deretan logo */
+.edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+/* Scroll horizontal tanpa scrollbar (kartu di mobile) */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 .animate-hero-zoom { animation: hero-zoom 8s ease-in-out infinite; }
 .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-marquee { animation: marquee 40s linear infinite; }
@@ -160,7 +314,7 @@ textarea:focus-visible {
 .hairline { border-color: rgba(20, 20, 20, 0.08); }
 .hairline-strong { border-color: rgba(20, 20, 20, 0.14); }
 
-/* Reveal — subtle fade-up when in viewport */
+/* Reveal - subtle fade-up when in viewport */
 .reveal {
   opacity: 0;
   transform: translateY(16px);
@@ -172,7 +326,7 @@ textarea:focus-visible {
   transform: translateY(0);
 }
 
-/* Text gradient — restrained editorial */
+/* Text gradient - restrained editorial */
 .text-gradient-red {
   background: linear-gradient(135deg, #C53B3B 0%, #E85555 100%);
   -webkit-background-clip: text;
@@ -181,7 +335,7 @@ textarea:focus-visible {
   color: transparent;
 }
 
-/* Editorial link — inline hover underline */
+/* Editorial link - inline hover underline */
 .link-editorial {
   position: relative;
   display: inline-flex;
@@ -205,7 +359,7 @@ textarea:focus-visible {
   transform-origin: left;
 }
 
-/* Row hover — Tikal "Pick Your Fit" pattern */
+/* Row hover - Tikal "Pick Your Fit" pattern */
 .row-hover {
   transition: background-color 0.3s ease, padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -233,8 +387,38 @@ textarea:focus-visible {
     transition: none;
   }
   .animate-marquee,
+  .animate-marquee-slow,
+  .animate-marquee-reverse,
   .animate-pulse-dot,
-  .animate-fade-up {
+  .animate-ping-soft,
+  .animate-hero-zoom,
+  .animate-fade-up,
+  .ribbon-float-a,
+  .ribbon-float-b,
+  .mesh-drift,
+  .building-drift {
     animation: none;
+  }
+  .tilt-card:hover {
+    transform: none;
+  }
+  /* Hero foto: tampilkan foto pertama saja, tanpa animasi */
+  .hero-slide,
+  .hero-slide-bar {
+    animation: none;
+  }
+  .org-node,
+  .org-fade,
+  .bar-grow,
+  .donut-in {
+    animation: none;
+    opacity: 1;
+  }
+  .org-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .hero-slides .hero-slide:first-child {
+    opacity: 1;
   }
 }
