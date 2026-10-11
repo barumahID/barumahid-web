@@ -17,8 +17,6 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Link YouTube dan Facebook | `active: false`, tidak tampil | `src/data/site.ts` |
 | Link DM Instagram Jururancang (`ig.me`) | Belum dites di HP | `src/data/site.ts` |
 | Testimoni pelanggan | Kosong, menunggu izin tampil dari pemberi testimoni | `src/data/faq.ts` |
-| Logo Rocket Incubation | Belum ada file logo, di `/tentang` tampil ikon piala dan tidak ikut marquee beranda | `src/data/partners.ts` |
-| LMS dan TAKA di marquee | Dipasang sesuai folder logo user. Kalau keduanya klien (bukan partner), perlu izin tertulis | `src/data/partners.ts` (`PARTNERS`) |
 | Foto katalog proyek dari Canva dan Google Drive | Belum diambil (Canva perlu login). Perlu file PNG/JPG di folder `Picture/` atau link view per folder | `public/images/proyek/` |
 | Listing RTO pertama | Kosong. Dua calon unit sudah diusulkan (satu Siap Berdaya, satu Siap Beli). Menunggu foto, data unit, izin tertulis pemilik, dan cek dokumen legal | `src/data/listings.ts` |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |

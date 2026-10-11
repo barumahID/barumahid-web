@@ -45,7 +45,7 @@ export const TIMELINE: Milestone[] = [
   {
     year: "2026",
     title: "Tumbuh jadi ekosistem",
-    body: "Mulai membangun program Rent-to-Own. Lulus Rocket Incubation, Yayasan Indonesia Setara × Sandination Academy. Jururancang Engineering Mahaksa resmi berdiri.",
+    body: "Mulai membangun program Rent-to-Own. Lulus Rocket Acceleration, Yayasan Indonesia Setara × Sandination Academy. Jururancang Engineering Mahaksa resmi berdiri.",
     award: true,
   },
 ];

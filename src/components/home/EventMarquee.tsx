@@ -12,7 +12,7 @@ export default function EventMarquee() {
   return (
     <section className="border-y border-brand-dark/5 bg-white py-14 md:py-16" aria-labelledby="judul-logo">
       <p id="judul-logo" className="type-micro px-5 text-center text-brand-gray">
-        Pernah bersama barumahID
+        Event &amp; Partner
       </p>
       <div className="edge-fade marquee-pause mt-8 overflow-hidden [--logo-scale:0.7] md:[--logo-scale:1]" aria-hidden="true">
         <div className="animate-marquee-slow flex w-max items-center">
