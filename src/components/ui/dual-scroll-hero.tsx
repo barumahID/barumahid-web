@@ -13,6 +13,7 @@ export interface HeroPanel {
   href: string;
   image: string;
   alt: string;
+  focus?: string;
   audience: string;
   name: string;
   headline: string;
@@ -133,7 +134,7 @@ export default function DualScrollHero({
   const mobile = viewport.w < 768;
   const nav = 68;
   const gap = mobile ? 10 : 16;
-  const titleBlock = subline ? (mobile ? 150 : 158) : mobile ? 96 : 128;
+  const titleBlock = subline ? (mobile ? 174 : 158) : mobile ? 96 : 128;
   // Ukuran awal ikut tinggi layar supaya panel tidak terpotong atau menabrak judul di layar pendek.
   const h0 = Math.min(mobile ? 180 : 290, Math.max(140, viewport.h - nav - titleBlock - 88));
   const w0 = h0 * (mobile ? 136 / 180 : 220 / 290);
@@ -174,7 +175,15 @@ export default function DualScrollHero({
               </span>
             )}
           </h1>
-          <p className="mt-4 px-4 text-[16px] font-bold tracking-[-0.01em] text-brand-dark md:text-[21px]">{tagline}</p>
+          <p className="mt-4 px-4 text-[16px] font-bold tracking-[-0.01em] text-brand-dark md:text-[21px]">
+            {/* Tiap kalimat satu baris di HP supaya tidak terpotong di tengah */}
+            {tagline.split(/(?<=\.)\s+/).map((part, i) => (
+              <span key={part} className="block md:inline">
+                {i > 0 && <span className="hidden md:inline"> </span>}
+                {part}
+              </span>
+            ))}
+          </p>
           {subline && <p className="mx-auto mt-1.5 max-w-[340px] px-4 text-[13px] font-medium text-balance text-brand-gray md:max-w-none md:text-[15px]">{subline}</p>}
         </div>
 
@@ -198,6 +207,7 @@ export default function DualScrollHero({
                 priority
                 sizes="(min-width: 768px) 60vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
+                style={s.focus ? { objectPosition: s.focus } : undefined}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/0" />
               {s.badge && (

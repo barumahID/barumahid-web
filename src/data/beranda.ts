@@ -7,8 +7,8 @@ import { STATS } from "./projects";
 export const HOME_HERO = {
   title: "barumahID",
   // Satu kalimat yang menyatukan dua lini: proyek (ConTech) dan kepemilikan rumah (PropTech).
-  tagline: "Wujudkan proyekmu. Miliki rumahmu.",
-  subline: "Jasa konstruksi dan jalan menuju rumah sendiri, dalam satu platform.",
+  tagline: "Wujudkan proyekmu. Miliki hunian nantinya.",
+  subline: "Jasa konstruksi dan program kepemilikan hunian dalam satu platform.",
 };
 
 // Halaman 2 beranda. Arahan user: barumahID bisnis yang sedang berkembang di lini ConTech dan PropTech,
@@ -60,6 +60,8 @@ export interface PhotoCard {
   cta: string;
   image: string;
   alt: string;
+  // titik fokus foto (CSS object-position) supaya proporsional di panel tegak maupun lebar
+  focus?: string;
   badge?: string;
 }
 
@@ -72,8 +74,10 @@ export const DUA_LAYANAN: PhotoCard[] = [
     headline: "Proyekmu, dibikin mudah aja.",
     body: "Gambar, analisa struktur, renovasi, dan bangun. Dikerjakan insinyur, biayanya dihitung per item pekerjaan dengan AHSP.",
     cta: "Lihat jasa dan harga",
-    image: "/images/proyek/bangun-rumah-2-lantai-padang.webp",
-    alt: "Rumah dua lantai yang sedang dibangun tim barumahID di Padang",
+    // Foto proyek nyata yang sudah selesai (bahan user), malam hari dengan lampu pilar pagar menyala.
+    image: "/images/proyek/rumah-selesai-malam.webp",
+    alt: "Rumah hasil pengerjaan tim barumahID di malam hari, lampu pilar pagar menyala",
+    focus: "62% 60%",
   },
   {
     href: "/layanan/rto",
