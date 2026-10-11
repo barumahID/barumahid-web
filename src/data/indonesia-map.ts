@@ -56,5 +56,13 @@ export const CITY_POINTS: Record<string, { x: number; y: number }> = {
   "sumedang": {
     "x": 285.7,
     "y": 281.1
+  },
+  "jambi": {
+    "x": 194.9,
+    "y": 170.6
+  },
+  "palembang": {
+    "x": 218.8,
+    "y": 199.4
   }
 };

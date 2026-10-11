@@ -37,6 +37,8 @@ const cities = [
   { id: "mamuju", name: "Mamuju", prov: "Sulawesi Barat", lon: 118.8861, lat: -2.6806 },
   { id: "kinabalu", name: "Kota Kinabalu", prov: "Sabah, Malaysia", lon: 116.0735, lat: 5.9804 },
   { id: "sumedang", name: "Sumedang", prov: "Jawa Barat", lon: 107.9206, lat: -6.8381 },
+  { id: "jambi", name: "Jambi", prov: "Jambi", lon: 103.6131, lat: -1.6101 },
+  { id: "palembang", name: "Palembang", prov: "Sumatera Selatan", lon: 104.7458, lat: -2.9761 },
 ];
 const pts = Object.fromEntries(cities.map((c) => {
   const [x, y] = projection([c.lon, c.lat]);

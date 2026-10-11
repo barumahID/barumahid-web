@@ -126,3 +126,16 @@ export function waLink(message?: string, number: string = WA_ADMIN_1) {
 
 export const JURURANCANG_IG = "https://www.instagram.com/jururancang_mahaksa";
 export const JURURANCANG_DM = "https://ig.me/m/jururancang_mahaksa";
+
+// Kontak Jururancang Engineering Mahaksa, partner jasa gambar dan struktur (dari user, Okt 2026).
+// Website masih dibangun: isi `website` dengan URL kalau sudah tayang, otomatis jadi link di halaman ConTech.
+export const JURURANCANG = {
+  name: "Jururancang Engineering Mahaksa",
+  email: "jururancangengineeringmahaksa@gmail.com",
+  wa: "6282162367535",
+  waLabel: "+62 821-6236-7535",
+  website: null as string | null,
+  instagram: JURURANCANG_IG,
+  igHandle: "@jururancang_mahaksa",
+  logo: { src: "/logos/jururancang.webp", w: 117, h: 160 },
+};

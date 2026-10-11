@@ -161,6 +161,23 @@ export const PROJECT_CITIES: ProjectCity[] = [
     verified: false,
     projects: [{ title: "Modelling BIM jembatan dan box tunnel", service: "gambar" }],
   },
+  {
+    // Ditambahkan atas info user (Okt 2026). Detail proyek belum ada; peta menampilkan "detail menyusul".
+    id: "jambi",
+    name: "Jambi",
+    province: "Jambi",
+    basis: "lokasi",
+    verified: true,
+    projects: [],
+  },
+  {
+    id: "palembang",
+    name: "Palembang",
+    province: "Sumatera Selatan",
+    basis: "lokasi",
+    verified: true,
+    projects: [],
+  },
 ];
 
 export const verifiedCities = () => PROJECT_CITIES.filter((c) => c.verified);
@@ -275,4 +292,10 @@ export const STATS = {
   cities: verifiedCities().length,
   countries: 1 + new Set(verifiedCities().flatMap((c) => (c.country ? [c.country] : []))).size,
   since: 2018,
+  // Jumlah proyek per lini jasa, dari user (Okt 2026). Tampil di halaman ConTech sebagai "10+", "15+", dst.
+  byService: {
+    renovasiBangun: 10,
+    gambar: 15,
+    struktur: 10,
+  },
 };

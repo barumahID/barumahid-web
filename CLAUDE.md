@@ -29,7 +29,7 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 | `/layanan` | Hub 3 layanan (RTO, ConTech, Kemitraan). |
 | `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
 | `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
-| `/layanan/contech` | Jasa, peta proyek (`#peta`), harga (`#harga`), renovasi dan bangun (`#renovasi`), portofolio, form konsultasi (`#konsultasi`). |
+| `/layanan/contech` | Jasa General Kontraktor. Urutan: hero 4 foto saat konstruksi yang berganti pelan; jejak proyek (`#peta`: wilayah satu baris, angka per lini jasa dari `STATS.byService`, peta dengan label Base barumahID dan VO); renovasi dan bangun sebagai layanan unggulan (`#renovasi`: cakupan, harga per item AHSP, alur kerja); gambar & modelling + desain & analisa struktur bersama partner Jururancang (`#harga`: logo dan kontak partner, paket Basic/Plus/Pro); portofolio; form konsultasi (`#konsultasi`). Isi teks di `src/data/contech.ts`. |
 | `/kemitraan` | Ekosistem dan 7 peran mitra. |
 | `/kemitraan/daftar/[peran]` | Form per peran, 7 halaman statis dari `src/data/roles.ts`. |
 | `/portofolio` | Grid portofolio dengan filter layanan. |
@@ -47,7 +47,8 @@ SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `rob
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - `beranda.ts`: judul, tagline, dan subline hero (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`, versi lengkap tetap `TIMELINE` di `company.ts`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
-- `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`.
+- `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`, kontak partner `JURURANCANG` (email, WA admin, Instagram; `website` diisi kalau situsnya sudah tayang).
+- `contech.ts`: teks halaman `/layanan/contech` (hero dan fotonya, wilayah proyek, renovasi dan bangun, gambar dan struktur).
 - `nav.ts`: menu utama dan dropdown Layanan.
 - `projects.ts`: kota proyek untuk peta, portofolio, `STATS`. Kota luar negeri diberi `country` (mis. Kota Kinabalu, Malaysia) dan tidak dihitung di `STATS.provinces`; jumlah negara di `STATS.countries`.
 - `pricing.ts`: tier harga ConTech (Basic, Plus, Pro per m²), isi paket, langkah order.
@@ -77,7 +78,7 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
 - `layout/Footer.tsx`: logo PT tampil di sini saja (komponen `brand/PtMark`: simbol saja, warna asli di latar terang, putih di latar gelap seperti logo barumahID; nama PT ditulis pakai font situs, bukan gambar logo utuh). Alamat bisa diklik langsung ke Google Maps, tanpa tombol tambahan (begitu juga di `/kontak` dan `/tentang`).
 - `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
-- `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
+- `ui/`: `PageHero` (prop `slides` untuk beberapa foto yang berganti pelan, CSS saja), `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
 - `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `HistoryRoadmap` (roadmap beranda, animasi berurutan saat masuk layar), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
 - `about/`: `PetaProyek` (peta + angka + kartu kantor, pakai `ProjectMap` dengan prop `offices`), `PillarCards`, `ValueLetters`.
 - `constech/` (`ProjectMap`, `PricingTiers`), `rto/` (`DPSimulator`, `ListingGrid`), `about/`, `portfolio/`.

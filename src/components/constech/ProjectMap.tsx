@@ -17,6 +17,8 @@ const SERVICE_DOT: Record<string, string> = {
 export interface MapOffice {
   cityId: string;
   label: string;
+  /** Teks pendek yang ditulis langsung di peta, mis. "Base barumahID" atau "VO" */
+  short?: string;
 }
 
 // `offices`: titik kantor (mis. kantor pusat Padang, virtual office Tangerang), digambar sebagai cincin putih.
@@ -52,9 +54,29 @@ export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCi
             {placedOffices.map((o) => {
               const p = CITY_POINTS[o.cityId];
               return (
-                <circle key={o.cityId} cx={p.x} cy={p.y} r="12" fill="none" stroke="#ffffff" strokeWidth="2" strokeDasharray="3 2.5">
-                  <title>{o.label}</title>
-                </circle>
+                <g key={o.cityId}>
+                  <circle cx={p.x} cy={p.y} r="12" fill="none" stroke="#ffffff" strokeWidth="2" strokeDasharray="3 2.5">
+                    <title>{o.label}</title>
+                  </circle>
+                  {o.short && (
+                    // Label di kiri titik supaya tidak bertabrakan dengan label kota terpilih (di kanan).
+                    <text
+                      x={p.x - 17}
+                      y={p.y + 4}
+                      textAnchor="end"
+                      fontSize="11.5"
+                      fontWeight="700"
+                      fill="#ffffff"
+                      stroke="#101010"
+                      strokeWidth="3"
+                      paintOrder="stroke"
+                      fontFamily="var(--font-montserrat), sans-serif"
+                      pointerEvents="none"
+                    >
+                      {o.short}
+                    </text>
+                  )}
+                </g>
               );
             })}
             {placed.map((c) => {
@@ -151,7 +173,9 @@ export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCi
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-red">{city.province}</p>
           <p className="mt-2 text-[28px] font-extrabold leading-none tracking-tight">{city.name}</p>
           <p className="mt-2 text-[13px] text-brand-gray">
-            {city.projects.length} proyek{city.basis === "klien" ? " untuk klien yang berbasis di kota ini" : ""}
+            {city.projects.length > 0
+              ? `${city.projects.length} proyek${city.basis === "klien" ? " untuk klien yang berbasis di kota ini" : ""}`
+              : "Kota proyek barumahID. Rincian proyeknya menyusul."}
           </p>
           <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
             {city.projects.map((p) => (

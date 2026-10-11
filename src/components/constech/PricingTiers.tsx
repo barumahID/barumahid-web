@@ -1,5 +1,5 @@
 import { GAMBAR_INCLUDES, PRICE_NOTES, STRUKTUR_INCLUDES, TIERS, formatRupiah } from "@/data/pricing";
-import { JURURANCANG_DM, waLink } from "@/data/site";
+import { JURURANCANG, waLink } from "@/data/site";
 
 function Check() {
   return (
@@ -50,7 +50,7 @@ export default function PricingTiers() {
               </div>
 
               <a
-                href={JURURANCANG_DM}
+                href={waLink(`Halo Jururancang, saya dari website barumahID. Saya mau pesan paket ${t.name}.`, JURURANCANG.wa)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`mt-7 block rounded-full py-3 text-center text-[13.5px] font-bold transition-colors ${

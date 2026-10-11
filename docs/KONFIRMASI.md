@@ -19,6 +19,9 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Testimoni pelanggan | Kosong, menunggu izin tampil dari pemberi testimoni | `src/data/faq.ts` |
 | Foto katalog proyek dari Canva dan Google Drive | Belum diambil (Canva perlu login). Perlu file PNG/JPG di folder `Picture/` atau link view per folder | `public/images/proyek/` |
 | Listing RTO pertama | Kosong. Dua calon unit sudah diusulkan (satu Siap Berdaya, satu Siap Beli). Menunggu foto, data unit, izin tertulis pemilik, dan cek dokumen legal | `src/data/listings.ts` |
+| Proyek di Jambi dan Palembang | Titik sudah tampil di peta, rincian proyeknya belum ada (panel peta menulis "menyusul") | `src/data/projects.ts` (`PROJECT_CITIES`) |
+| Total proyek "30+" vs angka per lini (10+, 15+, 10+ = 35+) | Total di beranda dan Tentang masih 30+. Perlu konfirmasi apakah total dinaikkan | `src/data/projects.ts` (`STATS`) |
+| Website Jururancang | Belum ada, tampil "Website segera hadir" | `src/data/site.ts` (`JURURANCANG.website`) |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |
 | Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/app/rekrutmen/page.tsx` (`BATCH`) |
 

@@ -193,6 +193,29 @@ textarea:focus-visible {
   mask-image: radial-gradient(ellipse at 50% 45%, black 25%, transparent 75%);
 }
 
+/* Hero halaman dengan beberapa foto (PageHero `slides`): crossfade + zoom pelan, 6 detik per foto.
+   Persentase di bawah untuk 4 foto (25% per foto). Durasi siklus dari variabel --slide-cycle. */
+@keyframes hero-slide {
+  0% { opacity: 0; transform: scale(1.04); }
+  4% { opacity: 1; }
+  25% { opacity: 1; }
+  29% { opacity: 0; transform: scale(1.12); }
+  100% { opacity: 0; transform: scale(1.12); }
+}
+.hero-slide {
+  opacity: 0;
+  animation: hero-slide var(--slide-cycle, 24s) linear infinite both;
+}
+@keyframes hero-slide-bar {
+  0% { transform: scaleX(0); }
+  25% { transform: scaleX(1); }
+  25.01%, 100% { transform: scaleX(0); }
+}
+.hero-slide-bar {
+  transform: scaleX(0);
+  animation: hero-slide-bar var(--slide-cycle, 24s) linear infinite both;
+}
+
 /* Latar hero beranda (HeroBackdrop): bayangan pita melayang, gedung samar, anyaman garis mengalir */
 @keyframes ribbon-a {
   from { transform: translate(0, 0) rotate(0deg); }
@@ -334,5 +357,13 @@ textarea:focus-visible {
   }
   .tilt-card:hover {
     transform: none;
+  }
+  /* Hero foto: tampilkan foto pertama saja, tanpa animasi */
+  .hero-slide,
+  .hero-slide-bar {
+    animation: none;
+  }
+  .hero-slides .hero-slide:first-child {
+    opacity: 1;
   }
 }
