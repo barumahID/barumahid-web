@@ -20,7 +20,7 @@ export default function SemestaMahaksa() {
 
   return (
     <section id="astro" className="relative isolate overflow-hidden bg-[#0B0B0F] text-white">
-      {/* Latar garis cahaya yang menyatu ke inti orbit (arahan user: ganti grid, referensi Light Streak BG) */}
+      {/* Latar garis cahaya redup pengganti grid (arahan user: jangan menonjol, referensi Light Streak BG) */}
       <LightStreaks className="-z-10" />
       <div className="pointer-events-none absolute left-[62%] top-[40%] -z-10 h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-red/10 blur-3xl" aria-hidden="true" />
 
