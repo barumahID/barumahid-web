@@ -10,8 +10,8 @@ import { ADDRESSES } from "@/data/site";
 // Kartu alamat bisa diklik, membuka Google Maps.
 // Angka dari STATS, titik kota hanya yang verified (aturan CLAUDE.md).
 const OFFICES = [
-  { cityId: "padang", label: `${ADDRESSES.hq.label}, Padang`, short: ADDRESSES.hq.label },
-  { cityId: "tangerang", label: `${ADDRESSES.vo.label}, Tangerang`, short: ADDRESSES.vo.label },
+  { cityId: "padang", label: `${ADDRESSES.hq.label}, Padang` },
+  { cityId: "tangerang", label: `${ADDRESSES.vo.label}, Tangerang` },
 ];
 
 export default function PetaProyek() {

@@ -25,7 +25,7 @@ export const CONTECH_REACH = {
   label: "Jejak proyek",
   title: "Proyek yang sudah kami kerjakan.",
   // Ringkasan wilayah dari user, ditampilkan dalam satu baris.
-  regions: ["Sumatera Barat", "Jambi", "Palembang", "Jabodetabek", "Kinabalu", "Mamuju"],
+  regions: ["Sumatera Barat", "Jambi", "Palembang", "Jabodetabek", "Kinibalu", "Mamuju"],
   stats: [
     { value: STATS.byService.renovasiBangun, label: "Proyek Renovasi dan Bangun Konstruksi" },
     { value: STATS.byService.gambar, label: "Proyek Gambar & Modelling" },
@@ -61,3 +61,38 @@ export const GAMBAR_STRUKTUR = {
   body: "Dikerjakan bersama partner kami, Jururancang Engineering Mahaksa. Tim insinyurnya menyiapkan denah, gambar kerja, model 3D, sampai hitungan struktur sesuai standar yang berlaku. Tinggal pilih paket sesuai kebutuhan dan tenggat proyekmu.",
   partnerTitle: "Paket harga dikerjakan oleh partner kami",
 };
+
+// Koridor foto 3D di bagian renovasi dan bangun: foto proyek saat konstruksi (bahan user + foto proyek yang ada).
+export const KORIDOR_KONSTRUKSI = Array.from({ length: 16 }, (_, i) => ({
+  src: `/images/konstruksi/galeri/konstruksi-${String(i + 1).padStart(2, "0")}.webp`,
+  alt: "Foto proyek konstruksi barumahID",
+}));
+
+// Pembanding geser di bagian gambar dan struktur. Versi garis dibuat dari render yang sama (deteksi tepi),
+// jadi sudut pandangnya persis sama.
+export const COMPARE_PAIRS = [
+  {
+    id: "rumah",
+    tab: "Rumah tinggal 2 lantai",
+    before: { src: "/images/proyek/garis-render-rumah-2-lantai.webp", alt: "Gambar garis rumah tinggal 2 lantai", label: "Gambar garis" },
+    after: { src: "/images/proyek/render-rumah-2-lantai.webp", alt: "Render 3D rumah tinggal 2 lantai", label: "Render 3D" },
+  },
+  {
+    id: "pesantren",
+    tab: "Gedung pesantren",
+    before: { src: "/images/proyek/garis-render-pesantren.webp", alt: "Gambar garis gedung pesantren tiga lantai", label: "Gambar garis" },
+    after: { src: "/images/proyek/render-pesantren.webp", alt: "Render 3D gedung pesantren tiga lantai", label: "Render 3D" },
+  },
+];
+
+// Slider kartu bertumpuk: karya gambar, modelling, dan analisa struktur.
+export const KARYA_GAMBAR_STRUKTUR = [
+  { src: "/images/proyek/render-rumah-2-lantai.webp", alt: "Render 3D rumah tinggal 2 lantai", title: "Desain rumah tinggal 2 lantai", tag: "Gambar & Modelling" },
+  { src: "/images/proyek/model-struktur-gedung-baja.webp", alt: "Model struktur gedung restoran baja di software analisa", title: "Struktur gedung restoran baja", tag: "Analisa Struktur" },
+  { src: "/images/proyek/render-pesantren.webp", alt: "Render 3D gedung pesantren tiga lantai", title: "Desain dan struktur pesantren", tag: "Analisa Struktur" },
+  { src: "/images/proyek/desain-saluran-precast.webp", alt: "Model 3D potongan saluran air precast", title: "Desain saluran precast", tag: "Gambar & Modelling" },
+  { src: "/images/proyek/model-struktur-shelter.webp", alt: "Model struktur shelter di software analisa", title: "Struktur shelter", tag: "Analisa Struktur" },
+  { src: "/images/proyek/analisa-struktur-jembatan.webp", alt: "Model struktur jembatan dengan pilar dan pondasi tiang", title: "Analisa struktur jembatan", tag: "Analisa Struktur" },
+  { src: "/images/proyek/model-struktur-menara-masjid.webp", alt: "Model struktur menara masjid di software analisa", title: "Struktur menara masjid", tag: "Analisa Struktur" },
+  { src: "/images/proyek/analisa-dermaga.webp", alt: "Tiang dan balok beton di bawah dermaga di tepi laut", title: "Analisa struktur dermaga", tag: "Analisa Struktur" },
+];

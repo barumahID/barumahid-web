@@ -23,6 +23,9 @@ export interface ProjectCity {
   basis: "lokasi" | "klien";
   /** false = belum dikonfirmasi, tidak tampil di peta */
   verified: boolean;
+  /** Koordinat untuk globe di /layanan/contech */
+  lat: number;
+  lon: number;
   /** Diisi kalau proyek di luar Indonesia. Tidak dihitung di STATS.provinces. */
   country?: string;
   projects: { title: string; service: Service }[];
@@ -33,6 +36,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "padang",
     name: "Padang",
     province: "Sumatera Barat",
+    lat: -0.9471,
+    lon: 100.3543,
     basis: "lokasi",
     verified: true,
     projects: [
@@ -55,6 +60,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "painan",
     name: "Painan",
     province: "Sumatera Barat",
+    lat: -1.3502,
+    lon: 100.5753,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Analisa struktur baja komposit gudang pabrik es", service: "struktur" }],
@@ -63,6 +70,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "bukittinggi",
     name: "Bukittinggi",
     province: "Sumatera Barat",
+    lat: -0.3056,
+    lon: 100.3692,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Desain drawing kawasan", service: "gambar" }],
@@ -71,6 +80,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "batusangkar",
     name: "Batusangkar",
     province: "Sumatera Barat",
+    lat: -0.4559,
+    lon: 100.5953,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Desain dan modelling rumah (BIM)", service: "gambar" }],
@@ -79,6 +90,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "dharmasraya",
     name: "Dharmasraya",
     province: "Sumatera Barat",
+    lat: -1.0236,
+    lon: 101.5469,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Desain drawing masjid", service: "gambar" }],
@@ -87,6 +100,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "bandung",
     name: "Bandung",
     province: "Jawa Barat",
+    lat: -6.9175,
+    lon: 107.6191,
     basis: "klien",
     verified: true,
     projects: [
@@ -98,6 +113,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "cimahi",
     name: "Cimahi",
     province: "Jawa Barat",
+    lat: -6.8722,
+    lon: 107.5425,
     basis: "klien",
     verified: true,
     projects: [
@@ -109,6 +126,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "jonggol",
     name: "Jonggol",
     province: "Jawa Barat",
+    lat: -6.4708,
+    lon: 107.0544,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Analisa struktur gedung TPQ", service: "struktur" }],
@@ -117,6 +136,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "tangerang",
     name: "Tangerang",
     province: "Banten",
+    lat: -6.1783,
+    lon: 106.6319,
     basis: "lokasi",
     verified: true,
     projects: [
@@ -128,6 +149,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "mamuju",
     name: "Mamuju",
     province: "Sulawesi Barat",
+    lat: -2.6806,
+    lon: 118.8861,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Desain drawing dermaga", service: "gambar" }],
@@ -137,6 +160,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "cikarang",
     name: "Cikarang",
     province: "Jawa Barat",
+    lat: -6.2615,
+    lon: 107.158,
     basis: "lokasi",
     verified: true,
     projects: [{ title: "Analisa struktur bangunan", service: "struktur" }],
@@ -146,6 +171,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "kinabalu",
     name: "Kota Kinabalu",
     province: "Sabah, Malaysia",
+    lat: 5.9804,
+    lon: 116.0735,
     basis: "lokasi",
     verified: true,
     country: "Malaysia",
@@ -157,6 +184,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "sumedang",
     name: "Sumedang",
     province: "Jawa Barat",
+    lat: -6.8381,
+    lon: 107.9206,
     basis: "lokasi",
     verified: false,
     projects: [{ title: "Modelling BIM jembatan dan box tunnel", service: "gambar" }],
@@ -166,6 +195,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "jambi",
     name: "Jambi",
     province: "Jambi",
+    lat: -1.6101,
+    lon: 103.6131,
     basis: "lokasi",
     verified: true,
     projects: [],
@@ -174,6 +205,8 @@ export const PROJECT_CITIES: ProjectCity[] = [
     id: "palembang",
     name: "Palembang",
     province: "Sumatera Selatan",
+    lat: -2.9761,
+    lon: 104.7458,
     basis: "lokasi",
     verified: true,
     projects: [],

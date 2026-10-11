@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
-// Alat bantu animasi 3D isometrik (SVG + framer-motion) untuk halaman ConTech.
+// Alat bantu animasi 3D isometrik (SVG + framer-motion) untuk halaman ConTech (dipakai TechExploded).
 // Koordinat 3D (x, y, z) dalam "unit", z ke atas. Proyeksi isometrik 30 derajat.
 
 export type V3 = [number, number, number];
@@ -121,99 +120,5 @@ export function IsoBox({ box, tone, on, mode = "drop", delay = 0 }: { box: Box; 
         <path key={k} d={full[k]} fill={tone[k]} {...style} />
       ))}
     </motion.g>
-  );
-}
-
-/** Garis 3D yang "tergambar" (pathLength). Garis putus-putus hanya memudar. */
-export function IsoLine({
-  points,
-  on,
-  stroke,
-  sw = 1.4,
-  dash,
-  delay = 0,
-  close = false,
-  duration = 0.9,
-  opacity = 1,
-}: {
-  points: V3[];
-  on: boolean;
-  stroke: string;
-  sw?: number;
-  dash?: string;
-  delay?: number;
-  close?: boolean;
-  duration?: number;
-  opacity?: number;
-}) {
-  const d = pathOf(points, close);
-  const t = { duration: on ? duration : 0.3, delay: on ? delay : 0, ease: "easeInOut" as const };
-  if (dash) {
-    return (
-      <motion.path d={d} fill="none" stroke={stroke} strokeWidth={sw} strokeDasharray={dash} initial={false} animate={{ opacity: on ? opacity : 0 }} transition={t} />
-    );
-  }
-  return (
-    <motion.path
-      d={d}
-      fill="none"
-      stroke={stroke}
-      strokeWidth={sw}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      initial={false}
-      animate={{ pathLength: on ? 1 : 0, opacity: on ? opacity : 0 }}
-      transition={t}
-    />
-  );
-}
-
-/**
- * Urutan langkah animasi: 0..steps, tahan sebentar di akhir, lalu ulang dari awal.
- * Hanya berjalan saat terlihat di layar. Kalau pengguna memilih kurangi animasi, langsung tampil lengkap.
- */
-export function useSequence(steps: number, stepMs: number, holdMs: number) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { amount: 0.35 });
-  const reduce = useReducedMotion();
-  const [step, setStep] = useState(-1);
-
-  useEffect(() => {
-    if (reduce || !inView) return;
-    let s = -1;
-    let timer: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      s = s >= steps ? -1 : s + 1;
-      setStep(s);
-      timer = setTimeout(tick, s === steps ? holdMs : s === -1 ? 900 : stepMs);
-    };
-    timer = setTimeout(tick, 250);
-    return () => clearTimeout(timer);
-  }, [reduce, inView, steps, stepMs, holdMs]);
-
-  return { ref, step: reduce ? steps : step };
-}
-
-/** Label tahapan di bawah animasi; tahap aktif ditandai titik merah. */
-export function StageCaptions({ stages, step, dark = false }: { stages: { label: string; at: number }[]; step: number; dark?: boolean }) {
-  const active = stages.reduce((acc, s, i) => (step >= s.at ? i : acc), -1);
-  return (
-    <ol className="flex flex-wrap justify-center gap-x-5 gap-y-2" aria-hidden="true">
-      {stages.map((s, i) => (
-        <li
-          key={s.label}
-          className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors duration-500 ${
-            i <= active ? (dark ? "text-white" : "text-brand-dark") : dark ? "text-white/30" : "text-brand-dark/30"
-          }`}
-        >
-          <span
-            className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${
-              i === active ? "bg-brand-red" : i < active ? (dark ? "bg-white/70" : "bg-brand-dark/60") : dark ? "bg-white/20" : "bg-brand-dark/20"
-            }`}
-          />
-          {s.label}
-        </li>
-      ))}
-    </ol>
   );
 }

@@ -4,18 +4,27 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import ButtonLink from "@/components/ui/ButtonLink";
-import ProjectMap, { type MapOffice } from "@/components/constech/ProjectMap";
+import ProjectGlobe, { type GlobeOffice } from "@/components/constech/ProjectGlobe";
 import PricingTiers from "@/components/constech/PricingTiers";
-import PortfolioCard from "@/components/portfolio/PortfolioCard";
+import OrbitGallery from "@/components/portfolio/OrbitGallery";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
 import ChannelIcon from "@/components/icons/ChannelIcon";
-import BuildSequence from "@/components/constech/anim/BuildSequence";
-import BlueprintModel from "@/components/constech/anim/BlueprintModel";
+import ImageCorridor from "@/components/constech/ImageCorridor";
+import SplitCompare from "@/components/constech/SplitCompare";
+import StackingSlider from "@/components/constech/StackingSlider";
 import TechExploded from "@/components/constech/anim/TechExploded";
-import { PORTFOLIO, verifiedCities } from "@/data/projects";
+import { PORTFOLIO, PROJECT_CITIES, SERVICE_LABEL, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
-import { CONTECH_HERO, CONTECH_REACH, GAMBAR_STRUKTUR, RENOVASI_BANGUN } from "@/data/contech";
+import {
+  COMPARE_PAIRS,
+  CONTECH_HERO,
+  CONTECH_REACH,
+  GAMBAR_STRUKTUR,
+  KARYA_GAMBAR_STRUKTUR,
+  KORIDOR_KONSTRUKSI,
+  RENOVASI_BANGUN,
+} from "@/data/contech";
 import { ADDRESSES, JURURANCANG, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -25,10 +34,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/layanan/contech" },
 };
 
-// Base barumahID (Padang) dan VO (Tangerang), ditandai di peta.
-const OFFICES: MapOffice[] = [
-  { cityId: "padang", label: `${ADDRESSES.hq.label}, Padang`, short: ADDRESSES.hq.label },
-  { cityId: "tangerang", label: `${ADDRESSES.vo.label}, Tangerang`, short: ADDRESSES.vo.label },
+// Base barumahID (Padang) dan VO (Tangerang), ditandai di globe tanpa tulisan (keterangan ada di bawah globe).
+const cityLL = (id: string) => {
+  const c = PROJECT_CITIES.find((x) => x.id === id)!;
+  return { lat: c.lat, lon: c.lon };
+};
+const OFFICES: GlobeOffice[] = [
+  { label: `${ADDRESSES.hq.label}, Padang`, ...cityLL("padang") },
+  { label: `${ADDRESSES.vo.label}, Tangerang`, ...cityLL("tangerang") },
 ];
 
 function SectionHead({ label, title, dark = false }: { label: string; title: string; dark?: boolean }) {
@@ -96,7 +109,7 @@ export default function ContechPage() {
             ))}
           </div>
           <div className="mt-10">
-            <ProjectMap cities={cities} offices={OFFICES} details={false} />
+            <ProjectGlobe cities={cities} offices={OFFICES} />
           </div>
           {/* Visual 3D sinematik menggantikan daftar kota dan panel proyek */}
           <Reveal className="mt-6">
@@ -108,15 +121,17 @@ export default function ContechPage() {
       {/* 3. Renovasi dan bangun (layanan unggulan) */}
       <section id="renovasi" className="bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-            <Reveal className="lg:col-span-5">
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-14">
+            <Reveal className="lg:col-span-7">
               <SectionHead label={RENOVASI_BANGUN.label} title={RENOVASI_BANGUN.title} />
-              <p className="mt-6 text-[16.5px] leading-relaxed text-brand-gray">{RENOVASI_BANGUN.body}</p>
             </Reveal>
-            <Reveal className="lg:col-span-7" delay={80}>
-              <BuildSequence />
+            <Reveal className="lg:col-span-5" delay={80}>
+              <p className="text-[16.5px] leading-relaxed text-brand-gray">{RENOVASI_BANGUN.body}</p>
             </Reveal>
           </div>
+          <Reveal className="mt-10">
+            <ImageCorridor images={KORIDOR_KONSTRUKSI} label="Galeri foto proyek konstruksi barumahID yang bergerak seperti lorong" />
+          </Reveal>
 
           {/* Paket: cakupan pekerjaan, harga dihitung per item (AHSP) */}
           <div className="mt-12 grid gap-4 md:grid-cols-3">
@@ -184,9 +199,15 @@ export default function ContechPage() {
               <p className="mt-6 text-[16.5px] leading-relaxed text-brand-gray">{GAMBAR_STRUKTUR.body}</p>
             </Reveal>
             <Reveal className="lg:col-span-7" delay={80}>
-              <BlueprintModel />
+              <SplitCompare pairs={COMPARE_PAIRS} />
             </Reveal>
           </div>
+          <Reveal className="mt-14">
+            <p className="type-micro text-brand-red">Karya gambar dan struktur</p>
+            <div className="mt-5">
+              <StackingSlider slides={KARYA_GAMBAR_STRUKTUR} />
+            </div>
+          </Reveal>
 
           {/* Judul paket harga: logo dan kontak partner */}
           <Reveal>
@@ -277,10 +298,8 @@ export default function ContechPage() {
               </Link>
             </div>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PORTFOLIO.slice(0, 6).map((p) => (
-              <PortfolioCard key={p.slug} item={p} />
-            ))}
+          <div className="mt-10">
+            <OrbitGallery items={PORTFOLIO.map((p) => ({ src: p.image, alt: p.imageAlt, title: p.title, tag: SERVICE_LABEL[p.service] }))} />
           </div>
         </div>
       </section>
