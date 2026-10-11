@@ -61,13 +61,12 @@ const nama = (label = "Nama lengkap"): FieldDef => ({
 });
 const wa: FieldDef = {
   name: "WA",
-  label: "Nomor WhatsApp",
+  label: "No. WhatsApp aktif",
   type: "tel",
   required: true,
   half: true,
   maxLength: 20,
   placeholder: "08xxxxxxxxxx",
-  help: "Kami menghubungi lewat nomor ini.",
 };
 const email = (required = false): FieldDef => ({
   name: "Email",

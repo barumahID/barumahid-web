@@ -8,6 +8,8 @@ import type { ProjectCity } from "@/data/projects";
 // Google Earth, referensi visual "AtomicGlobe" (Framer), dibuat ulang sendiri dengan canvas 2D + proyeksi ortografis.
 // - Daratan: titik dari public/data/globe-dots.json (scripts/gen-globe-dots.mjs). Indonesia selalu digambar
 //   dengan titik rapat dan lebih terang supaya jadi fokus; negara lain lebih jarang dan redup.
+// - Saat dibuka langsung fokus ke Indonesia (zoom menyesuaikan lebar bingkai supaya seluruh Indonesia pas),
+//   diam sampai pengguna menggeser atau zoom sendiri (arahan user Okt 2026).
 // - Geser untuk memutar (dengan inersia). Zoom: tombol +/−, Ctrl/⌘ + scroll, atau dua jari di HP.
 // - Titik merah = kota proyek, cincin putih putus-putus = Base barumahID dan VO. Nama muncul saat disorot/diketuk.
 
@@ -35,9 +37,17 @@ interface Points {
 }
 
 const RAD = Math.PI / 180;
-const HOME = { lambda: 113, phi: -2, zoom: 1.25 };
+const HOME = { lambda: 118, phi: -2.5 };
 const MIN_ZOOM = 0.85;
-const MAX_ZOOM = 7;
+const MAX_ZOOM = 16;
+
+// Zoom supaya seluruh Indonesia (95°-141° BT, 11° LS-6° LU) pas di bingkai selebar w x h (px CSS).
+// Dari titik tengah HOME: lebar Indonesia sekitar 0,78 R dan tingginya sekitar 0,3 R (proyeksi ortografis).
+function fitZoom(w: number, h: number) {
+  if (!w || !h) return 1.25;
+  const R = Math.min((w * 0.9) / 0.78, (h * 0.86) / 0.3);
+  return Math.min(MAX_ZOOM, Math.max(1.25, R / (Math.min(w, h) * 0.42)));
+}
 
 function toPoints(flat: number[]): Points {
   const n = flat.length / 2;
@@ -66,7 +76,8 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
     lambda: HOME.lambda,
     phi: HOME.phi,
     zoom: 0.95,
-    targetZoom: HOME.zoom,
+    targetZoom: 1.25,
+    homeZoom: 1.25,
     vx: 0,
     vy: 0,
     dragging: false,
@@ -106,7 +117,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
   const goHome = useCallback(() => {
     const st = s.current;
     st.homing = true;
-    st.targetZoom = HOME.zoom;
+    st.targetZoom = st.homeZoom;
     st.vx = st.vy = 0;
   }, []);
 
@@ -131,6 +142,11 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
       h = r.height;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
+      st.homeZoom = fitZoom(w, h);
+      if (!st.interacted) {
+        st.targetZoom = st.homeZoom;
+        if (reduce) st.zoom = st.homeZoom;
+      }
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -154,7 +170,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
       if (now - lastFrame < 32) return;
       lastFrame = now;
 
-      // Gerak: ayun pelan di sekitar Indonesia sampai pengguna berinteraksi, inersia setelah digeser
+      // Gerak: diam di Indonesia sampai pengguna berinteraksi, inersia setelah digeser
       if (st.homing) {
         st.lambda += (HOME.lambda - st.lambda) * 0.08;
         st.phi += (HOME.phi - st.phi) * 0.08;
@@ -162,8 +178,6 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
           st.homing = false;
           st.interacted = false;
         }
-      } else if (!st.interacted && !reduce) {
-        st.lambda = HOME.lambda + Math.sin((now - start) / 5200) * 16;
       } else if (!st.dragging && (Math.abs(st.vx) > 0.01 || Math.abs(st.vy) > 0.01)) {
         st.lambda -= (st.vx * 0.25) / st.zoom;
         st.phi = Math.max(-75, Math.min(75, st.phi + (st.vy * 0.25) / st.zoom));
