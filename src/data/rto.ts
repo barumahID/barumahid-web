@@ -30,7 +30,7 @@ export const RTO_PATHS: RtoPath[] = [
     name: "Siap Bangun",
     explainer: "Punya lahan, siap membangun",
     forWho: "Untuk kamu yang sudah punya tanah tapi modal bangun belum cukup.",
-    how: "Sewa sambil mengumpulkan modal, lalu bangun di tanahmu sendiri dengan RAB transparan dari tim ConsTech.",
+    how: "Sewa sambil mengumpulkan modal, lalu bangun di tanahmu sendiri dengan RAB transparan dari tim ConTech.",
     status: "Inti program",
   },
   {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Pillar } from "@/data/company";
 
-// Empat kartu LBAG. Tiap kartu punya toggle kecil ConsTech / PropTech untuk menunjukkan perannya.
+// Empat kartu LBAG. Tiap kartu punya toggle kecil ConTech / PropTech untuk menunjukkan perannya.
 function PillarCard({ p }: { p: Pillar }) {
   const [wing, setWing] = useState<"constech" | "proptech">("constech");
   return (
@@ -21,7 +21,7 @@ function PillarCard({ p }: { p: Pillar }) {
                 wing === w ? "bg-brand-dark text-white" : "text-brand-gray hover:text-brand-dark"
               }`}
             >
-              {w === "constech" ? "ConsTech" : "PropTech"}
+              {w === "constech" ? "ConTech" : "PropTech"}
             </button>
           ))}
         </div>
@@ -31,7 +31,7 @@ function PillarCard({ p }: { p: Pillar }) {
       <div className="mt-auto pt-5">
         <div className="rounded-2xl bg-brand-cream px-4 py-3.5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-red">
-            Di {wing === "constech" ? "ConsTech" : "PropTech"}
+            Di {wing === "constech" ? "ConTech" : "PropTech"}
           </p>
           <p className="mt-1 text-[14px] font-medium leading-snug text-brand-dark" aria-live="polite">
             {wing === "constech" ? p.constech : p.proptech}

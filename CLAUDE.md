@@ -25,11 +25,11 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 ## Struktur situs
 | Route | Isi |
 |---|---|
-| `/` | Beranda bersih gaya tikalindustries.com. Halaman 1: hero scroll-expand berisi **dua gambar** (Jasa Konstruksi ke `/layanan/constech`, Rent-to-Own ke `/layanan/rto`) di atas latar beranimasi (`HeroBackdrop`: foto gedung + gelombang merah yang di-blur dan diwarnai ulang ke palet situs, garis dan cahaya bergerak, parallax kursor), membesar penuh saat digulir. Halaman 2: deskripsi barumahID (ConsTech + PropTech) dengan roadmap histori beranimasi di kanan, lalu marquee logo event dan partner (logo saja). Penjelasan lengkap ada di `/tentang`. |
-| `/layanan` | Hub 3 layanan (RTO, ConsTech, Kemitraan). |
+| `/` | Beranda bersih gaya tikalindustries.com. Halaman 1: hero scroll-expand berisi **dua gambar** (Jasa Konstruksi ke `/layanan/contech`, Rent-to-Own ke `/layanan/rto`) di atas latar beranimasi (`HeroBackdrop`: kolase karya barumahID di tepi layar, yaitu model struktur jadi line art tinta, render saluran 3D melayang dengan bayangan, foto proyek jadi kartu; plus bayangan daun bergoyang, grid blueprint, garis ukur merah, parallax kursor. Bahan di `public/images/beranda/latar/`, sudah diolah ke palet situs). Tagline hero: "Wujudkan proyekmu. Miliki rumahmu.", membesar penuh saat digulir. Halaman 2: deskripsi barumahID (ConTech + PropTech) dengan roadmap histori beranimasi di kanan, lalu marquee logo event dan partner (logo saja). Penjelasan lengkap ada di `/tentang`. |
+| `/layanan` | Hub 3 layanan (RTO, ConTech, Kemitraan). |
 | `/layanan/rto` | Cara kerja, 3 jalur, kanal DP, simulator DP (`#simulasi`), keamanan dana, listing (`#listing`), FAQ dan form customer RTO (`#daftar`). |
 | `/layanan/rto/[slug]` | Detail listing RTO, info yang tampil beda per kategori (Siap Berdaya, Siap Bangun, Siap Beli). Selama `LISTINGS` kosong, semua slug 404. Alamat persis tidak ditampilkan, cukup kelurahan dan kecamatan. |
-| `/layanan/constech` | Jasa, peta proyek (`#peta`), harga (`#harga`), renovasi dan bangun (`#renovasi`), portofolio, form konsultasi (`#konsultasi`). |
+| `/layanan/contech` | Jasa, peta proyek (`#peta`), harga (`#harga`), renovasi dan bangun (`#renovasi`), portofolio, form konsultasi (`#konsultasi`). |
 | `/kemitraan` | Ekosistem dan 7 peran mitra. |
 | `/kemitraan/daftar/[peran]` | Form per peran, 7 halaman statis dari `src/data/roles.ts`. |
 | `/portofolio` | Grid portofolio dengan filter layanan. |
@@ -40,17 +40,17 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 | `/kebijakan-privasi` | DRAF v1 mengacu UU PDP. Perlu review hukum sebelum dianggap final. |
 | `/artikel`, `/artikel/[slug]` | Siap dipakai, kosong untuk sekarang. |
 
-Redirect permanen di `next.config.ts`: `/rto`, `/program-rto`, `/ekosistem` ke `/layanan/rto`; `/services/*` ke `/layanan/constech`; `/mitra` ke `/kemitraan`; `/daftar` ke `/masuk`.
+Redirect permanen di `next.config.ts`: `/rto`, `/program-rto`, `/ekosistem` ke `/layanan/rto`; `/services/*` dan `/layanan/constech` (nama lama, sebelum ConsTech diganti ConTech) ke `/layanan/contech`; `/mitra` ke `/kemitraan`; `/daftar` ke `/masuk`.
 
 SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `robots.ts`, `opengraph-image.jpg`, JSON-LD LocalBusiness (layout) dan FAQPage (`/tentang`, dari `FaqTestimonials`).
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
-- `beranda.ts`: judul hero dan gambar latar (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`, versi lengkap tetap `TIMELINE` di `company.ts`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
+- `beranda.ts`: judul, tagline, dan subline hero (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`, versi lengkap tetap `TIMELINE` di `company.ts`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
 - `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`.
 - `nav.ts`: menu utama dan dropdown Layanan.
 - `projects.ts`: kota proyek untuk peta, portofolio, `STATS`. Kota luar negeri diberi `country` (mis. Kota Kinabalu, Malaysia) dan tidak dihitung di `STATS.provinces`; jumlah negara di `STATS.countries`.
-- `pricing.ts`: tier harga ConsTech (Basic, Plus, Pro per m²), isi paket, langkah order.
+- `pricing.ts`: tier harga ConTech (Basic, Plus, Pro per m²), isi paket, langkah order.
 - `rto.ts`: jalur RTO, langkah, kanal DP, keamanan dana, FAQ RTO.
 - `listings.ts`: listing RTO (kosong). `roles.ts`: 7 peran mitra. `masuk.ts`: pilihan di `/masuk`.
 - `company.ts`: isi halaman Tentang. `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program (`EVENTS_AND_PROGRAMS`, tampil di `/tentang`) dan partner (`PARTNERS`). Semua yang punya `logo` ({src, w, h}, file di `/public/logos/`) ikut di marquee beranda (`MARQUEE_LOGOS`); tanpa logo, di `/tentang` tampil ikon piala.
@@ -75,7 +75,7 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 
 ## Komponen
 - `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
-- `layout/Footer.tsx`: logo PT tampil di sini saja (simbol `public/brand/logo-pt-mark.webp`, nama PT ditulis pakai font situs, bukan gambar logo utuh). Alamat bisa diklik langsung ke Google Maps, tanpa tombol tambahan (begitu juga di `/kontak` dan `/tentang`).
+- `layout/Footer.tsx`: logo PT tampil di sini saja (komponen `brand/PtMark`: simbol saja, warna asli di latar terang, putih di latar gelap seperti logo barumahID; nama PT ditulis pakai font situs, bukan gambar logo utuh). Alamat bisa diklik langsung ke Google Maps, tanpa tombol tambahan (begitu juga di `/kontak` dan `/tentang`).
 - `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
 - `ui/`: `PageHero`, `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
 - `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `HistoryRoadmap` (roadmap beranda, animasi berurutan saat masuk layar), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.

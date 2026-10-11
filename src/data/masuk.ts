@@ -18,8 +18,8 @@ export const MASUK_OPTIONS: MasukOption[] = [
   },
   {
     label: "Klien konstruksi",
-    hint: "ConsTech",
-    href: "/layanan/constech#konsultasi",
+    hint: "ConTech",
+    href: "/layanan/contech#konsultasi",
     description: "Minta konsultasi gambar, struktur, renovasi, atau bangun.",
   },
   {

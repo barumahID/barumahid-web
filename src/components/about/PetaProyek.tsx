@@ -94,7 +94,7 @@ export default function PetaProyek() {
           <ButtonLink href="/portofolio" variant="red">
             Lihat portofolio
           </ButtonLink>
-          <ButtonLink href="/layanan/constech" variant="outline-light">
+          <ButtonLink href="/layanan/contech" variant="outline-light">
             Jasa konstruksi
           </ButtonLink>
         </div>

@@ -9,7 +9,7 @@ export const SITE = {
   tagline: "Sewa hari ini. Miliki hunian nantinya.",
   taglineConstech: "Proyekmu, dibikin mudah aja.",
   description:
-    "barumahID membantu kamu membangun rumah dengan benar lewat layanan ConsTech, lalu membuka jalan untuk memilikinya lewat program Rent-to-Own.",
+    "barumahID membantu kamu membangun rumah dengan benar lewat layanan ConTech, lalu membuka jalan untuk memilikinya lewat program Rent-to-Own.",
   foundedBrand: "11 November 2018",
   foundedCompany: "9 Januari 2024",
 } as const;

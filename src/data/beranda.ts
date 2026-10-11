@@ -6,20 +6,20 @@ import { STATS } from "./projects";
 
 export const HOME_HERO = {
   title: "barumahID",
-  tagline: "Platform pendamping kepemilikan rumah",
-  // Latar dari bahan user: kartu nama PT tanpa teks (no HP, alamat, email dihapus), di-blur,
-  // diwarnai ulang ke palet situs. Logo PT dipindah ke footer (arahan user).
-  background: "/images/beranda/hero-bg.webp",
+  // Satu kalimat yang menyatukan dua lini: proyek (ConTech) dan kepemilikan rumah (PropTech).
+  tagline: "Wujudkan proyekmu. Miliki rumahmu.",
+  subline: "Jasa konstruksi dan jalan menuju rumah sendiri, dalam satu platform.",
 };
 
-// Halaman 2 beranda. Arahan user: barumahID bisnis yang sedang berkembang di lini ConsTech dan PropTech,
+// Halaman 2 beranda. Arahan user: barumahID bisnis yang sedang berkembang di lini ConTech dan PropTech,
 // platform untuk mewujudkan proyek dan mendampingi kepemilikan rumah.
 export const HOME_ABOUT = {
   label: "Tentang barumahID",
-  title: "Wujudkan proyekmu. Kami dampingi sampai punya rumah.",
+  // Ditulis dari sudut pandang calon klien: sekali baca langsung paham barumahID itu apa dan bisa bantu apa.
+  title: "Wujudkan proyekmu, kami dampingi hingga miliki rumah.",
   body: [
-    "barumahID adalah bisnis yang terus bertumbuh di dua lini, ConsTech dan PropTech. Kami jadi platform tempat proyekmu diwujudkan, sekaligus teman jalan menuju rumah milik sendiri.",
-    "Di ConsTech, insinyur kami mengerjakan gambar, analisa struktur, renovasi, dan bangun. Biayanya dihitung per item pekerjaan, jadi jelas dari awal. Di PropTech, kami sedang menyiapkan program Rent-to-Own: sewa hari ini, miliki hunian nantinya.",
+    "barumahID adalah platform yang menyatukan jasa konstruksi (ConTech) dan jalan menuju kepemilikan rumah (PropTech). Satu tempat untuk membangun, merenovasi, sampai punya rumah sendiri.",
+    "Butuh gambar, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang jelas sejak awal. Ingin punya rumah tapi DP belum cukup? Lewat program Rent-to-Own yang sedang kami siapkan, kamu bisa sewa sambil mengumpulkan DP.",
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
@@ -46,7 +46,7 @@ export const HOME_HISTORY: HistoryStep[] = [
   {
     period: "2024 – sekarang",
     title: "Resmi jadi PT",
-    body: "PT Inditek Bluprim Mahaksa berdiri. barumahID tumbuh di dua lini: ConsTech dan PropTech.",
+    body: "PT Inditek Bluprim Mahaksa berdiri. barumahID tumbuh di dua lini: ConTech dan PropTech.",
     current: true,
   },
 ];
@@ -66,7 +66,7 @@ export interface PhotoCard {
 // Dua gambar di hero beranda.
 export const DUA_LAYANAN: PhotoCard[] = [
   {
-    href: "/layanan/constech",
+    href: "/layanan/contech",
     audience: "Untuk pemilik proyek",
     name: "Jasa Konstruksi",
     headline: "Proyekmu, dibikin mudah aja.",
@@ -101,9 +101,9 @@ export const LAYANAN_CARDS: PhotoCard[] = [
     alt: "Rumah tinggal satu lantai dengan pagar dan taman depan",
   },
   {
-    href: "/layanan/constech",
+    href: "/layanan/contech",
     audience: "Untuk pemilik proyek",
-    name: "ConsTech",
+    name: "ConTech",
     headline: "Proyekmu, dibikin mudah aja.",
     body: "Jasa gambar, analisa struktur, renovasi, dan bangun. Dikerjakan insinyur, dihitung transparan.",
     cta: "Lihat jasa dan harga",

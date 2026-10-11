@@ -11,8 +11,10 @@ const nextConfig: NextConfig = {
       { source: "/rto", destination: "/layanan/rto", permanent: true },
       { source: "/program-rto", destination: "/layanan/rto", permanent: true },
       { source: "/ekosistem", destination: "/layanan/rto", permanent: true },
-      { source: "/services", destination: "/layanan/constech", permanent: true },
-      { source: "/services/:path*", destination: "/layanan/constech", permanent: true },
+      { source: "/services", destination: "/layanan/contech", permanent: true },
+      { source: "/services/:path*", destination: "/layanan/contech", permanent: true },
+      // Nama lini diganti ConsTech -> ConTech (Okt 2026); link lama tetap jalan.
+      { source: "/layanan/constech", destination: "/layanan/contech", permanent: true },
       { source: "/mitra", destination: "/kemitraan", permanent: true },
       { source: "/daftar", destination: "/masuk", permanent: true },
     ];

@@ -50,7 +50,8 @@ export default function ScrollExpandHero() {
       panels={DUA_LAYANAN}
       title={HOME_HERO.title}
       tagline={HOME_HERO.tagline}
-      background={<HeroBackdrop image={HOME_HERO.background} />}
+      subline={HOME_HERO.subline}
+      background={<HeroBackdrop />}
     >
       <HomeAbout />
     </DualScrollHero>

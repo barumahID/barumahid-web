@@ -65,7 +65,7 @@ function Ecosystem() {
         </svg>
         <div className="absolute left-1/2 top-1/2 flex h-36 w-36 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-brand-red text-center text-white shadow-[0_0_80px_rgba(197,59,59,0.45)]">
           <span className="text-[20px] font-black">barumahID</span>
-          <span className="mt-1 text-[11px] font-semibold text-white/80">ConsTech + PropTech</span>
+          <span className="mt-1 text-[11px] font-semibold text-white/80">ConTech + PropTech</span>
         </div>
         {ORBIT.map((o, i) => {
           const a = (i / n) * Math.PI * 2 - Math.PI / 2;
@@ -144,7 +144,7 @@ export default function KemitraanPage() {
               Satu ekosistem, banyak peran.
             </h2>
             <p className="mt-5 text-[15.5px] leading-relaxed text-white/65">
-              Pelanggan datang lewat Rent-to-Own dan ConsTech. Mitra yang mengerjakan, memasok, dan menyediakan unitnya. Makin banyak
+              Pelanggan datang lewat Rent-to-Own dan ConTech. Mitra yang mengerjakan, memasok, dan menyediakan unitnya. Makin banyak
               yang bergabung, makin cepat orang punya rumah.
             </p>
           </Reveal>

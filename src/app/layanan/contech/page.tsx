@@ -13,10 +13,10 @@ import { AHSP_FORMULA, BUILD_STEPS, ORDER_STEPS } from "@/data/pricing";
 import { JURURANCANG_DM, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
-  title: "Layanan ConsTech: Jasa Gambar, Analisa Struktur, Renovasi, dan Bangun",
+  title: "Layanan ConTech: Jasa Gambar, Analisa Struktur, Renovasi, dan Bangun",
   description:
     "Jasa gambar mulai Rp15.000/m², analisa struktur mulai Rp18.000/m², renovasi dan bangun dengan RAB berbasis AHSP. Dikerjakan insinyur, 30+ proyek sejak 2018.",
-  alternates: { canonical: "/layanan/constech" },
+  alternates: { canonical: "/layanan/contech" },
 };
 
 const services = [
@@ -45,7 +45,7 @@ export default function ConstechPage() {
   return (
     <>
       <PageHero
-        label="Layanan ConsTech"
+        label="Layanan ConTech"
         title="Proyekmu, dibikin mudah aja."
         subtitle={
           <p>

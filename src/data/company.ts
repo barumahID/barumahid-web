@@ -15,7 +15,7 @@ export const STORY: string[] = [
   "Dari lapangan, kami melihat masalah yang sama terus berulang. Pemilik proyek susah menemukan jasa yang bisa dipercaya dan harganya jelas. Penyewa bertahun-tahun membayar sewa tanpa jalan yang jelas untuk punya rumah sendiri.",
   "Pandemi sempat menghentikan langkah kami di 2020. Kami bangkit lagi, dan sampai 2023 lebih dari 30 proyek selesai. Pada 9 Januari 2024, PT Inditek Bluprim Mahaksa resmi berdiri.",
   "Setelah itu kami ikut menggarap pembangunan dan pekerjaan subkontraktor. Dari sana kami makin yakin, masalah terbesar bukan cara membangun rumah, tapi jalan orang untuk memilikinya.",
-  "Di 2026, barumahID tumbuh jadi ekosistem. ConsTech untuk membangun, PropTech lewat program Rent-to-Own untuk membuka jalan kepemilikan. Kami mulai dari Padang, lalu melangkah ke kota tier-2 lain, Jabodetabek, dan seluruh Indonesia.",
+  "Di 2026, barumahID tumbuh jadi ekosistem. ConTech untuk membangun, PropTech lewat program Rent-to-Own untuk membuka jalan kepemilikan. Kami mulai dari Padang, lalu melangkah ke kota tier-2 lain, Jabodetabek, dan seluruh Indonesia.",
 ];
 
 export interface Milestone {
@@ -68,7 +68,7 @@ export interface Pillar {
 }
 
 export const PILLARS_TITLE = "Empat pilar yang menopang semua yang kami bangun.";
-export const PILLARS_SUBTITLE = "ConsTech membangun rumahnya. PropTech membuka jalan memilikinya. LBAG menopang keduanya.";
+export const PILLARS_SUBTITLE = "ConTech membangun rumahnya. PropTech membuka jalan memilikinya. LBAG menopang keduanya.";
 
 // Catatan dokumen Tentang: klaim BIM dan AR/VR harus sesuai praktik Jururancang.
 // Kalimat di bawah sengaja memakai "kami terapkan bertahap" untuk A.
@@ -146,7 +146,7 @@ export const GROUP_UNITS: GroupUnit[] = [
   {
     name: "barumahID",
     role: "Platform pendamping kepemilikan rumah",
-    body: "Jasa konstruksi lewat ConsTech, jalan kepemilikan lewat Rent-to-Own.",
+    body: "Jasa konstruksi lewat ConTech, jalan kepemilikan lewat Rent-to-Own.",
     status: "aktif",
     statusLabel: "Aktif",
   },

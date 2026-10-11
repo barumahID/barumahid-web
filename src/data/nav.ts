@@ -21,8 +21,8 @@ export const SERVICE_LINKS: NavChild[] = [
     audience: "Untuk calon pemilik rumah",
   },
   {
-    href: "/layanan/constech",
-    label: "ConsTech",
+    href: "/layanan/contech",
+    label: "ConTech",
     description: "Jasa gambar, analisa struktur, renovasi, dan bangun.",
     audience: "Untuk pemilik proyek",
   },

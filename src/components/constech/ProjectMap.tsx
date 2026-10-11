@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CITY_POINTS, INDONESIA_PATH, MAP_HEIGHT, MAP_WIDTH, NEIGHBOR_PATH } from "@/data/indonesia-map";
 import { SERVICE_LABEL, type ProjectCity } from "@/data/projects";
 
-// Peta proyek ConsTech. Titik = kota proyek atau kota klien (lihat `basis` di data).
+// Peta proyek ConTech. Titik = kota proyek atau kota klien (lihat `basis` di data).
 // Data dari src/data/projects.ts. Kota baru: tambah di data dan di scripts/gen-indonesia-map.mjs.
 
 const SERVICE_DOT: Record<string, string> = {

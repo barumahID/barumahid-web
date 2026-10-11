@@ -13,6 +13,7 @@ import {
 import { SERVICE_LINKS } from "@/data/nav";
 import { ARTICLES } from "@/data/articles";
 import ChannelIcon from "@/components/icons/ChannelIcon";
+import PtMark from "@/components/brand/PtMark";
 
 const companyLinks = [
   { href: "/tentang", label: "Tentang kami" },
@@ -50,9 +51,9 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-            {/* Logo PT: simbol saja, tulisan dirender pakai font situs supaya proporsional (arahan user) */}
+            {/* Logo PT: simbol saja (putih di latar gelap), tulisan pakai font situs supaya proporsional (arahan user) */}
             <div className="mt-8 flex items-center gap-3.5 border-t border-white/10 pt-6">
-              <Image src="/brand/logo-pt-mark.webp" alt="" width={105} height={160} className="h-11 w-auto" />
+              <PtMark onDark />
               <div className="leading-tight">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/40">Dinaungi oleh</p>
                 <p className="mt-1 text-[14px] font-bold text-white/90">{SITE.company}</p>
@@ -148,8 +149,6 @@ export default function Footer() {
             <Link href="/kebijakan-privasi" className="hover:text-white">
               Kebijakan privasi
             </Link>
-            <span className="mx-2">·</span>
-            Dibuat di Padang, Sumatera Barat
           </p>
         </div>
       </div>

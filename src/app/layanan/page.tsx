@@ -6,7 +6,7 @@ import { LAYANAN_CARDS } from "@/data/beranda";
 
 export const metadata: Metadata = {
   title: "Layanan",
-  description: "Tiga layanan barumahID: Rent-to-Own untuk calon pemilik rumah, ConsTech untuk pemilik proyek, dan Kemitraan.",
+  description: "Tiga layanan barumahID: Rent-to-Own untuk calon pemilik rumah, ConTech untuk pemilik proyek, dan Kemitraan.",
   alternates: { canonical: "/layanan" },
 };
 

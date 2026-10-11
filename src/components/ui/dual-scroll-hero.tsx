@@ -26,12 +26,14 @@ export default function DualScrollHero({
   panels,
   title,
   tagline,
+  subline,
   background,
   children,
 }: {
   panels: HeroPanel[];
   title: string;
   tagline: string;
+  subline?: string;
   background?: ReactNode;
   children?: ReactNode;
 }) {
@@ -131,7 +133,7 @@ export default function DualScrollHero({
   const mobile = viewport.w < 768;
   const nav = 68;
   const gap = mobile ? 10 : 16;
-  const titleBlock = mobile ? 96 : 128;
+  const titleBlock = subline ? (mobile ? 150 : 158) : mobile ? 96 : 128;
   // Ukuran awal ikut tinggi layar supaya panel tidak terpotong atau menabrak judul di layar pendek.
   const h0 = Math.min(mobile ? 180 : 290, Math.max(140, viewport.h - nav - titleBlock - 88));
   const w0 = h0 * (mobile ? 136 / 180 : 220 / 290);
@@ -160,7 +162,7 @@ export default function DualScrollHero({
         {/* Judul di atas panel, bergeser ke samping dan memudar saat panel membesar */}
         <div
           className="pointer-events-none absolute inset-x-0 z-10 flex flex-col items-center text-center"
-          style={{ top: Math.max(nav + 12, centerY - panelH / 2 - (mobile ? 110 : 150)), opacity: clamp01(1 - p * 1.6) }}
+          style={{ top: Math.max(nav + 12, centerY - panelH / 2 - titleBlock - (mobile ? 14 : 22)), opacity: clamp01(1 - p * 1.6) }}
         >
           <h1 className="flex text-5xl font-black leading-none tracking-tight md:text-7xl">
             <span className="text-brand-dark" style={{ transform: `translateX(-${titleShift}vw)` }}>
@@ -172,7 +174,8 @@ export default function DualScrollHero({
               </span>
             )}
           </h1>
-          <p className="mt-4 text-[14px] font-semibold tracking-wide text-brand-gray md:text-[15px]">{tagline}</p>
+          <p className="mt-4 px-4 text-[16px] font-bold tracking-[-0.01em] text-brand-dark md:text-[21px]">{tagline}</p>
+          {subline && <p className="mx-auto mt-1.5 max-w-[340px] px-4 text-[13px] font-medium text-balance text-brand-gray md:max-w-none md:text-[15px]">{subline}</p>}
         </div>
 
         {/* Dua panel */}

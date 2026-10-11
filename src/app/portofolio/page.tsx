@@ -32,7 +32,7 @@ export default function PortofolioPage() {
           <PortfolioGrid items={PORTFOLIO} />
           <p className="mt-12 text-[14px] text-brand-gray">
             Ingin lihat sebaran proyek per kota?{" "}
-            <Link href="/layanan/constech#peta" className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
+            <Link href="/layanan/contech#peta" className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
               Buka peta proyek
             </Link>
           </p>
@@ -44,7 +44,7 @@ export default function PortofolioPage() {
         primaryLabel="Konsultasi via WhatsApp"
         primaryHref={waLink("Halo barumahID, saya lihat portofolionya dan mau konsultasi proyek.")}
         secondaryLabel="Lihat harga jasa"
-        secondaryHref="/layanan/constech#harga"
+        secondaryHref="/layanan/contech#harga"
       />
     </>
   );

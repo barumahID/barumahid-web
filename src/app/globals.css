@@ -229,6 +229,13 @@ textarea:focus-visible {
   50% { transform: translateY(-10px); }
 }
 .hero-float { animation: float-y 7s ease-in-out infinite; }
+/* Bayangan daun di latar hero, bergoyang seperti tertiup angin */
+@keyframes leaf-sway {
+  from { transform: rotate(-2.5deg) translate(0, 0); }
+  to { transform: rotate(2deg) translate(-1.5%, 1%); }
+}
+.leaf-sway { animation: leaf-sway 9s ease-in-out infinite alternate; }
+.leaf-sway-alt { animation-duration: 12s; animation-delay: -4s; }
 
 /* Pola titik halus (kartu roadmap beranda) */
 .pattern-dots {
@@ -345,7 +352,8 @@ textarea:focus-visible {
   .hero-line-flow,
   .hero-orb-a,
   .hero-orb-b,
-  .hero-float {
+  .hero-float,
+  .leaf-sway {
     animation: none;
   }
   .hero-line-draw {

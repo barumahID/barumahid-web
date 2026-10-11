@@ -1,4 +1,4 @@
-// Data proyek untuk peta ConsTech, portofolio, dan angka di beranda.
+// Data proyek untuk peta ConTech, portofolio, dan angka di beranda.
 //
 // SUMBER: sheet "Daftar Klien dan Mitra BarumahID" (20 baris), folder Drive "04. barumahID Projects",
 // dan Katalog barumahID. Nama klien TIDAK ditampilkan sampai ada izin tertulis (kolom izin di sheet
