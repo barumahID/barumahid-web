@@ -131,3 +131,11 @@ export const SETELAH_KIRIM = [
   BUILD_STEPS[1],
   BUILD_STEPS[2],
 ];
+
+// Formulir klien layanan E2E (Google Form resmi, link di src/data/google-forms.ts). Diisi langsung oleh klien sesuai
+// tahap proyeknya (arahan user Okt 2026: judul rapi dan singkat).
+export const FORM_KLIEN: { code: "F01" | "F02" | "F03"; stage: string; title: string; body: string }[] = [
+  { code: "F01", stage: "Sebelum proyek", title: "Survei Kebutuhan & Konsultasi Awal", body: "Ceritakan kebutuhan, lokasi, dan anggaran proyekmu." },
+  { code: "F02", stage: "Saat siap memesan", title: "Pemesanan Jasa Konstruksi", body: "Konfirmasi jasa yang dipilih beserta data proyek." },
+  { code: "F03", stage: "Setelah proyek selesai", title: "Feedback Layanan (NPS)", body: "Nilai pengalamanmu bekerja bersama barumahID." },
+];

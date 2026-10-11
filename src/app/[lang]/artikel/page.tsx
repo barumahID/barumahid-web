@@ -41,8 +41,8 @@ export default function ArtikelPage() {
             <div className="mt-10 rounded-3xl border-2 border-dashed border-brand-dark/15 bg-white px-6 py-14 text-center">
               <p className="text-[20px] font-extrabold text-brand-dark">Artikel pertama sedang ditulis.</p>
               <p className="mx-auto mt-2 max-w-lg text-[15px] leading-relaxed text-brand-gray">
-                Sambil menunggu, konten edukasi kami rutin tayang di Instagram. Institusi atau praktisi yang mau ikut menulis
-                bisa gabung jadi mitra Knowledges.
+                Sambil menunggu, konten edukasi kami rutin tayang di Instagram. Praktisi dan akademisi yang ingin berkolaborasi
+                kini kami arahkan ke Jururancang Engineering Mahaksa.
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 {ig && (
@@ -50,8 +50,8 @@ export default function ArtikelPage() {
                     Buka Instagram {ig.handle}
                   </ButtonLink>
                 )}
-                <ButtonLink href="/kemitraan/daftar/knowledges" variant="outline-dark" arrow={false}>
-                  Jadi mitra Knowledges
+                <ButtonLink href="/kemitraan#jalur" variant="outline-dark" arrow={false}>
+                  Lihat jalur kemitraan
                 </ButtonLink>
               </div>
             </div>

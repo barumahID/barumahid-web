@@ -111,7 +111,7 @@ export default function ListingGrid({ listings }: { listings: Listing[] }) {
               Daftar minat
             </a>
             <Link
-              href="/kemitraan/daftar/penyedia-kos"
+              href="/kemitraan#formulir-rto"
               className="rounded-full border border-brand-dark/20 px-6 py-3 text-[14px] font-bold text-brand-dark hover:border-brand-dark"
             >
               Punya unit? Jadi mitra

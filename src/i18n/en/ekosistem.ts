@@ -20,12 +20,14 @@ const pairs = (ids: string[], ens: string[]) => Object.fromEntries(ids.map((id, 
 export const EKOSISTEM: Record<string, string> = {
   // Menu dan metadata
   Ekosistem: "Ecosystem",
-  "Ekosistem | PT Inditek Bluprim Mahaksa dan barumahID": "Ecosystem | PT Inditek Bluprim Mahaksa and barumahID",
+  // Menu Profil (dulu Ekosistem), EN: About Us
+  Profil: "About Us",
+  "Profil | PT Inditek Bluprim Mahaksa dan barumahID": "About Us | PT Inditek Bluprim Mahaksa and barumahID",
   "PT Inditek Bluprim Mahaksa, perusahaan konstruksi di balik barumahID sejak 9 Januari 2024. Gambar & modelling, renovasi & bangun, serta desain & analisa struktur dengan pendekatan LBAG.":
     "PT Inditek Bluprim Mahaksa, the construction company behind barumahID since January 9, 2024. Drawing & modelling, renovation & construction, and structural design & analysis with the LBAG approach.",
 
   // Hero
-  [H.label]: "The barumahID ecosystem",
+  [H.label]: "About barumahID",
   ...pairs(H.body, [
     "A construction company established on January 9, 2024. We provide drawing & modelling, renovation & construction, and structural design & analysis.",
     "Focused on serving as a general contractor and construction consultant, the company consistently adapts to technological developments through the LBAG concept: Lean Construction, Building Information Modeling (BIM), Artificial Intelligence and Augmented and Virtual Reality (AI and AR/VR), and Green Construction. We believe these four concepts will disrupt Indonesia's construction business ecosystem for the better in the years ahead.",

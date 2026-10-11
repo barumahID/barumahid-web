@@ -18,7 +18,8 @@ import type { Lang } from "@/i18n/config";
 import { makeT } from "@/i18n/t";
 
 const companyLinks = [
-  { href: "/tentang", label: "Ekosistem" },
+  { href: "/tentang", label: "Profil" },
+  { href: "/kemitraan", label: "Kemitraan" },
   ...(ARTICLES.length > 0 ? [{ href: "/artikel", label: "Artikel" }] : []),
   { href: "/rekrutmen", label: "Karier" },
   { href: "/kontak", label: "Kontak" },

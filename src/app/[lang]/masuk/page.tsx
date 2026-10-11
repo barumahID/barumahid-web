@@ -17,8 +17,8 @@ export default function MasukPage() {
         title="Kamu datang sebagai siapa?"
         subtitle={
           <p>
-            Akun dan dashboard per peran sedang kami bangun. Untuk sekarang, pilih peranmu, isi formulir singkat, lalu tim
-            kami menghubungi lewat WhatsApp.
+            Pelanggan langsung ke form layanan. Mitra dan tim barumahID masuk lewat Portal, akun mitra aktif setelah
+            diverifikasi tim kami.
           </p>
         }
         size="sm"
@@ -27,7 +27,7 @@ export default function MasukPage() {
         <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {MASUK_OPTIONS.map((o) => (
-              <li key={o.href}>
+              <li key={o.label}>
                 <Link
                   href={o.href}
                   className="group flex h-full flex-col rounded-3xl border border-brand-dark/10 bg-white p-6 transition-colors hover:border-brand-red"
@@ -43,7 +43,7 @@ export default function MasukPage() {
             ))}
           </ul>
           <p className="mt-10 text-[14px] text-brand-gray">
-            Peran lain (tenaga kerja, supplier, institusi) ada di{" "}
+            Belum terdaftar sebagai mitra? Pilih jalur dan formulirnya di{" "}
             <Link href="/kemitraan" className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
               halaman Kemitraan
             </Link>

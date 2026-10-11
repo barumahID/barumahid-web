@@ -20,9 +20,14 @@ export function stripLang(pathname: string): string {
   return p === "" ? "/" : p;
 }
 
+/** Portal mitra dan tim (/portal) berdiri sendiri di luar rute bahasa. */
+export function isPortal(href: string): boolean {
+  return href === "/portal" || href.startsWith("/portal/") || href.startsWith("/portal?") || href.startsWith("/portal#");
+}
+
 /** Alamat internal untuk bahasa tertentu. Link luar, mailto, tel, dan anchor (#) tidak diubah. */
 export function localizePath(lang: Lang, href: string): string {
-  if (lang === DEFAULT_LANG || !href.startsWith("/") || href.startsWith("//") || href.startsWith("/api")) return href;
+  if (lang === DEFAULT_LANG || !href.startsWith("/") || href.startsWith("//") || href.startsWith("/api") || isPortal(href)) return href;
   if (href === "/en" || href.startsWith("/en/") || href.startsWith("/en#") || href.startsWith("/en?")) return href;
   if (href === "/") return "/en";
   if (href.startsWith("/#") || href.startsWith("/?")) return `/en${href.slice(1)}`;

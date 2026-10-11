@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
       { source: "/portofolio", destination: "/layanan/contech", permanent: true },
       { source: "/mitra", destination: "/kemitraan", permanent: true },
       { source: "/daftar", destination: "/masuk", permanent: true },
+      // Form per peran di situs diganti Google Form resmi di halaman Kemitraan (arahan user Okt 2026)
+      { source: "/kemitraan/daftar/:peran", destination: "/kemitraan#formulir", permanent: true },
     ];
     // Versi bahasa Inggris (/en/...) dari alamat lama yang sama
     return [...list, ...list.map((r) => ({ ...r, source: `/en${r.source}`, destination: `/en${r.destination}` }))];

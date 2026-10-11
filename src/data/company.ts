@@ -6,7 +6,7 @@
 // RTO masih pre-launch: copy tidak boleh mengklaim program sudah berjalan.
 
 export const EKOSISTEM_HERO = {
-  label: "Ekosistem barumahID",
+  label: "Profil barumahID",
   title: "PT Inditek Bluprim Mahaksa",
   body: [
     "Perusahaan konstruksi yang berdiri sejak 9 Januari 2024. Kami mengerjakan gambar & modelling, renovasi & bangun konstruksi, serta desain & analisa struktur.",

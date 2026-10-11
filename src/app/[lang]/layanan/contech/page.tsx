@@ -12,7 +12,8 @@ import ClosingCta from "@/components/home/ClosingCta";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
-import { CONTECH_FAQ, CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
+import { GFORMS } from "@/data/google-forms";
+import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 import { alternates, pageLang } from "@/i18n/server";
 
@@ -264,6 +265,45 @@ export default async function ContechPage({ params }: Props) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Formulir klien E2E: tiga tahap, diisi langsung oleh klien */}
+      <section id="formulir-klien" className="scroll-mt-20 bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-7">
+              <p className="type-micro text-brand-red">{t("Formulir klien")}</p>
+              <h2 className="mt-4 text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold leading-tight tracking-[-0.02em] text-brand-dark">
+                {t("Tiga formulir, sesuai tahap proyekmu.")}
+              </h2>
+            </div>
+            <p className="text-[15px] leading-relaxed text-brand-gray lg:col-span-5">
+              {t("Diisi langsung oleh klien. Datanya membantu kami menyiapkan penawaran, menjalankan pesanan, dan memperbaiki layanan.")}
+            </p>
+          </div>
+          <ol className="mt-8 grid gap-3 md:grid-cols-3">
+            {FORM_KLIEN.map((f, i) => (
+              <li key={f.code}>
+                <a
+                  href={GFORMS[f.code]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex h-full flex-col rounded-2xl border border-brand-dark/10 bg-white p-5 transition-colors hover:border-brand-red"
+                >
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="text-[12px] font-bold uppercase tracking-[0.12em] text-brand-mute">
+                      {String(i + 1).padStart(2, "0")} · {t(f.stage)}
+                    </span>
+                    <span className="rounded-md bg-brand-dark/[0.06] px-2 py-0.5 font-mono text-[11px] font-bold text-brand-dark">{f.code}</span>
+                  </span>
+                  <span className="mt-3 text-[17px] font-extrabold leading-snug text-brand-dark group-hover:text-brand-red">{t(f.title)}</span>
+                  <span className="mt-1.5 text-[14px] leading-relaxed text-brand-gray">{t(f.body)}</span>
+                  <span className="mt-auto pt-4 text-[13px] font-bold text-brand-red">{t("Isi formulir")} ↗</span>
+                </a>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

@@ -195,7 +195,7 @@ export default function Navbar() {
                   <Chevron open={serviceOpen} />
                 </button>
                 <div
-                  className={`absolute left-1/2 top-full w-[560px] -translate-x-1/2 pt-3 transition-all duration-200 ${
+                  className={`absolute left-1/2 top-full w-[480px] -translate-x-1/2 pt-3 transition-all duration-200 ${
                     serviceOpen ? "visible opacity-100" : "invisible -translate-y-1 opacity-0"
                   }`}
                 >
@@ -218,12 +218,6 @@ export default function Navbar() {
                         </span>
                       </Link>
                     ))}
-                    <Link
-                      href="/layanan"
-                      className="m-1 rounded-xl px-4 py-3 text-[13px] font-semibold text-brand-dark/70 hover:bg-brand-cream hover:text-brand-dark"
-                    >
-                      {t("Lihat semua layanan →")}
-                    </Link>
                   </div>
                 </div>
               </div>
@@ -273,7 +267,7 @@ export default function Navbar() {
                 <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">{t("Masuk sebagai")}</p>
                 {MASUK_OPTIONS.map((o) => (
                   <Link
-                    key={o.href}
+                    key={o.label}
                     href={o.href}
                     className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-brand-dark hover:bg-brand-cream hover:text-brand-red"
                   >
@@ -282,7 +276,7 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <p className="mx-3 mb-2 mt-2 border-t border-brand-dark/10 pt-3 text-[12px] leading-relaxed text-brand-gray">
-                  {t("Akun dan dashboard per peran sedang dibangun. Untuk sekarang, daftar lewat form dan tim kami menghubungi lewat WhatsApp.")}
+                  {t("Mitra dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
                 </p>
               </div>
             </div>

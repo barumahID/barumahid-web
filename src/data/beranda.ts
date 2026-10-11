@@ -114,14 +114,4 @@ export const LAYANAN_CARDS: PhotoCard[] = [
     image: "/images/proyek/render-rumah-2-lantai.webp",
     alt: "Render 3D desain rumah dua lantai karya tim barumahID",
   },
-  {
-    href: "/kemitraan",
-    audience: "Untuk mitra dan profesional",
-    name: "Kemitraan",
-    headline: "Tumbuh bareng ekosistem barumahID.",
-    body: "Penyedia kos, developer, kontraktor, tukang, supplier, freelancer, dan institusi pendidikan.",
-    cta: "Pilih peran mitra",
-    image: "/images/proyek/bangun-rumah-2-lantai-padang.webp",
-    alt: "Rumah dua lantai yang sedang dibangun bersama mitra mandor",
-  },
 ];

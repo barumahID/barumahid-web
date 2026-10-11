@@ -6,7 +6,7 @@ import { LAYANAN_CARDS } from "@/data/beranda";
 
 export const metadata: Metadata = {
   title: "Layanan",
-  description: "Tiga layanan barumahID: Rent-to-Own untuk calon pemilik rumah, ConTech untuk pemilik proyek, dan Kemitraan.",
+  description: "Dua layanan barumahID: ConTech untuk pemilik proyek dan Rent-to-Own untuk calon pemilik rumah.",
   alternates: { canonical: "/layanan" },
 };
 
@@ -22,9 +22,9 @@ export default function LayananPage() {
       />
       <ServiceCards
         id="layanan"
-        eyebrow="Tiga layanan, satu tujuan"
+        eyebrow="Dua layanan, satu tujuan"
         title="Pilih pintu yang paling pas buat kamu."
-        intro="Mau punya rumah, butuh jasa konstruksi, atau ingin jadi bagian dari ekosistemnya. Semua dimulai dari sini."
+        intro="Butuh jasa konstruksi atau ingin punya rumah. Semua dimulai dari sini."
         items={LAYANAN_CARDS}
       />
       <ClosingCta />

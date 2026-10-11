@@ -22,7 +22,7 @@ import {
 } from "@/data/company";
 import { alternates, pageLang } from "@/i18n/server";
 
-// Halaman Ekosistem (dulu "Tentang", alamat tetap /tentang). Arahan user Okt 2026: profil PT di hero dengan foto
+// Halaman Profil (dulu "Tentang", lalu "Ekosistem"; EN: About Us; alamat tetap /tentang). Arahan user Okt 2026: profil PT di hero dengan foto
 // kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG dan BUILD, Astro Mahaksa (orbit
 // unit usaha), dan tanya jawab. Cerita/timeline, peta proyek, tim, event, dan kanal dihapus.
 
@@ -31,7 +31,7 @@ type Props = { params: Promise<{ lang: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, t } = await pageLang(params);
   return {
-    title: { absolute: t("Ekosistem | PT Inditek Bluprim Mahaksa dan barumahID") },
+    title: { absolute: t("Profil | PT Inditek Bluprim Mahaksa dan barumahID") },
     description: t(
       "PT Inditek Bluprim Mahaksa, perusahaan konstruksi di balik barumahID sejak 9 Januari 2024. Gambar & modelling, renovasi & bangun, serta desain & analisa struktur dengan pendekatan LBAG.",
     ),
@@ -55,7 +55,7 @@ function SectionTitle({ label, title, subtitle, dark = false }: { label: string;
   );
 }
 
-export default async function EkosistemPage({ params }: Props) {
+export default async function ProfilPage({ params }: Props) {
   const { lang, t } = await pageLang(params);
   return (
     <>
