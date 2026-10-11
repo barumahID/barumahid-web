@@ -1,53 +1,47 @@
 import type { Metadata } from "next";
-import Link from "@/i18n/Link";
 import Image from "next/image";
+import Link from "@/i18n/Link";
 import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import PillarCards from "@/components/about/PillarCards";
 import ValueLetters from "@/components/about/ValueLetters";
-import PetaProyek from "@/components/about/PetaProyek";
-import ProblemSection from "@/components/home/ProblemSection";
+import LineIcon from "@/components/about/LineIcon";
 import FaqTestimonials from "@/components/home/FaqTestimonials";
-import { EVENTS_AND_PROGRAMS } from "@/data/partners";
-import ChannelGrid from "@/components/ui/ChannelGrid";
-import ChannelIcon from "@/components/icons/ChannelIcon";
 import {
-  ABOUT_HERO,
+  BARUMAHID_INTRO,
+  EKOSISTEM_HERO,
   GROUP_SUBTITLE,
   GROUP_TITLE,
   GROUP_UNITS,
+  KEUNGGULAN,
+  MASALAH,
   MISSIONS,
   MOTTO,
   PILLARS,
   PILLARS_SUBTITLE,
   PILLARS_TITLE,
-  STORY,
-  STORY_TITLE,
-  TEAM,
-  TEAM_SUBTITLE,
-  TEAM_TITLE,
-  TIMELINE,
   VALUES,
   VALUES_SUBTITLE,
   VALUES_TITLE,
   VISION,
 } from "@/data/company";
-import { STATS } from "@/data/projects";
+import { alternates, pageLang } from "@/i18n/server";
 
-export const metadata: Metadata = {
-  title: { absolute: "Tentang Kami | PT Inditek Bluprim Mahaksa, di balik barumahID" },
-  description:
-    "PT Inditek Bluprim Mahaksa, perusahaan konstruksi dan teknologi properti dari Padang di balik barumahID. Sejak 2018, 30+ proyek selesai.",
-  alternates: { canonical: "/tentang" },
-};
+// Halaman Ekosistem (dulu "Tentang", alamat tetap /tentang). Arahan user Okt 2026: profil PT di hero dengan foto
+// kegiatan kompetisi, barumahID itu apa, masalah, keunggulan, visi misi, LBAG, BUILD, grup usaha (menunggu
+// revisi), dan tanya jawab. Cerita/timeline, peta proyek, tim, event, dan kanal dihapus.
 
-function Trophy() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" />
-      <path d="M17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4" />
-    </svg>
-  );
+type Props = { params: Promise<{ lang: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang, t } = await pageLang(params);
+  return {
+    title: { absolute: t("Ekosistem | PT Inditek Bluprim Mahaksa dan barumahID") },
+    description: t(
+      "PT Inditek Bluprim Mahaksa, perusahaan konstruksi di balik barumahID sejak 9 Januari 2024. Gambar & modelling, renovasi & bangun, serta desain & analisa struktur dengan pendekatan LBAG.",
+    ),
+    alternates: alternates(lang, "/tentang"),
+  };
 }
 
 function SectionTitle({ label, title, subtitle, dark = false }: { label: string; title: string; subtitle?: string; dark?: boolean }) {
@@ -66,89 +60,171 @@ function SectionTitle({ label, title, subtitle, dark = false }: { label: string;
   );
 }
 
-export default function TentangPage() {
+export default async function EkosistemPage({ params }: Props) {
+  const { lang, t } = await pageLang(params);
   return (
     <>
+      {/* 1. Profil PT di atas foto kegiatan kompetisi yang berganti pelan */}
       <PageHero
-        label={ABOUT_HERO.label}
-        title={ABOUT_HERO.title}
-        subtitle={<p>{ABOUT_HERO.subtitle}</p>}
-        image="/images/proyek/bangun-rumah-2-lantai-padang-2.webp"
+        label={t(EKOSISTEM_HERO.label)}
+        title={EKOSISTEM_HERO.title}
+        subtitle={
+          <div className="space-y-4">
+            {EKOSISTEM_HERO.body.map((p) => (
+              <p key={p}>{t(p)}</p>
+            ))}
+          </div>
+        }
+        slides={EKOSISTEM_HERO.images.map((im) => ({ ...im, alt: t(im.alt) }))}
         size="lg"
       >
-        <ul className="flex flex-wrap gap-x-8 gap-y-3 text-[14px] font-semibold text-white/85">
-          <li>
-            <span className="text-2xl font-black text-white">{STATS.projects}+</span> proyek selesai
-          </li>
-          <li>
-            Berjalan sejak <span className="text-2xl font-black text-white">2018</span>
-          </li>
-          <li>
-            PT resmi <span className="text-2xl font-black text-white">2024</span>
-          </li>
-        </ul>
+        {EKOSISTEM_HERO.services.map((s) => (
+          <Link
+            key={s.label}
+            href={s.href}
+            className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-white hover:text-brand-dark"
+          >
+            {t(s.label)}
+          </Link>
+        ))}
       </PageHero>
 
-      {/* Cerita kami */}
+      {/* 2. barumahID itu apa */}
       <section className="bg-brand-cream">
-        <div className="mx-auto grid max-w-[1280px] gap-14 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:px-14">
-          <div className="lg:col-span-7">
-            <Reveal>
-              <SectionTitle label="Cerita kami" title={STORY_TITLE} />
-            </Reveal>
-            <div className="mt-8 space-y-5">
-              {STORY.map((para, i) => (
-                <Reveal key={i} delay={i * 60}>
-                  <p className="max-w-2xl text-[16.5px] leading-[1.75] text-brand-dark/80">{para}</p>
-                </Reveal>
+        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
+          <Reveal className="lg:col-span-6">
+            <SectionTitle label={t(BARUMAHID_INTRO.label)} title={t(BARUMAHID_INTRO.title)} />
+            <div className="mt-6 space-y-4">
+              {BARUMAHID_INTRO.body.map((p) => (
+                <p key={p} className="max-w-xl text-[16.5px] leading-[1.75] text-brand-dark/80">
+                  {t(p)}
+                </p>
               ))}
             </div>
-          </div>
-          <div className="lg:col-span-5">
-            <Reveal>
-              <ol className="relative space-y-7 border-l-2 border-brand-red/25 pl-7 lg:mt-24">
-                {TIMELINE.map((m) => (
-                  <li key={m.year} className="relative">
-                    <span
-                      className={`absolute -left-[39px] top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full ${
-                        m.award ? "bg-brand-red text-white" : "border-2 border-brand-red bg-brand-cream"
-                      }`}
-                      aria-hidden="true"
-                    >
-                      {m.award && <Trophy />}
-                    </span>
-                    <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">{m.year}</p>
-                    <p className="mt-1 text-[17px] font-extrabold text-brand-dark">{m.title}</p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-brand-gray">{m.body}</p>
-                  </li>
-                ))}
-              </ol>
-            </Reveal>
-          </div>
+          </Reveal>
+          <Reveal className="lg:col-span-6" delay={100}>
+            <div className="grid grid-cols-3 gap-3">
+              {BARUMAHID_INTRO.steps.map((s, i) => (
+                <div key={s.label} className="flex flex-col items-center gap-3 rounded-3xl bg-white px-3 py-6 text-center card-shadow">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red/10 text-brand-red">
+                    <LineIcon name={s.icon} size={28} />
+                  </span>
+                  <span className="text-[11px] font-bold text-brand-mute">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="-mt-2 text-[14px] font-extrabold text-brand-dark md:text-[15px]">{t(s.label)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 flex gap-5 rounded-3xl bg-brand-dark p-6 text-white md:p-7">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-red">
+                <LineIcon name="lampu" size={24} />
+              </span>
+              <div>
+                <p className="inline-flex rounded-full bg-brand-red px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em]">
+                  {t(BARUMAHID_INTRO.innovation.label)}
+                </p>
+                <p className="mt-3 text-[15px] leading-relaxed text-white/80">{t(BARUMAHID_INTRO.innovation.body)}</p>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Masalah yang ingin kami selesaikan */}
-      <ProblemSection />
+      {/* 3. Masalah yang sering terjadi */}
+      <section className="relative isolate overflow-hidden bg-brand-dark text-white">
+        <Image src="/images/proyek/renovasi-rangka-atap-padang.webp" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-90" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-brand-dark/95 via-brand-dark/88 to-brand-dark/80" />
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <SectionTitle label={t(MASALAH.label)} title={t(MASALAH.title)} subtitle={t(MASALAH.intro)} dark />
+          </Reveal>
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
+            {MASALAH.items.map((m, i) => (
+              <Reveal key={m.title} delay={i * 90}>
+                <div className="flex h-full gap-5 rounded-2xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm md:p-7">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-red text-white">
+                    <LineIcon name={m.icon} size={24} />
+                  </span>
+                  <div>
+                    <h3 className="text-[clamp(1.05rem,1.5vw,1.25rem)] font-bold leading-snug tracking-tight">{t(m.title)}</h3>
+                    <p className="mt-2 text-[15px] leading-relaxed text-white/65">{t(m.body)}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={150}>
+            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-white p-6 text-brand-dark sm:flex-row sm:items-center md:p-7">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-red text-white">
+                <LineIcon name="lampu" size={24} />
+              </span>
+              <div>
+                <p className="text-[18px] font-extrabold tracking-tight">{t(MASALAH.answerTitle)}</p>
+                <p className="mt-1 text-[15px] leading-relaxed text-brand-gray">{t(MASALAH.answerBody)}</p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-      {/* Visi & misi */}
+      {/* 4. Keunggulan kami */}
       <section className="bg-brand-cream-warm">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
-            <p className="type-micro text-brand-red">Visi</p>
+            <SectionTitle label={t(KEUNGGULAN.label)} title={t(KEUNGGULAN.title)} subtitle={t(KEUNGGULAN.intro)} />
+          </Reveal>
+          <ol className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {KEUNGGULAN.items.map((k, i) => (
+              <Reveal key={k.title} delay={(i % 5) * 60}>
+                <li className="flex h-full flex-col rounded-3xl bg-white p-5 card-shadow">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-red/10 text-brand-red">
+                      <LineIcon name={k.icon} size={22} />
+                    </span>
+                    <span className="text-[12px] font-black text-brand-red/70">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                  <h3 className="mt-4 text-[15.5px] font-extrabold leading-snug text-brand-dark">{t(k.title)}</h3>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-brand-gray">{t(k.body)}</p>
+                  {k.soon && (
+                    <span className="mt-auto self-start pt-3">
+                      <span className="inline-flex rounded-full bg-brand-red/10 px-2.5 py-1 text-[11px] font-bold text-brand-red">{t("Segera")}</span>
+                    </span>
+                  )}
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+          <Reveal delay={120}>
+            <div className="mt-6 flex flex-col gap-4 rounded-3xl bg-brand-dark p-6 text-white sm:flex-row sm:items-center md:p-7">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-red">
+                <LineIcon name="perisai" size={24} />
+              </span>
+              <div>
+                <p className="text-[18px] font-extrabold tracking-tight md:text-[20px]">{t(KEUNGGULAN.closingTitle)}</p>
+                <p className="mt-1 text-[15px] text-white/70">{t(KEUNGGULAN.closingBody)}</p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 5. Visi dan misi */}
+      <section className="bg-brand-cream">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <Reveal>
+            <p className="type-micro text-brand-red">{t("Visi")}</p>
             <blockquote className="mt-6 max-w-4xl text-[clamp(1.7rem,3.8vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.02em] text-brand-dark">
-              “{VISION}”
+              “{t(VISION)}”
             </blockquote>
           </Reveal>
           <Reveal delay={100}>
-            <p className="type-micro mt-16 text-brand-red">Misi</p>
+            <p className="type-micro mt-16 text-brand-red">{t("Misi")}</p>
           </Reveal>
           <ol className="mt-6 grid gap-4 md:grid-cols-2">
             {MISSIONS.map((m, i) => (
-              <Reveal key={i} delay={i * 80}>
+              <Reveal key={m} delay={i * 80}>
                 <li className="flex h-full gap-5 rounded-3xl bg-white p-6 card-shadow md:p-7">
                   <span className="text-[34px] font-black leading-none text-brand-red/80">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-[15.5px] leading-relaxed text-brand-dark/85">{m}</p>
+                  <p className="text-[15.5px] leading-relaxed text-brand-dark/85">{t(m)}</p>
                 </li>
               </Reveal>
             ))}
@@ -156,14 +232,11 @@ export default function TentangPage() {
         </div>
       </section>
 
-      {/* Peta penyebaran proyek + basis kantor */}
-      <PetaProyek />
-
-      {/* LBAG */}
-      <section className="bg-brand-cream">
+      {/* 6. LBAG */}
+      <section className="bg-brand-cream-warm">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
-            <SectionTitle label="Empat pilar LBAG" title={PILLARS_TITLE} subtitle={PILLARS_SUBTITLE} />
+            <SectionTitle label={t("Empat pilar LBAG")} title={t(PILLARS_TITLE)} subtitle={t(PILLARS_SUBTITLE)} />
           </Reveal>
           <div className="mt-12">
             <PillarCards pillars={PILLARS} />
@@ -171,35 +244,35 @@ export default function TentangPage() {
         </div>
       </section>
 
-      {/* BUILD */}
+      {/* 7. BUILD */}
       <section className="relative isolate overflow-hidden bg-brand-dark text-white">
         <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
-            <SectionTitle label="Nilai kami" title={VALUES_TITLE} subtitle={VALUES_SUBTITLE} dark />
+            <SectionTitle label={t("Nilai kami")} title={t(VALUES_TITLE)} subtitle={t(VALUES_SUBTITLE)} dark />
           </Reveal>
           <div className="mt-12">
             <ValueLetters values={VALUES} />
           </div>
           <p className="mt-10 border-t border-white/10 pt-6 text-[14px] text-white/55">
-            Motto kami: <span className="font-bold italic text-white">{MOTTO}</span>
+            {t("Motto kami:")} <span className="font-bold italic text-white">{MOTTO}</span>
           </p>
         </div>
       </section>
 
-      {/* Grup usaha */}
+      {/* 8. Grup usaha (menunggu revisi user) */}
       <section className="bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
-            <SectionTitle label="Grup usaha" title={GROUP_TITLE} subtitle={GROUP_SUBTITLE} />
+            <SectionTitle label={t("Grup usaha")} title={t(GROUP_TITLE)} subtitle={t(GROUP_SUBTITLE)} />
           </Reveal>
           <Reveal delay={100}>
             <div className="mt-12">
               {GROUP_UNITS.filter((u) => u.status === "induk").map((u) => (
                 <div key={u.name} className="mx-auto max-w-md rounded-3xl bg-brand-dark p-6 text-center text-white">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{u.role}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">{t(u.role)}</p>
                   <p className="mt-2 text-[20px] font-extrabold">{u.name}</p>
-                  <p className="mt-2 text-[14px] leading-relaxed text-white/65">{u.body}</p>
+                  <p className="mt-2 text-[14px] leading-relaxed text-white/65">{t(u.body)}</p>
                 </div>
               ))}
               <div className="mx-auto h-8 w-px bg-brand-dark/25" aria-hidden="true" />
@@ -213,15 +286,15 @@ export default function TentangPage() {
                     } ${u.name === "barumahID" ? "border-brand-red" : "border-brand-dark/10"}`}
                   >
                     <span className="absolute -top-8 left-1/2 hidden h-8 w-px bg-brand-dark/25 md:block" aria-hidden="true" />
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{u.role}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{t(u.role)}</p>
                     <p className="mt-2 text-[19px] font-extrabold text-brand-dark">{u.name}</p>
-                    <p className="mt-2 text-[14px] leading-relaxed text-brand-gray">{u.body}</p>
+                    <p className="mt-2 text-[14px] leading-relaxed text-brand-gray">{t(u.body)}</p>
                     <p
                       className={`mt-4 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
                         u.status === "aktif" ? "bg-credit/10 text-credit" : "bg-brand-dark/5 text-brand-gray"
                       }`}
                     >
-                      {u.statusLabel}
+                      {t(u.statusLabel)}
                     </p>
                   </div>
                 ))}
@@ -231,103 +304,8 @@ export default function TentangPage() {
         </div>
       </section>
 
-      {/* Tim */}
-      <section className="bg-brand-cream-warm">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <Reveal>
-            <SectionTitle label="Tim" title={TEAM_TITLE} subtitle={TEAM_SUBTITLE} />
-          </Reveal>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {TEAM.map((t, i) => (
-              <Reveal key={t.name} delay={i * 80}>
-                <article className="flex h-full flex-col rounded-3xl bg-white p-6 card-shadow">
-                  <div
-                    className="flex aspect-[4/5] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-brand-dark to-[#2b2b2b] text-[44px] font-black tracking-tight text-white/90"
-                    aria-hidden="true"
-                  >
-                    {t.initials}
-                  </div>
-                  <p className="mt-5 text-[17px] font-extrabold leading-snug text-brand-dark">{t.name}</p>
-                  <p className="mt-1 text-[13px] font-semibold text-brand-red">{t.role}</p>
-                  <p className="mt-3 text-[14px] leading-relaxed text-brand-gray">{t.bio}</p>
-                  {t.linkedin && (
-                    <a
-                      href={t.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`LinkedIn ${t.name}`}
-                      className="mt-auto inline-flex h-10 w-10 items-center justify-center self-start rounded-full border border-brand-dark/15 text-brand-dark transition-colors hover:border-brand-red hover:text-brand-red"
-                    >
-                      <ChannelIcon id="linkedin" size={16} />
-                    </a>
-                  )}
-                </article>
-              </Reveal>
-            ))}
-          </div>
-          <p className="mt-10 text-[15px] text-brand-dark">
-            Mau ikut membangun?{" "}
-            <Link href="/rekrutmen" className="font-bold text-brand-red underline underline-offset-4 hover:text-brand-red-dark">
-              Lihat posisi yang sedang dibuka
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* Tanya jawab + testimoni (testimoni otomatis tampil kalau datanya ada) */}
-      <FaqTestimonials />
-
-      {/* Event dan program yang pernah diikuti */}
-      <section className="bg-brand-cream-warm">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
-          <Reveal>
-            <SectionTitle
-              label="Event dan program"
-              title="Tempat kami belajar dan menguji ide."
-              subtitle="Bootcamp, inkubasi, kompetisi, dan hackathon yang pernah kami ikuti sejak 2018."
-            />
-          </Reveal>
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS_AND_PROGRAMS.map((e, i) => {
-              const year = e.note?.match(/\b(19|20)\d{2}\b/)?.[0];
-              return (
-                <Reveal key={e.name} delay={(i % 3) * 80}>
-                  <li className="flex h-full flex-col gap-4 rounded-3xl bg-white p-6 card-shadow">
-                    {e.logo ? (
-                      <span className="flex h-12 items-center" aria-hidden="true">
-                        <Image src={e.logo.src} width={e.logo.w} height={e.logo.h} alt="" className="h-auto max-h-12 w-auto max-w-[150px] rounded-md" />
-                      </span>
-                    ) : (
-                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-red/10 text-brand-red" aria-hidden="true">
-                        <Trophy />
-                      </span>
-                    )}
-                    <div>
-                      <p className="text-[16px] font-extrabold leading-snug text-brand-dark">{e.name}</p>
-                      {e.note && <p className="mt-1 text-[14px] leading-relaxed text-brand-gray">{e.note}</p>}
-                      {year && (
-                        <span className="mt-3 inline-flex rounded-full bg-brand-cream px-3 py-1 text-[11px] font-bold text-brand-dark">{year}</span>
-                      )}
-                    </div>
-                  </li>
-                </Reveal>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
-
-      {/* Kanal */}
-      <section className="bg-brand-cream">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
-          <Reveal>
-            <SectionTitle label="Kanal barumahID" title="Ikuti dan hubungi kami." subtitle="Pilih kanal yang paling nyaman buat kamu." />
-          </Reveal>
-          <div className="mt-10">
-            <ChannelGrid />
-          </div>
-        </div>
-      </section>
+      {/* 9. Tanya jawab (testimoni otomatis tampil kalau datanya ada) */}
+      <FaqTestimonials lang={lang} />
     </>
   );
 }

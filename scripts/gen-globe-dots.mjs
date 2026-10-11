@@ -1,5 +1,5 @@
 // Generator titik daratan untuk globe di /layanan/contech (ProjectGlobe).
-// Cara pakai sama dengan gen-indonesia-map.mjs (sekali jalan, tidak perlu masuk package.json):
+// Cara pakai (sekali jalan, tidak perlu masuk package.json):
 //   mkdir -p /tmp/mapgen && cd /tmp/mapgen && npm i world-atlas@2 topojson-client@3 d3-geo@3
 //   cp <repo>/scripts/gen-globe-dots.mjs /tmp/mapgen/ && node gen-globe-dots.mjs <repo>/public/data/globe-dots.json
 // Hasil: { global: [lat*100, lon*100, ...], detail: [...] }. `global` = daratan dunia selain Indonesia, tersebar

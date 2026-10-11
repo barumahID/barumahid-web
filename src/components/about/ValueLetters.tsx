@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import type { Value } from "@/data/company";
+import { useT } from "@/i18n/LangProvider";
 
 // Lima huruf B-U-I-L-D. Desktop: hover membuka penjelasan. HP: tap.
 export default function ValueLetters({ values }: { values: Value[] }) {
+  const t = useT();
   const [active, setActive] = useState(0);
   const v = values[active];
   return (
     <div>
-      <div className="grid grid-cols-5 gap-2 md:gap-4" role="tablist" aria-label="Nilai BUILD">
+      <div className="grid grid-cols-5 gap-2 md:gap-4" role="tablist" aria-label={t("Nilai BUILD")}>
         {values.map((val, i) => (
           <button
             key={val.name}
@@ -33,7 +35,7 @@ export default function ValueLetters({ values }: { values: Value[] }) {
       </div>
       <div id="nilai-build-panel" role="tabpanel" className="mt-8 min-h-[110px] md:mt-10" aria-live="polite">
         <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-brand-red">{v.name}</p>
-        <p className="mt-3 max-w-2xl text-[clamp(1.1rem,1.8vw,1.45rem)] font-medium leading-snug text-white">{v.body}</p>
+        <p className="mt-3 max-w-2xl text-[clamp(1.1rem,1.8vw,1.45rem)] font-medium leading-snug text-white">{t(v.body)}</p>
       </div>
     </div>
   );

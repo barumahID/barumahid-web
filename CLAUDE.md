@@ -32,7 +32,7 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 | `/layanan/contech` | Jasa General Kontraktor. Urutan: hero 4 foto saat konstruksi yang berganti pelan; jejak proyek (`#peta`: wilayah satu baris, angka per lini jasa dari `STATS.byService`, globe titik interaktif `ProjectGlobe`: saat dibuka langsung fokus ke seluruh Indonesia (zoom menyesuaikan lebar layar), diam sampai pengguna menggeser atau zoom (tombol/Ctrl+scroll/dua jari), penanda proyek + cincin Base/VO tanpa tulisan); renovasi dan bangun sebagai layanan unggulan (`#renovasi`: copy singkat + 4 foto konstruksi berukuran sama (survey pengukuran, pembesian, saluran, pasangan batu kali; pilihan user), cakupan, cara hitung AHSP, alur kerja); gambar & modelling + desain & analisa struktur bersama partner Jururancang (`#harga`: copy + `KaryaStrip` 4 desain rumah dan 4 analisa struktur yang bergeser sendiri dan bisa digeser, lalu `PricingTerrace` ringkas: logo dan kontak partner, satu pilihan paket Basic/Plus/Pro untuk dua jasa, simulasi "Harga per m²" atau "Estimasi total" dari luas bangunan, ajakan chat admin WhatsApp); "Ceritakan proyekmu" (`#konsultasi`): kanvas sketsa `DrawingCanvas` di kiri (mouse, pen, atau jari) dengan FAQ singkat `CONTECH_FAQ` di bawahnya, form konsultasi di kanan. Tidak ada lagi bagian portofolio terpisah (karya sudah tampil di tiap jasa). Setiap foto di halaman ini hanya dipakai di satu tempat (arahan user). Isi teks dan daftar foto di `src/data/contech.ts`. |
 | `/kemitraan` | Ekosistem dan 7 peran mitra. |
 | `/kemitraan/daftar/[peran]` | Form per peran, 7 halaman statis dari `src/data/roles.ts`. |
-| `/tentang` | About barumahID: apa itu barumahID + PT (hero), cerita dan timeline, masalah yang ingin diselesaikan, visi misi, peta penyebaran proyek + Base barumahID Padang dan VO Tangerang (`#peta`), 4 pilar, nilai BUILD, grup, tim, tanya jawab/testimoni, event yang pernah diikuti, kanal resmi. |
+| `/tentang` | **Ekosistem** (menu "Ekosistem", dulu "Tentang"; alamat tetap /tentang karena /ekosistem dipakai redirect lama ke RTO). Urutan: hero profil PT Inditek Bluprim Mahaksa di atas 4 foto kegiatan kompetisi (`public/images/ekosistem`, berganti pelan) dengan chip 3 layanan; barumahID itu apa + inovasi unggulan (RTO, "segera hadir"); masalah yang sering terjadi (4); keunggulan (10, RTO ditandai "Segera"); visi misi; LBAG; nilai BUILD; grup usaha (menunggu revisi user, rencananya globe cabang bisnis); tanya jawab. Cerita/timeline, peta, tim, event, dan kanal sudah dihapus (arahan user Okt 2026). Isi di `src/data/company.ts`. |
 | `/kontak` | Kontak dan form pesan. |
 | `/masuk` | Pilih jalur: pelanggan atau mitra. |
 | `/rekrutmen` | Batch rekrutmen. Link form dari `NEXT_PUBLIC_FORM_REKRUTMEN`; kalau kosong tampil status tutup. |
@@ -55,7 +55,7 @@ Arahan user Okt 2026: tombol ID/EN di pojok kanan atas navbar, untuk semua halam
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
-- `beranda.ts`: judul, tagline, dan subline hero (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`, versi lengkap tetap `TIMELINE` di `company.ts`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
+- `beranda.ts`: judul, tagline, dan subline hero (`HOME_HERO`), roadmap histori singkat (`HOME_HISTORY`), deskripsi halaman 2 (`HOME_ABOUT`), 2 gambar hero (`DUA_LAYANAN`), dan kartu hub `/layanan`.
 - `site.ts`: identitas, kontak, alamat, kanal sosial, `waLink()`, kontak partner `JURURANCANG` (email, WA admin, Instagram; `website` diisi kalau situsnya sudah tayang).
 - `contech.ts`: teks halaman `/layanan/contech` (hero dan fotonya, wilayah proyek, renovasi dan bangun, gambar dan struktur).
 - `nav.ts`: menu utama dan dropdown Layanan.
@@ -63,9 +63,8 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - `pricing.ts`: tier harga ConTech (Basic, Plus, Pro per m²), isi paket, langkah order.
 - `rto.ts`: jalur RTO, langkah, kanal DP, keamanan dana, FAQ RTO.
 - `listings.ts`: listing RTO (kosong). `roles.ts`: 7 peran mitra. `masuk.ts`: pilihan di `/masuk`.
-- `company.ts`: isi halaman Tentang. `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program (`EVENTS_AND_PROGRAMS`, tampil di `/tentang`) dan partner (`PARTNERS`). Semua yang punya `logo` ({src, w, h}, file di `/public/logos/`) ikut di marquee beranda (`MARQUEE_LOGOS`); tanpa logo, di `/tentang` tampil ikon piala.
+- `company.ts`: isi halaman Ekosistem (`EKOSISTEM_HERO`, `BARUMAHID_INTRO`, `MASALAH`, `KEUNGGULAN`, visi misi, `PILLARS` LBAG, `VALUES` BUILD, grup usaha). `faq.ts`: FAQ umum dan testimoni (tampil di `/tentang`). `partners.ts`: event dan program (`EVENTS_AND_PROGRAMS`) dan partner (`PARTNERS`). Semua yang punya `logo` ({src, w, h}, file di `/public/logos/`) ikut di marquee beranda (`MARQUEE_LOGOS`).
 - `articles.ts`: artikel (kosong).
-- `indonesia-map.ts`: hasil generate `scripts/gen-indonesia-map.mjs`. Jangan diedit manual. Cara pakai ada di header script.
 
 ## Form dan lead
 - Skema semua form: `src/lib/leads.ts` (`FORMS`, 10 peran). Nama field sama dengan judul kolom di Google Sheet CRM Master.
@@ -84,13 +83,14 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
 - Preview Vercel menulis ke tabel yang sama dengan production. Kalau mengetes form, isi nama dengan "TEST", lalu hapus barisnya dari dashboard.
 
 ## Komponen
-- `layout/Navbar.tsx`: dropdown Layanan dan Masuk. Panel menu HP dirender **di luar** `<header>`, karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
+- `layout/Navbar.tsx`: dropdown Layanan dan Masuk, tombol Kabar (`NewsPanel`) dan ID/EN di pojok kanan atas. Panel menu HP dan panel Kabar dirender **di luar** `<header>` (menu HP di luar, Kabar lewat portal ke body), karena header pakai `backdrop-filter` (elemen `fixed` di dalamnya jadi tidak terlihat).
+- Kabar terkini: `src/lib/berita.ts` mengambil RSS media terkurasi (Indonesia: Detik Finance, CNBC Indonesia, Okezone, SINDOnews, ANTARA, Republika, disaring kata kunci konstruksi/properti; dunia: Construction Dive, Global Construction Review, Construction News, The Guardian Housing, HousingWire), 7 hari terakhir, maksimal 8 per wilayah dan 3 per media, berita duka/kriminal dibuang. `GET /api/berita` di-cache 6 jam. Yang tampil hanya judul, media, waktu, dan link ke artikel asli.
 - `layout/Footer.tsx`: logo PT tampil di sini saja (komponen `brand/PtMark`: simbol saja, warna asli di latar terang, putih di latar gelap seperti logo barumahID; nama PT ditulis pakai font situs, bukan gambar logo utuh). Alamat bisa diklik langsung ke Google Maps, tanpa tombol tambahan (begitu juga di `/kontak` dan `/tentang`).
 - `layout/FloatingWhatsApp.tsx` (HP saja), `ScrollProgress.tsx`.
 - `ui/`: `PageHero` (prop `slides` untuk beberapa foto yang berganti pelan, CSS saja), `ButtonLink`, `AccordionFAQ`, `ChannelGrid`, `hero-backdrop` (latar hero beranda; foto di-blur di file, bukan CSS blur, supaya ringan), `dual-scroll-hero` (hero dua panel beranda, latar lewat prop `background`; scroll window dikunci di atas sampai panel terbuka penuh, keyboard dan anchor langsung membuka penuh).
-- `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `HistoryRoadmap` (roadmap beranda, animasi berurutan saat masuk layar), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `ProblemSection` dan `FaqTestimonials` (dipakai di `/tentang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
-- `about/`: `PetaProyek` (peta + angka + kartu kantor, pakai `ProjectMap` dengan prop `offices`), `PillarCards`, `ValueLetters`.
-- `constech/`: `ProjectMap`, `ProjectGlobe` (canvas 2D, data `public/data/globe-dots.json` dari `scripts/gen-globe-dots.mjs`), `KaryaStrip` (gambar setinggi sama, lebar ikut rasio asli, bergeser sendiri, bisa digeser), `PricingTerrace` (kartu paket harga ringkas), `DrawingCanvas` (pointer events: mouse/trackpad, pen dengan tekanan dan ujung penghapus, jari; jari kedua dan telapak tangan saat pakai pen diabaikan; sketsa disimpan di localStorage pengunjung, belum ikut terkirim bersama form). Hormati reduced motion.
+- `home/`: `EventMarquee` (logo event dan partner yang bergerak, tinggi logo diatur dari luas bidangnya), `HistoryRoadmap` (roadmap beranda, animasi berurutan saat masuk layar), `ServiceCards` (kartu foto hub `/layanan`, isi lewat props), `FaqTestimonials` (dipakai di `/tentang`, prop `lang`), `ClosingCta`. Hero beranda: `sections/ScrollExpandHeroSection`.
+- `about/`: `PillarCards` (kartu LBAG + "Artinya buat kamu"), `ValueLetters` (BUILD), `LineIcon` (ikon garis halaman Ekosistem).
+- `constech/`: `ProjectGlobe` (canvas 2D, data `public/data/globe-dots.json` dari `scripts/gen-globe-dots.mjs`), `KaryaStrip` (gambar setinggi sama, lebar ikut rasio asli, bergeser sendiri, bisa digeser), `PricingTerrace` (kartu paket harga ringkas), `DrawingCanvas` (pointer events: mouse/trackpad, pen dengan tekanan dan ujung penghapus, jari; jari kedua dan telapak tangan saat pakai pen diabaikan; sketsa disimpan di localStorage pengunjung, belum ikut terkirim bersama form). Hormati reduced motion.
 - `rto/` (`DPSimulator`, `ListingGrid`).
 - `CountUp`: angka final dirender di server, animasi hanya kalau elemen di luar layar dan reduced motion tidak aktif. `Reveal`: animasi muncul, ada fallback `<noscript>` di layout.
 

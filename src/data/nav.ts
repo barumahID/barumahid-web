@@ -39,5 +39,6 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Beranda" },
   { href: "/layanan", label: "Layanan", children: SERVICE_LINKS },
   ...(ARTICLES.length > 0 ? [{ href: "/artikel", label: "Artikel" }] : []),
-  { href: "/tentang", label: "Tentang" },
+  // Dulu "Tentang". Alamat tetap /tentang: /ekosistem sudah dipakai link lama yang mengarah ke RTO.
+  { href: "/tentang", label: "Ekosistem" },
 ];

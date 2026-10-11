@@ -25,7 +25,7 @@ export const HOME_ABOUT = {
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
 
-// Roadmap singkat di sebelah kanan "Tentang barumahID". Versi lengkap ada di TIMELINE (company.ts, /tentang).
+// Roadmap singkat di sebelah kanan "Tentang barumahID" (beranda).
 export interface HistoryStep {
   period: string;
   title: string;

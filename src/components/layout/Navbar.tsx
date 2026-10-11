@@ -10,6 +10,7 @@ import { NAV_ITEMS, SERVICE_LINKS } from "@/data/nav";
 import { MASUK_OPTIONS } from "@/data/masuk";
 import { waLink } from "@/data/site";
 import ChannelIcon from "@/components/icons/ChannelIcon";
+import NewsPanel from "./NewsPanel";
 
 function Chevron({ open }: { open: boolean }) {
   return (
@@ -235,6 +236,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <NewsPanel solid={solid} />
           <LangSwitch solid={solid} path={pathname} />
           <a
             href={waHalo}
@@ -288,7 +290,8 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: tombol bahasa tetap di pojok kanan atas, di samping tombol menu */}
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-1.5 lg:hidden">
+          <NewsPanel solid={solid} />
           <LangSwitch solid={solid} path={pathname} />
           <button
             type="button"
