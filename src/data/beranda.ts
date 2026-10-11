@@ -1,5 +1,4 @@
 import { STATS } from "./projects";
-import { RTO_RATE } from "./rto";
 
 // Isi beranda dan hub /layanan.
 // Arahan user (Okt 2026): beranda bersih seperti tikalindustries.com. Halaman 1 = hero scroll-expand dengan
@@ -18,9 +17,10 @@ export const HOME_ABOUT = {
   label: "Tentang barumahID",
   // Ditulis dari sudut pandang calon klien: sekali baca langsung paham barumahID itu apa dan bisa bantu apa.
   title: "Wujudkan proyekmu, kami dampingi hingga miliki hunian.",
+  // Teks dari user (Okt 2026), dipakai persis.
   body: [
-    "barumahID adalah platform properti yang menyatukan dua layanan: jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Mulai dari merancang dan membangun rumah, sampai akhirnya punya hunian sendiri, kami temani di setiap langkahnya.",
-    `Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP (Down Payment) belum cukup? Lewat program Rent-to-Own barumahID, kamu sewa huniannya dulu, dan ${Math.round(RTO_RATE * 100)}% dari sewa bulananmu otomatis dicatat jadi saldo DP.`,
+    "barumahID adalah bisnis yang terus bertumbuh di dua lini yaitu jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Kami jadi platform tempat proyekmu diwujudkan, mulai dari merancang, renovasi hingga membangun, sekaligus menemani perjalanan di setiap langkah menuju kepemilikan hunian nantinya.",
+    "Butuh gambar kerja, hitungan struktur, renovasi, atau bangun konstruksi? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP (Down Payment) belum cukup? Lewat program Rent-to-Own barumahID, kamu sewa huniannya dulu, dan dari sewa bulananmu otomatis dicatat jadi saldo DP.",
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
