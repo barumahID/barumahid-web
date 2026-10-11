@@ -91,7 +91,7 @@ export default function PetaProyek() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-3">
-          <ButtonLink href="/portofolio" variant="red">
+          <ButtonLink href="/layanan/contech#portofolio" variant="red">
             Lihat portofolio
           </ButtonLink>
           <ButtonLink href="/layanan/contech" variant="outline-light">

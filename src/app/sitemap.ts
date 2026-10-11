@@ -13,7 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/layanan/rto", priority: 0.9 },
     { path: "/layanan/contech", priority: 0.9 },
     { path: "/kemitraan", priority: 0.8 },
-    { path: "/portofolio", priority: 0.7 },
     { path: "/tentang", priority: 0.6 },
     { path: "/kontak", priority: 0.5 },
     { path: "/rekrutmen", priority: 0.3 },

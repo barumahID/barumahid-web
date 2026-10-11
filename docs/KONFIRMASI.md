@@ -21,6 +21,7 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Listing RTO pertama | Kosong. Dua calon unit sudah diusulkan (satu Siap Berdaya, satu Siap Beli). Menunggu foto, data unit, izin tertulis pemilik, dan cek dokumen legal | `src/data/listings.ts` |
 | Proyek di Jambi dan Palembang | Titik sudah tampil di peta, rincian proyeknya belum ada (panel peta menulis "menyusul") | `src/data/projects.ts` (`PROJECT_CITIES`) |
 | Total proyek "30+" vs angka per lini (10+, 15+, 10+ = 35+) | Total di beranda dan Tentang masih 30+. Perlu konfirmasi apakah total dinaikkan | `src/data/projects.ts` (`STATS`) |
+| Sketsa dari kanvas "Ceritakan proyekmu" | Belum ikut terkirim bersama form (skema form dan sheet CRM belum punya kolomnya). Pengunjung bisa mengunduh PNG lalu mengirim lewat WhatsApp. Kalau mau dikirim otomatis, perlu kolom baru di form dan CRM | `src/components/constech/DrawingCanvas.tsx`, `src/lib/leads.ts` |
 | Website Jururancang | Belum ada, tampil "Website segera hadir" | `src/data/site.ts` (`JURURANCANG.website`) |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |
 | Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/app/rekrutmen/page.tsx` (`BATCH`) |

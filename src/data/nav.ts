@@ -38,7 +38,6 @@ export const SERVICE_LINKS: NavChild[] = [
 export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Beranda" },
   { href: "/layanan", label: "Layanan", children: SERVICE_LINKS },
-  { href: "/portofolio", label: "Portofolio" },
   ...(ARTICLES.length > 0 ? [{ href: "/artikel", label: "Artikel" }] : []),
   { href: "/tentang", label: "Tentang" },
 ];

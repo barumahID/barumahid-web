@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
       { source: "/services/:path*", destination: "/layanan/contech", permanent: true },
       // Nama lini diganti ConsTech -> ConTech (Okt 2026); link lama tetap jalan.
       { source: "/layanan/constech", destination: "/layanan/contech", permanent: true },
+      // Halaman portofolio dihapus (arahan user Okt 2026); portofolio pilihan ada di halaman ConTech.
+      { source: "/portofolio", destination: "/layanan/contech#portofolio", permanent: true },
       { source: "/mitra", destination: "/kemitraan", permanent: true },
       { source: "/daftar", destination: "/masuk", permanent: true },
     ];

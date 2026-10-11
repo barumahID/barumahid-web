@@ -62,37 +62,55 @@ export const GAMBAR_STRUKTUR = {
   partnerTitle: "Paket harga dikerjakan oleh partner kami",
 };
 
-// Koridor foto 3D di bagian renovasi dan bangun: foto proyek saat konstruksi (bahan user + foto proyek yang ada).
+// Semua foto di bawah dari folder "Bahan Untuk Portofolio" (user, Okt 2026) dan masing-masing hanya dipakai
+// di SATU tempat di halaman ini (arahan user: gambar selalu segar, tidak berulang).
+
+// Koridor foto 3D di bagian renovasi dan bangun.
 export const KORIDOR_KONSTRUKSI = Array.from({ length: 16 }, (_, i) => ({
-  src: `/images/konstruksi/galeri/konstruksi-${String(i + 1).padStart(2, "0")}.webp`,
-  alt: "Foto proyek konstruksi barumahID",
+  src: `/images/konstruksi/galeri/renov-bangun-${String(i + 1).padStart(2, "0")}.webp`,
+  alt: "Foto proyek renovasi dan bangun barumahID",
 }));
 
-// Pembanding geser di bagian gambar dan struktur. Versi garis dibuat dari render yang sama (deteksi tepi),
-// jadi sudut pandangnya persis sama.
+// Pembanding sebelum-sesudah di bagian gambar dan modelling. Versi garis dibuat dari render yang sama
+// (deteksi tepi), jadi sudut pandangnya persis sama.
+const pair = (id: string, tab: string, what: string) => ({
+  id,
+  tab,
+  before: { src: `/images/gambar/${id}-garis.webp`, alt: `Gambar garis ${what}`, label: "Gambar garis" },
+  after: { src: `/images/gambar/${id}-render.webp`, alt: `Render 3D ${what}`, label: "Render 3D" },
+});
 export const COMPARE_PAIRS = [
-  {
-    id: "rumah",
-    tab: "Rumah tinggal 2 lantai",
-    before: { src: "/images/proyek/garis-render-rumah-2-lantai.webp", alt: "Gambar garis rumah tinggal 2 lantai", label: "Gambar garis" },
-    after: { src: "/images/proyek/render-rumah-2-lantai.webp", alt: "Render 3D rumah tinggal 2 lantai", label: "Render 3D" },
-  },
-  {
-    id: "pesantren",
-    tab: "Gedung pesantren",
-    before: { src: "/images/proyek/garis-render-pesantren.webp", alt: "Gambar garis gedung pesantren tiga lantai", label: "Gambar garis" },
-    after: { src: "/images/proyek/render-pesantren.webp", alt: "Render 3D gedung pesantren tiga lantai", label: "Render 3D" },
-  },
+  pair("rumah-1-lantai", "Rumah 1 lantai", "rumah tinggal satu lantai"),
+  pair("rumah-tropis", "Rumah tropis", "rumah bergaya tropis"),
+  pair("gedung-serbaguna", "Gedung", "gedung berfasad kisi bata"),
 ];
 
-// Slider kartu bertumpuk: karya gambar, modelling, dan analisa struktur.
-export const KARYA_GAMBAR_STRUKTUR = [
-  { src: "/images/proyek/render-rumah-2-lantai.webp", alt: "Render 3D rumah tinggal 2 lantai", title: "Desain rumah tinggal 2 lantai", tag: "Gambar & Modelling" },
-  { src: "/images/proyek/model-struktur-gedung-baja.webp", alt: "Model struktur gedung restoran baja di software analisa", title: "Struktur gedung restoran baja", tag: "Analisa Struktur" },
-  { src: "/images/proyek/render-pesantren.webp", alt: "Render 3D gedung pesantren tiga lantai", title: "Desain dan struktur pesantren", tag: "Analisa Struktur" },
-  { src: "/images/proyek/desain-saluran-precast.webp", alt: "Model 3D potongan saluran air precast", title: "Desain saluran precast", tag: "Gambar & Modelling" },
-  { src: "/images/proyek/model-struktur-shelter.webp", alt: "Model struktur shelter di software analisa", title: "Struktur shelter", tag: "Analisa Struktur" },
-  { src: "/images/proyek/analisa-struktur-jembatan.webp", alt: "Model struktur jembatan dengan pilar dan pondasi tiang", title: "Analisa struktur jembatan", tag: "Analisa Struktur" },
-  { src: "/images/proyek/model-struktur-menara-masjid.webp", alt: "Model struktur menara masjid di software analisa", title: "Struktur menara masjid", tag: "Analisa Struktur" },
-  { src: "/images/proyek/analisa-dermaga.webp", alt: "Tiang dan balok beton di bawah dermaga di tepi laut", title: "Analisa struktur dermaga", tag: "Analisa Struktur" },
+// Slider kartu bertumpuk: karya desain dan analisa struktur (model dari software analisa).
+export const KARYA_STRUKTUR = [
+  { src: "/images/portofolio/struktur-shelter.webp", alt: "Model struktur shelter di software analisa", title: "Struktur shelter", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-pesantren.webp", alt: "Model struktur gedung pesantren", title: "Struktur gedung pesantren", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-gedung-baja.webp", alt: "Model struktur gedung restoran baja", title: "Struktur gedung restoran baja", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-ramp.webp", alt: "Model struktur ramp rumah sakit", title: "Struktur ramp rumah sakit", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-gedung-beton.webp", alt: "Model struktur gedung beton bertulang", title: "Pemodelan gedung beton", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-menara.webp", alt: "Model struktur menara masjid", title: "Struktur menara masjid", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-gedung-bertingkat.webp", alt: "Model struktur gedung bertingkat", title: "Pemodelan gedung bertingkat", tag: "Analisa Struktur" },
+  { src: "/images/portofolio/struktur-rangka.webp", alt: "Model struktur rangka bangunan", title: "Pemodelan rangka bangunan", tag: "Analisa Struktur" },
+];
+
+// Bola foto portofolio: 3 foto terbaik per jasa.
+export const PORTOFOLIO_JASA = [
+  { name: "Renovasi & Bangun", body: "Kitchen set, taman, plafon, sampai bangun baru. Dikerjakan general kontraktor barumahID bersama mitra konstruksi." },
+  { name: "Gambar & Modelling", body: "Desain dan model 3D rumah sampai gedung, supaya kamu bisa melihat hasilnya sebelum dibangun." },
+  { name: "Desain & Analisa Struktur", body: "Model dan hitungan struktur jembatan, atap bentang lebar, dan gedung, bersama partner Jururancang." },
+];
+export const PORTOFOLIO_PILIHAN = [
+  { src: "/images/portofolio/sphere-renov-kitchen-set.webp", alt: "Kitchen set putih dengan lampu gantung", title: "Renovasi dapur dan kitchen set", service: "Renovasi & Bangun" },
+  { src: "/images/portofolio/sphere-gambar-rumah-modern.webp", alt: "Model 3D rumah modern dengan dua fasad miring", title: "Desain rumah modern", service: "Gambar & Modelling" },
+  { src: "/images/portofolio/sphere-analisa-pilar-jembatan.webp", alt: "Model 3D pilar dan pondasi tiang jembatan", title: "Analisa pilar jembatan", service: "Desain & Analisa Struktur" },
+  { src: "/images/portofolio/sphere-renov-taman.webp", alt: "Taman vertikal dan kolam di samping rumah", title: "Taman dan kolam rumah", service: "Renovasi & Bangun" },
+  { src: "/images/portofolio/sphere-gambar-gedung.webp", alt: "Render 3D gedung dua lantai beratap merah", title: "Desain gedung dua lantai", service: "Gambar & Modelling" },
+  { src: "/images/portofolio/sphere-analisa-atap-lengkung.webp", alt: "Model struktur atap lengkung bentang lebar", title: "Analisa atap lengkung", service: "Desain & Analisa Struktur" },
+  { src: "/images/portofolio/sphere-renov-plafon.webp", alt: "Plafon dekoratif bermotif awan", title: "Renovasi plafon dekoratif", service: "Renovasi & Bangun" },
+  { src: "/images/portofolio/sphere-gambar-rumah-3-lantai.webp", alt: "Model 3D rumah tiga lantai", title: "Desain rumah tiga lantai", service: "Gambar & Modelling" },
+  { src: "/images/portofolio/sphere-analisa-rangka-jembatan.webp", alt: "Model rangka baja jembatan penyeberangan", title: "Analisa rangka jembatan", service: "Desain & Analisa Struktur" },
 ];

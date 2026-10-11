@@ -17,7 +17,6 @@ import PtMark from "@/components/brand/PtMark";
 
 const companyLinks = [
   { href: "/tentang", label: "Tentang kami" },
-  { href: "/portofolio", label: "Portofolio" },
   ...(ARTICLES.length > 0 ? [{ href: "/artikel", label: "Artikel" }] : []),
   { href: "/rekrutmen", label: "Karier" },
   { href: "/kontak", label: "Kontak" },

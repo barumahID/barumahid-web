@@ -25,14 +25,20 @@ export const TIERS: Tier[] = [
   },
 ];
 
-// Sudah termasuk di semua paket gambar dan struktur. Diringkas jadi satu daftar supaya hemat ruang (arahan user).
-export const PACKAGE_INCLUDES = [
-  "Survei lokasi dan konsultasi",
-  "Denah dan gambar arsitektur",
+// Isi tiap paket di kartu harga (PricingTerrace). Tambahan khusus paket Pro ada di `gambarExtra` / `strukturExtra`.
+export const GAMBAR_FEATURES = [
+  "Survei lokasi dan konsultasi kebutuhan",
+  "Denah lantai",
+  "Gambar arsitektur",
   "Gambar 3D eksterior",
   "Gambar struktur",
-  "Hitungan struktur SNI (ETABS atau SAP2000)",
-  "Dimensi dan penulangan",
+];
+
+export const STRUKTUR_FEATURES = [
+  "Survei lokasi dan konsultasi kebutuhan",
+  "Hitungan struktur berbasis SNI (ETABS atau SAP2000)",
+  "Dimensi kolom, balok, pelat, dan pondasi",
+  "Penulangan atau pembesian",
 ];
 
 export const PRICE_NOTE = "Harga per m² luas bangunan, menyesuaikan kerumitan proyek dan disepakati di awal. Konsultasi pertama gratis.";

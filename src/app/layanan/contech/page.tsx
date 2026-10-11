@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
 import ButtonLink from "@/components/ui/ButtonLink";
 import ProjectGlobe, { type GlobeOffice } from "@/components/constech/ProjectGlobe";
-import PricingTiers from "@/components/constech/PricingTiers";
-import OrbitGallery from "@/components/portfolio/OrbitGallery";
+import PricingTerrace from "@/components/constech/PricingTerrace";
+import DrawingCanvas from "@/components/constech/DrawingCanvas";
+import SphereCarousel from "@/components/portfolio/SphereCarousel";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
 import ChannelIcon from "@/components/icons/ChannelIcon";
@@ -14,15 +14,17 @@ import ImageCorridor from "@/components/constech/ImageCorridor";
 import SplitCompare from "@/components/constech/SplitCompare";
 import StackingSlider from "@/components/constech/StackingSlider";
 import TechExploded from "@/components/constech/anim/TechExploded";
-import { PORTFOLIO, PROJECT_CITIES, SERVICE_LABEL, verifiedCities } from "@/data/projects";
+import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
 import {
   COMPARE_PAIRS,
   CONTECH_HERO,
   CONTECH_REACH,
   GAMBAR_STRUKTUR,
-  KARYA_GAMBAR_STRUKTUR,
+  KARYA_STRUKTUR,
   KORIDOR_KONSTRUKSI,
+  PORTOFOLIO_JASA,
+  PORTOFOLIO_PILIHAN,
   RENOVASI_BANGUN,
 } from "@/data/contech";
 import { ADDRESSES, JURURANCANG, waLink } from "@/data/site";
@@ -203,9 +205,9 @@ export default function ContechPage() {
             </Reveal>
           </div>
           <Reveal className="mt-14">
-            <p className="type-micro text-brand-red">Karya gambar dan struktur</p>
+            <p className="type-micro text-brand-red">Karya desain dan analisa struktur</p>
             <div className="mt-5">
-              <StackingSlider slides={KARYA_GAMBAR_STRUKTUR} />
+              <StackingSlider slides={KARYA_STRUKTUR} />
             </div>
           </Reveal>
 
@@ -276,14 +278,31 @@ export default function ContechPage() {
             </div>
           </Reveal>
 
-          <div className="mt-6">
-            <PricingTiers />
+          <Reveal className="mt-6">
+            <PricingTerrace />
+          </Reveal>
+
+          {/* Terakhir dan terpisah: ajakan chat admin WhatsApp */}
+          <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-3xl bg-brand-dark p-6 text-white sm:flex-row sm:items-center md:px-8">
+            <div>
+              <p className="text-[18px] font-extrabold tracking-tight">Lebih nyaman lewat WhatsApp?</p>
+              <p className="mt-1 text-[14px] text-white/65">Tanya paket, harga, atau kebutuhan proyekmu. Admin kami siap membantu.</p>
+            </div>
+            <a
+              href={waLink("Halo barumahID, saya mau tanya paket jasa gambar atau analisa struktur.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#1FA855] px-6 py-3.5 text-[14px] font-bold text-white transition-colors hover:bg-[#178a45]"
+            >
+              <ChannelIcon id="whatsapp" size={18} />
+              Chat admin WhatsApp
+            </a>
           </div>
         </div>
       </section>
 
       {/* Portofolio pilihan */}
-      <section className="bg-brand-cream">
+      <section id="portofolio" className="bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
@@ -293,31 +312,36 @@ export default function ContechPage() {
                   Karya nyata, bukan gambar contoh.
                 </h2>
               </div>
-              <Link href="/portofolio" className="shrink-0 text-[14px] font-bold text-brand-red hover:text-brand-red-dark">
-                Lihat semua portofolio →
-              </Link>
             </div>
           </Reveal>
           <div className="mt-10">
-            <OrbitGallery items={PORTFOLIO.map((p) => ({ src: p.image, alt: p.imageAlt, title: p.title, tag: SERVICE_LABEL[p.service] }))} />
+            <SphereCarousel items={PORTOFOLIO_PILIHAN} services={PORTOFOLIO_JASA} />
           </div>
         </div>
       </section>
 
       {/* Form konsultasi */}
       <section id="konsultasi" className="bg-brand-dark">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-12 lg:px-14">
-          <div className="text-white lg:col-span-4">
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+          <div className="max-w-3xl text-white">
             <p className="type-micro text-brand-red">Konsultasi gratis</p>
             <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.8rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
               Ceritakan proyekmu.
             </h2>
             <p className="mt-5 text-[16px] leading-relaxed text-white/70">
-              Isi singkat saja. Kami balas lewat WhatsApp untuk tanya detail, jadwalkan survei kalau perlu, lalu kirim penawaran.
+              Gambarkan idemu di kanvas, sesederhana apa pun. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.
             </p>
           </div>
-          <div className="lg:col-span-8">
-            <LeadForm role="konsultasi" tone="card" compact />
+          <div className="mt-10 grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <DrawingCanvas />
+              <p className="mt-3 text-[13px] text-white/55">
+                Sketsa tersimpan di browsermu. Unduh lewat tombol panah bawah, lalu kirimkan ke admin WhatsApp kami setelah mengisi data.
+              </p>
+            </div>
+            <div className="lg:col-span-5">
+              <LeadForm role="konsultasi" tone="card" compact />
+            </div>
           </div>
         </div>
       </section>
@@ -327,8 +351,8 @@ export default function ContechPage() {
         body="Kirim gambarnya, kami cek dulu. Konsultasi pertama gratis."
         primaryLabel="Kirim lewat WhatsApp"
         primaryHref={waLink("Halo barumahID, saya mau cek struktur bangunan saya.")}
-        secondaryLabel="Lihat portofolio"
-        secondaryHref="/portofolio"
+        secondaryLabel="Lihat jasa dan harga"
+        secondaryHref="#harga"
       />
     </>
   );
