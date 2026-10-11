@@ -9,7 +9,7 @@ import { portalConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-type Props = { searchParams: Promise<{ bagian?: string; tab?: string; kategori?: string; status?: string; grup?: string }> };
+type Props = { searchParams: Promise<{ bagian?: string; tab?: string; kategori?: string; status?: string; grup?: string; q?: string }> };
 
 export default async function PortalDashboardPage({ searchParams }: Props) {
   if (!portalConfigured()) {
@@ -56,7 +56,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
         <TeamDashboard
           bagian={bagian}
           tab={tab}
-          filter={{ kategori: sp.kategori, status: sp.status, grup: sp.grup }}
+          filter={{ kategori: sp.kategori, status: sp.status, grup: sp.grup, q: sp.q }}
           levels={(levels.data ?? []) as OrgLevel[]}
           team={(team.data ?? []) as TeamMember[]}
           mitra={(mitra.data ?? []) as Mitra[]}

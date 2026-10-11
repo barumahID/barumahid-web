@@ -48,6 +48,8 @@ export interface TeamMember {
   status: TeamStatus;
   notes: string | null;
   sort: number;
+  /** Atasan langsung di dalam struktur (misalnya Supervisor di bawah Manajer) */
+  reports_to?: string | null;
 }
 
 export interface Mitra {

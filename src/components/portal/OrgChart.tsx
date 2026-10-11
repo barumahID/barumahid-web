@@ -12,6 +12,32 @@ import { TEAM_STATUS, type OrgLevel, type TeamMember } from "@/lib/portal";
 
 type Box = { x: number; y: number; w: number; h: number };
 
+/** Urutkan personil: atasan dulu, lalu bawahannya (reports_to) dengan kedalaman untuk tampilan menjorok. */
+function ordered(people: TeamMember[]) {
+  const ids = new Set(people.map((p) => p.id));
+  const top = people.filter((p) => !p.reports_to || !ids.has(p.reports_to));
+  const out: { p: TeamMember; depth: number }[] = [];
+  const walk = (p: TeamMember, depth: number) => {
+    out.push({ p, depth });
+    people.filter((c) => c.reports_to === p.id).forEach((c) => walk(c, depth + 1));
+  };
+  top.forEach((p) => walk(p, 0));
+  return out;
+}
+
+function Chip({ p }: { p: TeamMember }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11.5px] ${p.name ? "bg-brand-dark/[0.05] text-brand-dark" : "border border-dashed border-brand-dark/25 text-brand-mute"}`}
+      title={`${p.position}${p.name ? ` · ${p.name}` : ""} · ${TEAM_STATUS[p.status].label}`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${TEAM_STATUS[p.status].dot}`} aria-hidden="true" />
+      <span className="font-semibold">{p.name ?? p.position}</span>
+      {p.name && <span className="text-brand-mute">{p.position}</span>}
+    </span>
+  );
+}
+
 const STYLE: Record<string, { head: string; accent: string }> = {
   founder: { head: "bg-brand-red", accent: "#C53B3B" },
   komisaris: { head: "bg-[#1f2a44]", accent: "#1f2a44" },
@@ -141,21 +167,24 @@ function NodeCard({
             </span>
           ))}
         </span>
-        {people.length > 0 && (
-          <span className="mt-3 flex flex-wrap gap-1.5 border-t border-brand-dark/[0.07] pt-2.5">
-            {people.map((p) => (
-              <span
-                key={p.id}
-                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11.5px] ${p.name ? "bg-brand-dark/[0.05] text-brand-dark" : "text-brand-mute border border-dashed border-brand-dark/25"}`}
-                title={`${p.position}${p.name ? ` · ${p.name}` : ""} · ${TEAM_STATUS[p.status].label}`}
-              >
-                <span className={`h-1.5 w-1.5 rounded-full ${TEAM_STATUS[p.status].dot}`} aria-hidden="true" />
-                <span className="font-semibold">{p.name ?? p.position}</span>
-                {p.name && <span className="text-brand-mute">{p.position}</span>}
-              </span>
-            ))}
-          </span>
-        )}
+        {people.length > 0 &&
+          (people.some((p) => p.reports_to) ? (
+            // Ada hierarki (misalnya Manajer -> Supervisor): tampil bertingkat dengan garis kecil
+            <span className="mt-3 block space-y-1 border-t border-brand-dark/[0.07] pt-2.5">
+              {ordered(people).map(({ p, depth }) => (
+                <span key={p.id} className="flex items-center" style={{ paddingLeft: depth * 16 }}>
+                  {depth > 0 && <span className="mr-1.5 h-3 w-2.5 border-b border-l border-brand-dark/30" aria-hidden="true" />}
+                  <Chip p={p} />
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span className="mt-3 flex flex-wrap gap-1.5 border-t border-brand-dark/[0.07] pt-2.5">
+              {people.map((p) => (
+                <Chip key={p.id} p={p} />
+              ))}
+            </span>
+          ))}
         <span className="mt-2.5 block text-[11.5px] font-bold text-brand-red opacity-0 transition-opacity group-hover:opacity-100">
           Lihat jobdesk dan personil →
         </span>
@@ -277,16 +306,22 @@ export default function OrgChart({ levels, team, isAdmin }: { levels: OrgLevel[]
             </svg>
           )}
 
-          {levels.map((l) => (
+          {levels.map((l, i) => (
             <div
               key={l.id}
               ref={(el) => {
                 if (el) nodeRefs.current.set(l.id, el);
                 else nodeRefs.current.delete(l.id);
               }}
-              className={`org-node relative z-10 ${PLACE[l.id] ?? ""}`}
+              className={`org-node relative z-10 lg:self-start ${PLACE[l.id] ?? ""}`}
               style={{ animationDelay: `${(ROW[l.id] ?? 0) * 140}ms` }}
             >
+              {i > 0 && (
+                <span
+                  className={`absolute -top-4 left-1/2 h-4 w-0 border-l-2 lg:hidden ${l.id === "komisaris" ? "border-dashed border-brand-dark/45" : "border-brand-dark"}`}
+                  aria-hidden="true"
+                />
+              )}
               <NodeCard level={l} people={people(l.id)} active={selected === l.id} onSelect={() => setSelected(l.id)} />
             </div>
           ))}
@@ -344,10 +379,13 @@ export default function OrgChart({ levels, team, isAdmin }: { levels: OrgLevel[]
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-red">Jabatan dan personil</p>
               <ul className="mt-3 divide-y divide-brand-dark/[0.07] border-y border-brand-dark/[0.07]">
                 {people(level.id).length === 0 && <li className="py-3 text-[13px] text-brand-gray">Belum ada jabatan tercatat di level ini.</li>}
-                {people(level.id).map((p) => (
-                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                {ordered(people(level.id)).map(({ p, depth }) => (
+                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3" style={{ paddingLeft: depth * 20 }}>
                     <span className="min-w-0">
-                      <span className="block text-[14px] font-bold">{p.position}</span>
+                      <span className="block text-[14px] font-bold">
+                        {depth > 0 && <span className="mr-1 text-brand-mute">└</span>}
+                        {p.position}
+                      </span>
                       <span className="block text-[13px] text-brand-gray">{p.name ?? "Belum terisi"}</span>
                       {p.focus && <span className="block text-[12px] text-brand-mute">{p.focus}</span>}
                       {p.notes && <span className="block text-[12px] text-brand-mute">{p.notes}</span>}
