@@ -44,3 +44,6 @@ next-env.d.ts
 
 # bahan mentah dari user (kartu nama, logo pihak lain); yang dipakai sudah diolah ke public/
 /Picture/
+
+# file internal yang berisi kode rahasia atau data pribadi (Apps Script portal, dsb.); jangan pernah di-commit
+/private/
