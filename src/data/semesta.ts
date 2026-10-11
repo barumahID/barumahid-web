@@ -5,7 +5,8 @@
 // Progres ditulis apa adanya: barumahID 100%, Jururancang 44%, Piatu Tim 14% (berjalan), unit lain 4% (ide yang
 // pernah dicoba dan siap dibangun lagi). Istilah "gurita bisnis" sengaja tidak dipakai.
 // Cerita unit yang pernah gagal ditulis positif dan jujur, tanpa detail yang menyudutkan pihak lain.
-// Logo di public/images/semesta (simbolnya saja). Logo berlatar gelap memakai `logoBg` sebagai warna lingkaran.
+// Logo di public/images/semesta (simbolnya saja), kecuali barumahID yang tampil lengkap dengan tulisannya (arahan user,
+// `wide`). Logo berlatar gelap memakai `logoBg` sebagai warna lingkaran.
 // `initials` dipakai kalau suatu saat ada unit baru tanpa logo.
 
 export type DivisionId = "inditek" | "bluprim" | "mahaksa";
@@ -32,6 +33,8 @@ export interface Unit {
   body: string;
   logo?: string;
   logoBg?: string;
+  /** Logo melebar (simbol + tulisan): lingkarannya dibuat lebih besar dan logonya mengikuti lebar. */
+  wide?: boolean;
   initials: string;
 }
 
@@ -52,7 +55,8 @@ export const UNITS: Unit[] = [
     status: "berjalan",
     progress: 100,
     body: "Layanan desain, bangun, renovasi, dan kontraktor yang terintegrasi. Dari sini juga kami membuka jalan menuju hunian sendiri lewat Rent-to-Own.",
-    logo: "/images/semesta/barumahid.png",
+    logo: "/images/semesta/barumahid-lengkap.png",
+    wide: true,
     initials: "bID",
   },
   {

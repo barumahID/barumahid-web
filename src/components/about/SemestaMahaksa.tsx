@@ -50,7 +50,7 @@ export default function SemestaMahaksa() {
                   style={unit.logo ? { background: unit.logoBg ?? "#FFFFFF" } : { border: `1px solid rgba(${div.color},0.6)` }}
                 >
                   {unit.logo ? (
-                    <Image src={unit.logo} alt="" width={96} height={96} className="h-[80%] w-[80%] object-contain" />
+                    <Image src={unit.logo} alt="" width={128} height={96} className={unit.wide ? "h-[60%] w-[82%] object-contain" : "h-[80%] w-[80%] object-contain"} />
                   ) : (
                     <span className="text-[13px] font-black" style={{ color: `rgb(${div.color})` }}>
                       {unit.initials}

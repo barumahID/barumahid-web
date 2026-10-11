@@ -27,7 +27,7 @@ function Card({ u, color, selected, onSelect }: { u: Unit; color: string; select
         style={u.logo ? { background: u.logoBg ?? "#FFFFFF" } : { border: `1px solid rgba(${color},0.6)` }}
       >
         {u.logo ? (
-          <Image src={u.logo} alt="" width={80} height={80} className="h-[80%] w-[80%] object-contain" />
+          <Image src={u.logo} alt="" width={96} height={80} className={u.wide ? "h-[60%] w-[82%] object-contain" : "h-[80%] w-[80%] object-contain"} />
         ) : (
           <span className="text-[11px] font-black" style={{ color: `rgb(${color})` }}>
             {u.initials}

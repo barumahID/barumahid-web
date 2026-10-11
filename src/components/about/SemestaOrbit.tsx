@@ -318,7 +318,7 @@ export default function SemestaOrbit({
 
       {units.map((u) => {
         const running = u.status === "berjalan";
-        const size = running ? 48 : 38;
+        const size = u.wide ? 62 : running ? 48 : 38;
         const r = size / 2 + 4;
         const c = 2 * Math.PI * r;
         const col = COLOR[u.division];
@@ -364,7 +364,7 @@ export default function SemestaOrbit({
                 style={{ width: size, height: size, background: u.logo ? (u.logoBg ?? "#FFFFFF") : undefined, border: u.logo ? undefined : `1px solid rgba(${col},0.6)` }}
               >
                 {u.logo ? (
-                  <Image src={u.logo} alt="" width={96} height={96} className="h-[80%] w-[80%] object-contain" />
+                  <Image src={u.logo} alt="" width={128} height={96} className={u.wide ? "h-[60%] w-[82%] object-contain" : "h-[80%] w-[80%] object-contain"} />
                 ) : (
                   <span className="text-[11px] font-black tracking-tight" style={{ color: `rgb(${col})` }}>
                     {u.initials}
