@@ -271,3 +271,15 @@ export async function removeInvite(fd: FormData) {
   await supabase.from("portal_staff_invites").delete().eq("email", email);
   revalidatePath("/portal/dashboard");
 }
+
+// ---- Status personil (khusus admin; RLS portal_team juga hanya mengizinkan admin) ----
+
+export async function setTeamStatus(fd: FormData) {
+  const { supabase, profile } = await requireTeam();
+  if (profile?.role !== "admin") return;
+  const id = text(fd, "id", 60);
+  const status = text(fd, "status", 20);
+  if (!id || !["aktif", "nonaktif", "ditunda"].includes(status)) return;
+  await supabase.from("portal_team").update({ status, updated_at: new Date().toISOString() }).eq("id", id).not("name", "is", null);
+  revalidatePath("/portal/dashboard");
+}

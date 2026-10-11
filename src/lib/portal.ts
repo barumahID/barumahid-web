@@ -28,6 +28,16 @@ export interface OrgLevel {
   duties: string[];
 }
 
+/** Status personil. "kosong" = posisi belum terisi (bukan pilihan yang diubah manual). */
+export type TeamStatus = "aktif" | "nonaktif" | "ditunda" | "kosong";
+
+export const TEAM_STATUS: Record<TeamStatus, { label: string; tone: string; dot: string }> = {
+  aktif: { label: "Aktif", tone: "bg-[#2D7A4F]/10 text-[#2D7A4F]", dot: "bg-[#2D7A4F]" },
+  nonaktif: { label: "Nonaktif", tone: "bg-brand-dark/[0.07] text-brand-gray", dot: "bg-brand-mute" },
+  ditunda: { label: "Ditunda", tone: "bg-[#C25E20]/10 text-[#C25E20]", dot: "bg-[#C25E20]" },
+  kosong: { label: "Belum terisi", tone: "border border-dashed border-brand-dark/25 text-brand-mute", dot: "border border-brand-dark/40 bg-transparent" },
+};
+
 export interface TeamMember {
   id: string;
   level_id: string;
@@ -35,7 +45,7 @@ export interface TeamMember {
   name: string | null;
   phone: string | null;
   focus: string | null;
-  status: "aktif" | "perlu_konfirmasi" | "kosong";
+  status: TeamStatus;
   notes: string | null;
   sort: number;
 }

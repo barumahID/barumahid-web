@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import PortalShell, { SetupNotice } from "@/components/portal/PortalShell";
 import MitraDashboard from "@/components/portal/MitraDashboard";
-import TeamDashboard, { TABS, type TabId } from "@/components/portal/TeamDashboard";
+import TeamDashboard, { TABS, type Bagian, type TabId } from "@/components/portal/TeamDashboard";
 import { getPortalSession } from "@/lib/portal-session";
 import { isTeam, type AccountMeta, type FormSubmission, type Mitra, type OrgLevel, type Profile, type StaffInvite, type TeamMember } from "@/lib/portal";
 import { portalConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-type Props = { searchParams: Promise<{ tab?: string; kategori?: string; status?: string; grup?: string }> };
+type Props = { searchParams: Promise<{ bagian?: string; tab?: string; kategori?: string; status?: string; grup?: string }> };
 
 export default async function PortalDashboardPage({ searchParams }: Props) {
   if (!portalConfigured()) {
@@ -40,6 +40,8 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
   if (isTeam(profile)) {
     const sp = await searchParams;
     const tab: TabId = TABS.some((t) => t.id === sp.tab) ? (sp.tab as TabId) : "ringkasan";
+    // Bagian utama: Struktur Organisasi (bawaan) atau Dashboard; link lama ?tab=... otomatis ke Dashboard
+    const bagian: Bagian = sp.bagian === "dashboard" || (sp.bagian !== "struktur" && sp.tab) ? "dashboard" : "struktur";
     const [levels, team, mitra, accounts, accountMeta, submissions, invites] = await Promise.all([
       supabase.from("portal_org_levels").select("*").order("sort"),
       supabase.from("portal_team").select("*").order("sort"),
@@ -52,6 +54,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
     return (
       <PortalShell profile={profile} email={user.email ?? ""}>
         <TeamDashboard
+          bagian={bagian}
           tab={tab}
           filter={{ kategori: sp.kategori, status: sp.status, grup: sp.grup }}
           levels={(levels.data ?? []) as OrgLevel[]}

@@ -6,10 +6,12 @@ import {
   setMitraStatus,
   setRole,
   setSubmissionStatus,
+  setTeamStatus,
   unlinkAccount,
   verifySubmission,
 } from "@/app/portal/actions";
 import { waHref } from "./PortalShell";
+import OrgChart from "./OrgChart";
 import {
   CATEGORY_LABEL,
   CATEGORY_LINE,
@@ -18,6 +20,7 @@ import {
   STATUS_LABEL,
   STATUS_TONE,
   SUBMISSION_STATUS,
+  TEAM_STATUS,
   answerText,
   phoneKey,
   type AccountMeta,
@@ -33,9 +36,12 @@ import {
   type TeamMember,
 } from "@/lib/portal";
 
-// Dashboard monitoring tim barumahID (pusat data internal): ringkasan, formulir masuk (jawaban Google Form dan
-// verifikasi mitra), mitra, developer RTO, akun portal (login terakhir, verifikasi, undangan tim), struktur
-// organisasi + jobdesk, dan tim. Data dari Supabase (RLS: hanya admin/tim).
+// Portal tim barumahID (pusat data internal), dibagi dua bagian (arahan user Okt 2026):
+// 1) Struktur Organisasi: bagan beranimasi, jobdesk, dan daftar tim (status aktif/nonaktif/ditunda diubah admin).
+// 2) Dashboard: ringkasan, formulir masuk (jawaban Google Form dan verifikasi mitra), mitra, developer RTO, akun portal.
+// Data dari Supabase (RLS: hanya admin/tim).
+
+export type Bagian = "struktur" | "dashboard";
 
 export const TABS = [
   { id: "ringkasan", label: "Ringkasan" },
@@ -43,24 +49,8 @@ export const TABS = [
   { id: "mitra", label: "Mitra" },
   { id: "developer", label: "Developer RTO" },
   { id: "akun", label: "Akun portal" },
-  { id: "struktur", label: "Struktur organisasi" },
-  { id: "tim", label: "Tim" },
 ] as const;
 export type TabId = (typeof TABS)[number]["id"];
-
-// Nilai & prinsip dari bagan "Organisasi Kami" (user, Okt 2026)
-const NILAI = [
-  { name: "Leadership", body: "Memimpin dengan visi, integritas, dan inspirasi." },
-  { name: "Management", body: "Mengelola dengan strategi, data, dan kolaborasi." },
-  { name: "Execution", body: "Menjalankan rencana dengan fokus, disiplin, dan hasil terukur." },
-  { name: "Partnership", body: "Bertumbuh bersama mitra untuk nilai yang berkelanjutan." },
-];
-
-const TEAM_STATUS = {
-  aktif: { label: "Aktif", tone: "bg-[#2D7A4F]/10 text-[#2D7A4F]" },
-  perlu_konfirmasi: { label: "Perlu konfirmasi", tone: "bg-[#C25E20]/10 text-[#C25E20]" },
-  kosong: { label: "Belum terisi", tone: "bg-brand-dark/[0.06] text-brand-gray" },
-} as const;
 
 const PROFILE_LABEL: Record<string, string> = {
   pimpinan: "Pengurus",
@@ -150,6 +140,7 @@ export interface Filters {
 }
 
 export default function TeamDashboard({
+  bagian,
   tab,
   filter,
   levels,
@@ -161,6 +152,7 @@ export default function TeamDashboard({
   invites,
   me,
 }: {
+  bagian: Bagian;
   tab: TabId;
   filter: Filters;
   levels: OrgLevel[];
@@ -209,20 +201,49 @@ export default function TeamDashboard({
         </div>
       </div>
 
-      <nav className="no-scrollbar mt-6 flex gap-1 overflow-x-auto border-b border-brand-dark/10" aria-label="Bagian dashboard">
-        {TABS.map((t) => (
+      <div className="mt-6 inline-flex rounded-xl border border-brand-dark/10 bg-white p-1" role="tablist" aria-label="Bagian portal">
+        {(
+          [
+            { id: "struktur", label: "Struktur Organisasi", href: "/portal/dashboard?bagian=struktur" },
+            { id: "dashboard", label: "Dashboard", href: "/portal/dashboard?bagian=dashboard" },
+          ] as const
+        ).map((b) => (
           <Link
-            key={t.id}
-            href={`/portal/dashboard?tab=${t.id}`}
-            className={`whitespace-nowrap border-b-2 px-3.5 py-2.5 text-[13.5px] font-semibold transition-colors ${
-              tab === t.id ? "border-brand-red text-brand-dark" : "border-transparent text-brand-gray hover:text-brand-dark"
+            key={b.id}
+            href={b.href}
+            role="tab"
+            aria-selected={bagian === b.id}
+            className={`rounded-lg px-4 py-2 text-[13.5px] font-bold transition-colors ${
+              bagian === b.id ? "bg-brand-dark text-white" : "text-brand-gray hover:text-brand-dark"
             }`}
           >
-            {t.label}
+            {b.label}
           </Link>
         ))}
-      </nav>
+      </div>
 
+      {bagian === "dashboard" && (
+        <nav className="no-scrollbar mt-5 flex gap-1 overflow-x-auto border-b border-brand-dark/10" aria-label="Sub bagian dashboard">
+          {TABS.map((t) => (
+            <Link
+              key={t.id}
+              href={`/portal/dashboard?bagian=dashboard&tab=${t.id}`}
+              className={`whitespace-nowrap border-b-2 px-3.5 py-2.5 text-[13.5px] font-semibold transition-colors ${
+                tab === t.id ? "border-brand-red text-brand-dark" : "border-transparent text-brand-gray hover:text-brand-dark"
+              }`}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+
+      {bagian === "struktur" ? (
+        <div className="mt-6 space-y-6">
+          <OrgChart levels={levels} team={team} isAdmin={isAdmin} />
+          <Tim levels={levels} team={team} isAdmin={isAdmin} />
+        </div>
+      ) : (
       <div className="mt-6">
         {tab === "ringkasan" && (
           <Ringkasan team={team} mitra={mitra} developers={developers} pending={pendingAccounts} submissions={submissions} accounts={accounts} accountMeta={accountMeta} />
@@ -242,9 +263,8 @@ export default function TeamDashboard({
             meId={me.user_id}
           />
         )}
-        {tab === "struktur" && <Struktur levels={levels} team={team} />}
-        {tab === "tim" && <Tim levels={levels} team={team} />}
       </div>
+      )}
     </div>
   );
 }
@@ -266,7 +286,7 @@ function Ringkasan({
   accounts: Profile[];
   accountMeta: AccountMeta[];
 }) {
-  const aktif = team.filter((t) => t.status !== "kosong").length;
+  const aktif = team.filter((t) => t.status === "aktif").length;
   const kosong = team.filter((t) => t.status === "kosong").length;
   const konstruksi = mitra.filter((m) => CATEGORY_LINE[m.category] === "Jasa Konstruksi");
   const konstruksiAktif = konstruksi.filter((m) => m.status === "aktif" || m.status === "terverifikasi").length;
@@ -282,7 +302,7 @@ function Ringkasan({
   return (
     <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Stat label="Personil tercatat" value={aktif} note={`${kosong} posisi belum terisi`} href="/portal/dashboard?tab=tim" />
+        <Stat label="Personil aktif" value={aktif} note={`${kosong} posisi belum terisi`} href="/portal/dashboard?bagian=struktur" />
         <Stat label="Mitra Jasa Konstruksi" value={konstruksi.length} note={`${konstruksiAktif} aktif atau terverifikasi`} href="/portal/dashboard?tab=mitra" />
         <Stat label="Developer RTO" value={developers.length} note={`${developers.filter((d) => d.status === "bersedia").length} bersedia bergabung`} href="/portal/dashboard?tab=developer" />
         <Stat label="Formulir baru" value={baru.length} note={`${submissions.length} jawaban tercatat`} href="/portal/dashboard?tab=formulir&status=baru" />
@@ -814,79 +834,17 @@ function Akun({
   );
 }
 
-function Struktur({ levels, team }: { levels: OrgLevel[]; team: TeamMember[] }) {
-  return (
-    <div className="grid gap-5 lg:grid-cols-12">
-      <div className="space-y-3 lg:col-span-8">
-        {levels.map((l) => {
-          const people = team.filter((t) => t.level_id === l.id);
-          return (
-            <section key={l.id} className={`${card} p-5`}>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-[16px] font-extrabold">{l.name}</h2>
-                <Badge tone="bg-brand-dark/[0.06] text-brand-dark">{l.tier}</Badge>
-              </div>
-              {l.summary.length > 0 && (
-                <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-brand-gray">
-                  {l.summary.map((s) => (
-                    <li key={s} className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-red" aria-hidden="true" />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {people.length > 0 && (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {people.map((p) => (
-                    <li key={p.id} className={`rounded-full border px-2.5 py-1 text-[12.5px] ${p.name ? "border-brand-dark/10" : "border-dashed border-brand-dark/20 text-brand-mute"}`}>
-                      <span className="font-semibold">{p.position}</span>
-                      <span className="text-brand-mute"> · {p.name ?? "belum terisi"}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {l.duties.length > 0 && (
-                <details className="group mt-3">
-                  <summary className="cursor-pointer list-none text-[12.5px] font-bold text-brand-red">
-                    <span className="group-open:hidden">Lihat jobdesk lengkap</span>
-                    <span className="hidden group-open:inline">Tutup jobdesk</span>
-                  </summary>
-                  <ul className="mt-2 space-y-1.5 border-t border-brand-dark/[0.07] pt-3">
-                    {l.duties.map((d) => (
-                      <li key={d} className="flex gap-2 text-[13px] leading-relaxed text-brand-dark/85">
-                        <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-brand-dark/50" aria-hidden="true" />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              )}
-            </section>
-          );
-        })}
-      </div>
-      <aside className="lg:col-span-4">
-        <section className={`${card} p-5 lg:sticky lg:top-24`}>
-          <h2 className="text-[15px] font-extrabold">Nilai &amp; prinsip</h2>
-          <ul className="mt-3 divide-y divide-brand-dark/[0.07]">
-            {NILAI.map((n) => (
-              <li key={n.name} className="py-3">
-                <p className="text-[13.5px] font-extrabold text-brand-red">{n.name}</p>
-                <p className="mt-0.5 text-[13px] text-brand-gray">{n.body}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </aside>
-    </div>
-  );
-}
-
-function Tim({ levels, team }: { levels: OrgLevel[]; team: TeamMember[] }) {
+function Tim({ levels, team, isAdmin }: { levels: OrgLevel[]; team: TeamMember[]; isAdmin: boolean }) {
   const levelName = new Map(levels.map((l) => [l.id, l.name]));
   return (
-    <div className={`${card} overflow-x-auto`}>
+    <section className={`${card} overflow-x-auto`}>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-brand-dark/10 px-5 py-4">
+        <div>
+          <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">Daftar tim</p>
+          <h2 className="mt-1 text-[17px] font-extrabold">Jabatan, personil, dan status</h2>
+        </div>
+        {isAdmin && <p className="text-[12.5px] text-brand-gray">Status dapat diubah langsung di tabel.</p>}
+      </div>
       <table className="w-full min-w-[760px]">
         <thead className="border-b border-brand-dark/10 bg-brand-dark/[0.02]">
           <tr>
@@ -912,12 +870,26 @@ function Tim({ levels, team }: { levels: OrgLevel[]; team: TeamMember[] }) {
                 <Phone phone={t.phone} />
               </td>
               <td className={td}>
-                <Badge tone={TEAM_STATUS[t.status].tone}>{TEAM_STATUS[t.status].label}</Badge>
+                {isAdmin && t.name ? (
+                  <form action={setTeamStatus} className="flex items-center gap-1.5">
+                    <input type="hidden" name="id" value={t.id} />
+                    <select name="status" defaultValue={t.status} className={select} aria-label={`Status ${t.name}`}>
+                      <option value="aktif">Aktif</option>
+                      <option value="nonaktif">Nonaktif</option>
+                      <option value="ditunda">Ditunda</option>
+                    </select>
+                    <button type="submit" className={btnDark}>
+                      Simpan
+                    </button>
+                  </form>
+                ) : (
+                  <Badge tone={TEAM_STATUS[t.status].tone}>{TEAM_STATUS[t.status].label}</Badge>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   );
 }
