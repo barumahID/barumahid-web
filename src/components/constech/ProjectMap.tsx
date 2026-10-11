@@ -22,7 +22,16 @@ export interface MapOffice {
 }
 
 // `offices`: titik kantor (mis. kantor pusat Padang, virtual office Tangerang), digambar sebagai cincin putih.
-export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCity[]; offices?: MapOffice[] }) {
+// `details` false: hanya peta (tanpa daftar kota dan panel daftar proyek), dipakai di /layanan/contech.
+export default function ProjectMap({
+  cities,
+  offices = [],
+  details = true,
+}: {
+  cities: ProjectCity[];
+  offices?: MapOffice[];
+  details?: boolean;
+}) {
   const placed = useMemo(() => cities.filter((c) => CITY_POINTS[c.id]), [cities]);
   const [selected, setSelected] = useState<string>(placed[0]?.id ?? "");
   const city = placed.find((c) => c.id === selected) ?? placed[0];
@@ -146,50 +155,52 @@ export default function ProjectMap({ cities, offices = [] }: { cities: ProjectCi
 
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:gap-8">
-        {/* Pilihan kota, juga cara utama memilih di HP */}
-        <div className="space-y-3 lg:col-span-5">
-          {byProvince.map(([prov, list]) => (
-            <div key={prov} className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">{prov}</span>
-              {list.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setSelected(c.id)}
-                  aria-pressed={c.id === city.id}
-                  className={`rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
-                    c.id === city.id ? "bg-white text-brand-dark" : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <div className="rounded-3xl bg-white p-6 text-brand-dark md:p-7 lg:col-span-7" aria-live="polite">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-red">{city.province}</p>
-          <p className="mt-2 text-[28px] font-extrabold leading-none tracking-tight">{city.name}</p>
-          <p className="mt-2 text-[13px] text-brand-gray">
-            {city.projects.length > 0
-              ? `${city.projects.length} proyek${city.basis === "klien" ? " untuk klien yang berbasis di kota ini" : ""}`
-              : "Kota proyek barumahID. Rincian proyeknya menyusul."}
-          </p>
-          <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-            {city.projects.map((p) => (
-              <li key={p.title} className="flex gap-3">
-                <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${SERVICE_DOT[p.service]}`} aria-hidden="true" />
-                <span>
-                  <span className="block text-[14.5px] font-semibold leading-snug">{p.title}</span>
-                  <span className="block text-[12px] text-brand-gray">{SERVICE_LABEL[p.service]}</span>
-                </span>
-              </li>
+      {details && (
+        <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:gap-8">
+          {/* Pilihan kota, juga cara utama memilih di HP */}
+          <div className="space-y-3 lg:col-span-5">
+            {byProvince.map(([prov, list]) => (
+              <div key={prov} className="flex flex-wrap items-center gap-2">
+                <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">{prov}</span>
+                {list.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setSelected(c.id)}
+                    aria-pressed={c.id === city.id}
+                    className={`rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
+                      c.id === city.id ? "bg-white text-brand-dark" : "bg-white/10 text-white/80 hover:bg-white/20"
+                    }`}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
             ))}
-          </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 text-brand-dark md:p-7 lg:col-span-7" aria-live="polite">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-red">{city.province}</p>
+            <p className="mt-2 text-[28px] font-extrabold leading-none tracking-tight">{city.name}</p>
+            <p className="mt-2 text-[13px] text-brand-gray">
+              {city.projects.length > 0
+                ? `${city.projects.length} proyek${city.basis === "klien" ? " untuk klien yang berbasis di kota ini" : ""}`
+                : "Kota proyek barumahID. Rincian proyeknya menyusul."}
+            </p>
+            <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+              {city.projects.map((p) => (
+                <li key={p.title} className="flex gap-3">
+                  <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${SERVICE_DOT[p.service]}`} aria-hidden="true" />
+                  <span>
+                    <span className="block text-[14.5px] font-semibold leading-snug">{p.title}</span>
+                    <span className="block text-[12px] text-brand-gray">{SERVICE_LABEL[p.service]}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

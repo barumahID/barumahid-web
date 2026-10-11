@@ -1,4 +1,5 @@
-import { GAMBAR_INCLUDES, PRICE_NOTES, STRUKTUR_INCLUDES, TIERS, formatRupiah } from "@/data/pricing";
+import { PACKAGE_INCLUDES, PRICE_NOTE, TIERS, formatRupiah } from "@/data/pricing";
+import ChannelIcon from "@/components/icons/ChannelIcon";
 import { JURURANCANG, waLink } from "@/data/site";
 
 function Check() {
@@ -64,47 +65,36 @@ export default function PricingTiers() {
         })}
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="rounded-3xl border border-brand-dark/10 bg-white p-6">
-          <p className="text-[15px] font-extrabold text-brand-dark">Semua paket gambar sudah termasuk</p>
-          <ul className="mt-4 space-y-2.5">
-            {GAMBAR_INCLUDES.map((x) => (
-              <li key={x} className="flex gap-2.5 text-[14px] text-brand-dark/85">
-                <Check />
-                {x}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-3xl border border-brand-dark/10 bg-white p-6">
-          <p className="text-[15px] font-extrabold text-brand-dark">Semua paket struktur sudah termasuk</p>
-          <ul className="mt-4 space-y-2.5">
-            {STRUKTUR_INCLUDES.map((x) => (
-              <li key={x} className="flex gap-2.5 text-[14px] text-brand-dark/85">
-                <Check />
-                {x}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Yang sudah termasuk + catatan harga, digabung jadi satu blok ringkas */}
+      <div className="mt-4 rounded-3xl border border-brand-dark/10 bg-white p-5 md:p-6">
+        <p className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-brand-dark">Sudah termasuk di semua paket</p>
+        <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+          {PACKAGE_INCLUDES.map((x) => (
+            <li key={x} className="flex items-center gap-2 text-[14px] text-brand-dark/85">
+              <Check />
+              {x}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 border-t border-brand-dark/10 pt-3 text-[13px] text-brand-gray">* {PRICE_NOTE}</p>
       </div>
 
-      <ul className="mt-6 space-y-1.5 text-[13px] text-brand-gray">
-        {PRICE_NOTES.map((n) => (
-          <li key={n}>* {n}</li>
-        ))}
-      </ul>
-      <p className="mt-4 text-[13px] text-brand-gray">
-        Lebih nyaman lewat WhatsApp?{" "}
+      {/* Terakhir dan terpisah: ajakan chat admin WhatsApp */}
+      <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-3xl bg-brand-dark p-6 text-white sm:flex-row sm:items-center md:px-8">
+        <div>
+          <p className="text-[18px] font-extrabold tracking-tight">Lebih nyaman lewat WhatsApp?</p>
+          <p className="mt-1 text-[14px] text-white/65">Tanya paket, harga, atau kebutuhan proyekmu. Admin kami siap membantu.</p>
+        </div>
         <a
-          href={waLink("Halo barumahID, saya mau pesan jasa gambar atau analisa struktur.")}
+          href={waLink("Halo barumahID, saya mau tanya paket jasa gambar atau analisa struktur.")}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red"
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#1FA855] px-6 py-3.5 text-[14px] font-bold text-white transition-colors hover:bg-[#178a45]"
         >
-          Chat admin barumahID
+          <ChannelIcon id="whatsapp" size={18} />
+          Chat admin WhatsApp
         </a>
-      </p>
+      </div>
     </div>
   );
 }

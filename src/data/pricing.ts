@@ -25,31 +25,17 @@ export const TIERS: Tier[] = [
   },
 ];
 
-export const GAMBAR_INCLUDES = [
-  "Survei lokasi dan konsultasi kebutuhan",
-  "Denah lantai",
+// Sudah termasuk di semua paket gambar dan struktur. Diringkas jadi satu daftar supaya hemat ruang (arahan user).
+export const PACKAGE_INCLUDES = [
+  "Survei lokasi dan konsultasi",
+  "Denah dan gambar arsitektur",
   "Gambar 3D eksterior",
-  "Gambar arsitektur",
   "Gambar struktur",
+  "Hitungan struktur SNI (ETABS atau SAP2000)",
+  "Dimensi dan penulangan",
 ];
 
-export const STRUKTUR_INCLUDES = [
-  "Perhitungan struktur berbasis SNI dengan ETABS atau SAP2000",
-  "Dimensi kolom, balok, pelat, dan pondasi",
-  "Penulangan atau pembesian",
-];
-
-export const PRICE_NOTES = [
-  "Harga per m² luas bangunan, menyesuaikan kerumitan proyek dan disepakati bersama di awal.",
-  "Jasa gambar dan struktur dikerjakan Jururancang Engineering Mahaksa, mitra teknis barumahID.",
-  "Konsultasi pertama gratis.",
-];
-
-export const ORDER_STEPS = [
-  { title: "Kirim DM atau WhatsApp", body: "Ceritakan proyekmu: lokasi, luas bangunan, dan gambar yang dibutuhkan." },
-  { title: "Konsultasi dan penawaran", body: "Kami pahami kebutuhanmu, lalu kirim penawaran harga dan jadwal." },
-  { title: "Deal dan mulai dikerjakan", body: "Setelah sepakat, gambar dikerjakan sesuai paket dan batas waktu." },
-];
+export const PRICE_NOTE = "Harga per m² luas bangunan, menyesuaikan kerumitan proyek dan disepakati di awal. Konsultasi pertama gratis.";
 
 // Cara hitung biaya renovasi dan bangun dengan AHSP (Analisa Harga Satuan Pekerjaan). Rumus umum, tanpa angka contoh.
 export const AHSP_FORMULA = [

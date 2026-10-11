@@ -216,6 +216,32 @@ textarea:focus-visible {
   animation: hero-slide-bar var(--slide-cycle, 24s) linear infinite both;
 }
 
+/* Animasi 3D halaman ConTech (src/components/constech/anim) */
+@keyframes crane-swing {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(3deg); }
+}
+.crane-swing { animation: crane-swing 3.6s ease-in-out infinite alternate; }
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.scan-line {
+  background: linear-gradient(90deg, transparent, rgba(226, 112, 112, 0.9) 30%, rgba(255, 255, 255, 0.9) 50%, rgba(226, 112, 112, 0.9) 70%, transparent);
+  box-shadow: 0 0 18px 2px rgba(197, 59, 59, 0.45);
+  animation: scan-line 4.5s ease-in-out infinite;
+}
+/* Kertas gambar kerja: putih dengan grid tipis */
+.blueprint-paper {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(20, 20, 20, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 20, 20, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
 /* Latar hero beranda (HeroBackdrop): bayangan pita melayang, gedung samar, anyaman garis mengalir */
 @keyframes ribbon-a {
   from { transform: translate(0, 0) rotate(0deg); }
@@ -360,8 +386,13 @@ textarea:focus-visible {
   }
   /* Hero foto: tampilkan foto pertama saja, tanpa animasi */
   .hero-slide,
-  .hero-slide-bar {
+  .hero-slide-bar,
+  .crane-swing,
+  .scan-line {
     animation: none;
+  }
+  .scan-line {
+    display: none;
   }
   .hero-slides .hero-slide:first-child {
     opacity: 1;

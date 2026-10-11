@@ -10,8 +10,11 @@ import PortfolioCard from "@/components/portfolio/PortfolioCard";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
 import ChannelIcon from "@/components/icons/ChannelIcon";
+import BuildSequence from "@/components/constech/anim/BuildSequence";
+import BlueprintModel from "@/components/constech/anim/BlueprintModel";
+import TechExploded from "@/components/constech/anim/TechExploded";
 import { PORTFOLIO, verifiedCities } from "@/data/projects";
-import { AHSP_FORMULA, BUILD_STEPS, ORDER_STEPS } from "@/data/pricing";
+import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
 import { CONTECH_HERO, CONTECH_REACH, GAMBAR_STRUKTUR, RENOVASI_BANGUN } from "@/data/contech";
 import { ADDRESSES, JURURANCANG, waLink } from "@/data/site";
 
@@ -49,7 +52,13 @@ export default function ContechPage() {
   return (
     <>
       {/* 1. Hero: 4 foto saat konstruksi berganti pelan */}
-      <PageHero label={CONTECH_HERO.label} title={CONTECH_HERO.title} subtitle={<p>{CONTECH_HERO.subtitle}</p>} slides={CONTECH_HERO.images} size="lg">
+      <PageHero label={CONTECH_HERO.label} title={CONTECH_HERO.title} subtitle={
+          <p>
+            {CONTECH_HERO.subtitle}
+            <br />
+            <span className="font-semibold text-white">{CONTECH_HERO.partner}</span>
+          </p>
+        } slides={CONTECH_HERO.images} size="lg">
         <ButtonLink href="#konsultasi" variant="red">
           Konsultasi gratis
         </ButtonLink>
@@ -86,26 +95,26 @@ export default function ContechPage() {
               </Reveal>
             ))}
           </div>
-          <p className="mt-10 text-[14px] text-white/55">{CONTECH_REACH.mapHint}</p>
-          <div className="mt-4">
-            <ProjectMap cities={cities} offices={OFFICES} />
+          <div className="mt-10">
+            <ProjectMap cities={cities} offices={OFFICES} details={false} />
           </div>
+          {/* Visual 3D sinematik menggantikan daftar kota dan panel proyek */}
+          <Reveal className="mt-6">
+            <TechExploded />
+          </Reveal>
         </div>
       </section>
 
       {/* 3. Renovasi dan bangun (layanan unggulan) */}
       <section id="renovasi" className="bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
-            <Reveal className="lg:col-span-6">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <Reveal className="lg:col-span-5">
               <SectionHead label={RENOVASI_BANGUN.label} title={RENOVASI_BANGUN.title} />
+              <p className="mt-6 text-[16.5px] leading-relaxed text-brand-gray">{RENOVASI_BANGUN.body}</p>
             </Reveal>
-            <Reveal className="space-y-4 lg:col-span-6 lg:pt-10" delay={80}>
-              {RENOVASI_BANGUN.body.map((p) => (
-                <p key={p} className="text-[16px] leading-relaxed text-brand-gray">
-                  {p}
-                </p>
-              ))}
+            <Reveal className="lg:col-span-7" delay={80}>
+              <BuildSequence />
             </Reveal>
           </div>
 
@@ -169,16 +178,13 @@ export default function ContechPage() {
       {/* 4. Gambar & modelling + desain & analisa struktur, bersama partner Jururancang */}
       <section id="harga" className="bg-brand-cream-warm">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
-            <Reveal className="lg:col-span-6">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <Reveal className="lg:col-span-5">
               <SectionHead label={GAMBAR_STRUKTUR.label} title={GAMBAR_STRUKTUR.title} />
+              <p className="mt-6 text-[16.5px] leading-relaxed text-brand-gray">{GAMBAR_STRUKTUR.body}</p>
             </Reveal>
-            <Reveal className="space-y-4 lg:col-span-6 lg:pt-10" delay={80}>
-              {GAMBAR_STRUKTUR.body.map((p) => (
-                <p key={p} className="text-[16px] leading-relaxed text-brand-gray">
-                  {p}
-                </p>
-              ))}
+            <Reveal className="lg:col-span-7" delay={80}>
+              <BlueprintModel />
             </Reveal>
           </div>
 
@@ -252,15 +258,6 @@ export default function ContechPage() {
           <div className="mt-6">
             <PricingTiers />
           </div>
-          <ol className="mt-14 grid gap-4 md:grid-cols-3">
-            {ORDER_STEPS.map((s, i) => (
-              <li key={s.title} className="rounded-3xl bg-white p-6">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-dark text-[14px] font-black text-white">{i + 1}</span>
-                <p className="mt-4 text-[16px] font-extrabold text-brand-dark">{s.title}</p>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-brand-gray">{s.body}</p>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 
