@@ -1,4 +1,5 @@
 import { STATS } from "./projects";
+import { RTO_RATE } from "./rto";
 
 // Isi beranda dan hub /layanan.
 // Arahan user (Okt 2026): beranda bersih seperti tikalindustries.com. Halaman 1 = hero scroll-expand dengan
@@ -8,7 +9,7 @@ export const HOME_HERO = {
   title: "barumahID",
   // Satu kalimat yang menyatukan dua lini: proyek (ConTech) dan kepemilikan rumah (PropTech).
   tagline: "Wujudkan proyekmu. Miliki hunian nantinya.",
-  subline: "Jasa konstruksi dan program kepemilikan hunian dalam satu platform.",
+  subline: "Jasa Konstruksi dan Program Kepemilikan Hunian dalam Satu Platform",
 };
 
 // Halaman 2 beranda. Arahan user: barumahID bisnis yang sedang berkembang di lini ConTech dan PropTech,
@@ -18,8 +19,8 @@ export const HOME_ABOUT = {
   // Ditulis dari sudut pandang calon klien: sekali baca langsung paham barumahID itu apa dan bisa bantu apa.
   title: "Wujudkan proyekmu, kami dampingi hingga miliki hunian.",
   body: [
-    "barumahID adalah platform properti yang menyatukan dua layanan: jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Dari merancang, membangun, dan merenovasi, sampai punya hunian sendiri, semuanya ada di satu tempat.",
-    "Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP belum cukup? Lewat program Rent-to-Own barumahID, kamu bisa sewa sambil mengumpulkan DP sedikit demi sedikit.",
+    "barumahID adalah platform properti yang menyatukan dua layanan: jasa konstruksi (ConTech) dan kepemilikan hunian (PropTech). Mulai dari merancang dan membangun rumah, sampai akhirnya punya hunian sendiri, kami temani di setiap langkahnya.",
+    `Butuh gambar kerja, hitungan struktur, renovasi, atau bangun rumah? Insinyur kami yang mengerjakan, dengan biaya per item pekerjaan yang transparan sejak awal. Ingin punya hunian tapi DP belum cukup? Lewat program Rent-to-Own barumahID, kamu sewa huniannya dulu, dan ${Math.round(RTO_RATE * 100)}% dari sewa bulananmu otomatis dicatat jadi saldo DP.`,
   ],
   cta: { label: "Kenali barumahID", href: "/tentang" },
 };
@@ -88,7 +89,6 @@ export const DUA_LAYANAN: PhotoCard[] = [
     cta: "Lihat program RTO",
     image: "/images/hero-card.webp",
     alt: "Rumah tinggal satu lantai dengan pagar dan taman depan",
-    badge: "Tahap persiapan",
   },
 ];
 

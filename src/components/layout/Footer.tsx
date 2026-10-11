@@ -33,7 +33,7 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <Image src="/brand/logo-mark-white.png" alt="barumahID" width={427} height={250} className="h-12 w-auto" />
             <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-white/65">
-              Platform pendamping kepemilikan rumah. Bangun dengan benar, lalu miliki rumahnya.
+              Platform Jasa Konstruksi dan Pendamping Kepemilikan Rumah
             </p>
             <ul className="mt-6 flex flex-wrap gap-2" aria-label="Kanal resmi barumahID">
               {channels.map((c) => (
