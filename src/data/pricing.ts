@@ -62,8 +62,9 @@ export const BUILD_STEPS = [
   { title: "Serah terima", body: "Hasil dicek bersama, lalu masuk masa garansi pekerjaan." },
 ];
 
-export function formatRupiah(n: number): string {
-  return "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(n));
+/** Rp15.000 (Indonesia) atau Rp15,000 (Inggris) */
+export function formatRupiah(n: number, lang: "id" | "en" = "id"): string {
+  return "Rp" + new Intl.NumberFormat(lang === "en" ? "en-US" : "id-ID").format(Math.round(n));
 }
 
 /** Rp15.000 -> "15rb" untuk label ringkas */

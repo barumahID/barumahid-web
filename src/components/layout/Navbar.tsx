@@ -1,9 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Link from "@/i18n/Link";
+import { LANG_COOKIE, localizePath, stripLang, type Lang } from "@/i18n/config";
+import { useLang, useT } from "@/i18n/LangProvider";
 import { NAV_ITEMS, SERVICE_LINKS } from "@/data/nav";
 import { MASUK_OPTIONS } from "@/data/masuk";
 import { waLink } from "@/data/site";
@@ -47,8 +49,51 @@ function useDismiss(open: boolean, close: () => void) {
   return ref;
 }
 
+// Tombol bahasa ID/EN di pojok kanan atas (arahan user Okt 2026). Link biasa ke halaman yang sama di bahasa lain,
+// pilihan disimpan di cookie supaya kunjungan berikutnya langsung ke bahasa itu (lihat src/proxy.ts).
+function rememberLang(to: Lang) {
+  document.cookie = `${LANG_COOKIE}=${to}; path=/; max-age=31536000; samesite=lax`;
+}
+
+function LangSwitch({ solid, path }: { solid: boolean; path: string }) {
+  const lang = useLang();
+  const t = useT();
+  return (
+    <div
+      className={`flex h-10 items-center rounded-full border p-1 text-[12px] font-bold ${solid ? "border-brand-dark/15" : "border-white/25"}`}
+      role="group"
+      aria-label={t("Pilih bahasa")}
+    >
+      {(["id", "en"] as const).map((l) =>
+        l === lang ? (
+          <span
+            key={l}
+            aria-current="true"
+            className={`flex h-full items-center rounded-full px-2.5 ${solid ? "bg-brand-dark text-white" : "bg-white text-brand-dark"}`}
+          >
+            {l.toUpperCase()}
+          </span>
+        ) : (
+          <a
+            key={l}
+            href={localizePath(l, path)}
+            hrefLang={l}
+            lang={l}
+            onClick={() => rememberLang(l)}
+            aria-label={l === "en" ? "English" : "Bahasa Indonesia"}
+            className={`flex h-full items-center rounded-full px-2.5 transition-colors ${solid ? "text-brand-dark/60 hover:text-brand-dark" : "text-white/70 hover:text-white"}`}
+          >
+            {l.toUpperCase()}
+          </a>
+        ),
+      )}
+    </div>
+  );
+}
+
 export default function Navbar() {
-  const pathname = usePathname();
+  const t = useT();
+  const pathname = stripLang(usePathname());
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -89,6 +134,7 @@ export default function Navbar() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
   const serviceActive = SERVICE_LINKS.some((s) => isActive(s.href)) || pathname === "/layanan";
+  const waHalo = waLink(t("Halo barumahID, saya ingin konsultasi."));
 
   const linkCls = (active: boolean) =>
     `rounded-full px-3.5 py-2 text-[13.5px] font-semibold tracking-tight transition-colors duration-200 ${
@@ -109,7 +155,7 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between gap-4 px-5 md:px-10 lg:px-14">
-        <Link href="/" className="flex shrink-0 items-center" aria-label="barumahID, ke beranda">
+        <Link href="/" className="flex shrink-0 items-center" aria-label={t("barumahID, ke beranda")}>
           <Image
             src={solid ? "/brand/logo-mark-red.png" : "/brand/logo-mark-white.png"}
             alt="barumahID"
@@ -121,7 +167,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop */}
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Menu utama">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label={t("Menu utama")}>
           {NAV_ITEMS.map((item) =>
             item.children ? (
               <div
@@ -144,7 +190,7 @@ export default function Navbar() {
                   aria-haspopup="true"
                   className={`${linkCls(serviceActive)} inline-flex items-center gap-1.5`}
                 >
-                  {item.label}
+                  {t(item.label)}
                   <Chevron open={serviceOpen} />
                 </button>
                 <div
@@ -163,10 +209,10 @@ export default function Navbar() {
                       >
                         <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-brand-red" aria-hidden="true" />
                         <span>
-                          <span className="block text-[15px] font-bold text-brand-dark group-hover:text-brand-red">{c.label}</span>
-                          <span className="mt-0.5 block text-[13px] leading-snug text-brand-gray">{c.description}</span>
+                          <span className="block text-[15px] font-bold text-brand-dark group-hover:text-brand-red">{t(c.label)}</span>
+                          <span className="mt-0.5 block text-[13px] leading-snug text-brand-gray">{t(c.description)}</span>
                           <span className="mt-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">
-                            {c.audience}
+                            {t(c.audience)}
                           </span>
                         </span>
                       </Link>
@@ -175,25 +221,26 @@ export default function Navbar() {
                       href="/layanan"
                       className="m-1 rounded-xl px-4 py-3 text-[13px] font-semibold text-brand-dark/70 hover:bg-brand-cream hover:text-brand-dark"
                     >
-                      Lihat semua layanan →
+                      {t("Lihat semua layanan →")}
                     </Link>
                   </div>
                 </div>
               </div>
             ) : (
               <Link key={item.href} href={item.href} className={linkCls(isActive(item.href))}>
-                {item.label}
+                {t(item.label)}
               </Link>
             ),
           )}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <LangSwitch solid={solid} path={pathname} />
           <a
-            href={waLink("Halo barumahID, saya ingin konsultasi.")}
+            href={waHalo}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Chat WhatsApp barumahID"
+            aria-label={t("Chat WhatsApp barumahID")}
             className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
               solid
                 ? "border-brand-dark/15 text-brand-dark hover:border-[#1f9d55] hover:bg-[#1f9d55] hover:text-white"
@@ -212,7 +259,7 @@ export default function Navbar() {
                 solid ? "bg-brand-dark text-white hover:bg-brand-red" : "bg-white text-brand-dark hover:bg-brand-cream"
               }`}
             >
-              Masuk
+              {t("Masuk")}
               <Chevron open={masukOpen} />
             </button>
             <div
@@ -221,37 +268,40 @@ export default function Navbar() {
               }`}
             >
               <div className="rounded-2xl border border-brand-dark/10 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(20,20,20,0.35)]">
-                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">Masuk sebagai</p>
+                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">{t("Masuk sebagai")}</p>
                 {MASUK_OPTIONS.map((o) => (
                   <Link
                     key={o.href}
                     href={o.href}
                     className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-brand-dark hover:bg-brand-cream hover:text-brand-red"
                   >
-                    {o.label}
-                    <span className="text-[12px] font-medium text-brand-mute">{o.hint}</span>
+                    {t(o.label)}
+                    <span className="text-[12px] font-medium text-brand-mute">{t(o.hint)}</span>
                   </Link>
                 ))}
                 <p className="mx-3 mb-2 mt-2 border-t border-brand-dark/10 pt-3 text-[12px] leading-relaxed text-brand-gray">
-                  Akun dan dashboard per peran sedang dibangun. Untuk sekarang, daftar lewat form dan tim kami menghubungi lewat WhatsApp.
+                  {t("Akun dan dashboard per peran sedang dibangun. Untuk sekarang, daftar lewat form dan tim kami menghubungi lewat WhatsApp.")}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen((o) => !o)}
-          className={`flex h-11 w-11 items-center justify-center rounded-full lg:hidden ${solid ? "text-brand-dark" : "text-white"}`}
-          aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
-          aria-expanded={mobileOpen}
-        >
-          <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-            {mobileOpen ? <path d="M5 5l10 10M15 5L5 15" /> : <path d="M3 6.5h14M3 13.5h14" />}
-          </svg>
-        </button>
+        {/* Mobile: tombol bahasa tetap di pojok kanan atas, di samping tombol menu */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <LangSwitch solid={solid} path={pathname} />
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            className={`flex h-11 w-11 items-center justify-center rounded-full ${solid ? "text-brand-dark" : "text-white"}`}
+            aria-label={mobileOpen ? t("Tutup menu") : t("Buka menu")}
+            aria-expanded={mobileOpen}
+          >
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              {mobileOpen ? <path d="M5 5l10 10M15 5L5 15" /> : <path d="M3 6.5h14M3 13.5h14" />}
+            </svg>
+          </button>
+        </div>
       </div>
 
     </header>
@@ -261,11 +311,11 @@ export default function Navbar() {
           mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
-        <nav className="px-5 pb-10 pt-2" aria-label="Menu mobile">
+        <nav className="px-5 pb-10 pt-2" aria-label={t("Menu mobile")}>
           {NAV_ITEMS.map((item) =>
             item.children ? (
               <div key={item.href} className="border-b border-brand-dark/10 py-4">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{item.label}</p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{t(item.label)}</p>
                 <div className="mt-2 grid gap-1">
                   {item.children.map((c) => (
                     <Link
@@ -273,8 +323,8 @@ export default function Navbar() {
                       href={c.href}
                       className={`rounded-xl px-3 py-3 ${isActive(c.href) ? "bg-brand-cream" : "active:bg-brand-cream"}`}
                     >
-                      <span className={`block text-[17px] font-bold ${isActive(c.href) ? "text-brand-red" : "text-brand-dark"}`}>{c.label}</span>
-                      <span className="block text-[13px] text-brand-gray">{c.description}</span>
+                      <span className={`block text-[17px] font-bold ${isActive(c.href) ? "text-brand-red" : "text-brand-dark"}`}>{t(c.label)}</span>
+                      <span className="block text-[13px] text-brand-gray">{t(c.description)}</span>
                     </Link>
                   ))}
                 </div>
@@ -287,25 +337,25 @@ export default function Navbar() {
                   isActive(item.href) ? "text-brand-red" : "text-brand-dark"
                 }`}
               >
-                {item.label}
+                {t(item.label)}
               </Link>
             ),
           )}
           <Link href="/kontak" className="block border-b border-brand-dark/10 py-4 text-[17px] font-bold text-brand-dark">
-            Kontak
+            {t("Kontak")}
           </Link>
           <div className="mt-6 grid gap-3">
             <Link href="/masuk" className="rounded-full bg-brand-dark px-5 py-3.5 text-center text-[15px] font-bold text-white">
-              Masuk sebagai mitra atau pelanggan
+              {t("Masuk sebagai mitra atau pelanggan")}
             </Link>
             <a
-              href={waLink("Halo barumahID, saya ingin konsultasi.")}
+              href={waHalo}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 rounded-full border border-brand-dark/15 px-5 py-3.5 text-[15px] font-bold text-brand-dark"
             >
               <ChannelIcon id="whatsapp" size={17} />
-              Chat WhatsApp
+              {t("Chat WhatsApp")}
             </a>
           </div>
         </nav>

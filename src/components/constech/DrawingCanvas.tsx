@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useT } from "@/i18n/LangProvider";
 
 // Kanvas sketsa untuk "Ceritakan proyekmu" (referensi visual "Drawing Canvas" dari user, dibuat ulang).
 // Pengunjung bisa menggambar ide proyeknya: pena, penghapus, garis, kotak, lingkaran, 5 warna brand,
@@ -38,6 +39,7 @@ function Icon({ d }: { d: string }) {
 }
 
 export default function DrawingCanvas() {
+  const tr = useT();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [tool, setTool] = useState<Tool>("pen");
@@ -323,13 +325,13 @@ export default function DrawingCanvas() {
   return (
     <div className="overflow-hidden rounded-3xl bg-white shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]" onKeyDown={onKeyDown}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-brand-dark/10 bg-brand-cream px-3 py-2.5" role="toolbar" aria-label="Alat gambar">
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-brand-dark/10 bg-brand-cream px-3 py-2.5" role="toolbar" aria-label={tr("Alat gambar")}>
         {TOOLS.map((t) => (
           <button
             key={t.id}
             type="button"
-            title={t.label}
-            aria-label={t.label}
+            title={tr(t.label)}
+            aria-label={tr(t.label)}
             aria-pressed={tool === t.id}
             onClick={() => setTool(t.id)}
             className={`${btn} ${tool === t.id ? "bg-brand-dark text-white" : "text-brand-dark hover:bg-brand-dark/10"}`}
@@ -342,8 +344,8 @@ export default function DrawingCanvas() {
           <button
             key={c.v}
             type="button"
-            title={c.name}
-            aria-label={`Warna ${c.name}`}
+            title={tr(c.name)}
+            aria-label={tr("Warna {nama}", { nama: tr(c.name) })}
             aria-pressed={color === c.v}
             onClick={() => {
               setColor(c.v);
@@ -359,8 +361,8 @@ export default function DrawingCanvas() {
           <button
             key={s}
             type="button"
-            title={`Tebal ${s}px`}
-            aria-label={`Tebal garis ${s} piksel`}
+            title={tr("Tebal {n}px", { n: s })}
+            aria-label={tr("Tebal garis {n} piksel", { n: s })}
             aria-pressed={size === s}
             onClick={() => setSize(s)}
             className={`${btn} ${size === s ? "bg-brand-dark/10" : "hover:bg-brand-dark/5"}`}
@@ -371,8 +373,8 @@ export default function DrawingCanvas() {
         <span className="mx-1 h-6 w-px bg-brand-dark/15" aria-hidden="true" />
         <button
           type="button"
-          title="Grid"
-          aria-label="Tampilkan grid"
+          title={tr("Grid")}
+          aria-label={tr("Tampilkan grid")}
           aria-pressed={grid}
           onClick={() => setGrid((g) => !g)}
           className={`${btn} ${grid ? "bg-brand-dark/10 text-brand-dark" : "text-brand-dark/60 hover:bg-brand-dark/5"}`}
@@ -380,16 +382,16 @@ export default function DrawingCanvas() {
           <Icon d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16M15 4v16" />
         </button>
         <div className="ml-auto flex items-center gap-1">
-          <button type="button" title="Urungkan (Ctrl+Z)" aria-label="Urungkan" disabled={!undoable} onClick={undo} className={`${btn} text-brand-dark hover:bg-brand-dark/10 disabled:opacity-30 disabled:hover:bg-transparent`}>
+          <button type="button" title={tr("Urungkan (Ctrl+Z)")} aria-label={tr("Urungkan")} disabled={!undoable} onClick={undo} className={`${btn} text-brand-dark hover:bg-brand-dark/10 disabled:opacity-30 disabled:hover:bg-transparent`}>
             <Icon d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3" />
           </button>
-          <button type="button" title="Ulangi (Ctrl+Shift+Z)" aria-label="Ulangi" disabled={!redoable} onClick={redo} className={`${btn} text-brand-dark hover:bg-brand-dark/10 disabled:opacity-30 disabled:hover:bg-transparent`}>
+          <button type="button" title={tr("Ulangi (Ctrl+Shift+Z)")} aria-label={tr("Ulangi")} disabled={!redoable} onClick={redo} className={`${btn} text-brand-dark hover:bg-brand-dark/10 disabled:opacity-30 disabled:hover:bg-transparent`}>
             <Icon d="M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3" />
           </button>
-          <button type="button" title="Hapus semua" aria-label="Hapus semua" onClick={clear} className={`${btn} text-brand-dark hover:bg-brand-red/10 hover:text-brand-red`}>
+          <button type="button" title={tr("Hapus semua")} aria-label={tr("Hapus semua")} onClick={clear} className={`${btn} text-brand-dark hover:bg-brand-red/10 hover:text-brand-red`}>
             <Icon d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
           </button>
-          <button type="button" title="Unduh PNG" aria-label="Unduh sketsa sebagai PNG" onClick={download} className={`${btn} text-brand-dark hover:bg-brand-dark/10`}>
+          <button type="button" title={tr("Unduh PNG")} aria-label={tr("Unduh sketsa sebagai PNG")} onClick={download} className={`${btn} text-brand-dark hover:bg-brand-dark/10`}>
             <Icon d="M12 4v11M7 10l5 5 5-5M5 20h14" />
           </button>
         </div>
@@ -412,7 +414,7 @@ export default function DrawingCanvas() {
           ref={canvasRef}
           className="absolute inset-0 h-full w-full touch-none select-none"
           style={{ cursor: tool === "eraser" ? "cell" : "crosshair", WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
-          aria-label="Kanvas sketsa proyek. Gambar denah kasar, ukuran, atau bentuk bangunan yang kamu inginkan."
+          aria-label={tr("Kanvas sketsa proyek. Gambar denah kasar, ukuran, atau bentuk bangunan yang kamu inginkan.")}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
@@ -425,9 +427,9 @@ export default function DrawingCanvas() {
             <span className="text-brand-red">
               <Icon d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3" />
             </span>
-            <p className="text-[15px] font-bold text-brand-dark/70">Gambarkan ide proyekmu di sini</p>
-            <p className="max-w-xs text-[13px] text-brand-gray">Denah kasar, ukuran ruangan, atau bentuk bangunan. Tidak perlu rapi.</p>
-            <p className="max-w-xs text-[12px] font-semibold text-brand-dark/50">Bisa pakai mouse, trackpad, pen, atau jari.</p>
+            <p className="text-[15px] font-bold text-brand-dark/70">{tr("Gambarkan ide proyekmu di sini")}</p>
+            <p className="max-w-xs text-[13px] text-brand-gray">{tr("Denah kasar, ukuran ruangan, atau bentuk bangunan. Tidak perlu rapi.")}</p>
+            <p className="max-w-xs text-[12px] font-semibold text-brand-dark/50">{tr("Bisa pakai mouse, trackpad, pen, atau jari.")}</p>
           </div>
         )}
       </div>

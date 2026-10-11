@@ -2,8 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/i18n/Link";
 import { motion } from "framer-motion";
+import { useT } from "@/i18n/LangProvider";
 
 // Hero scroll-expand dengan DUA gambar (arahan user): dua panel kecil di tengah membesar berdampingan
 // saat digulir, sampai memenuhi layar. Latar terang dan bersih (gaya tikalindustries.com).
@@ -38,6 +39,7 @@ export default function DualScrollHero({
   background?: ReactNode;
   children?: ReactNode;
 }) {
+  const t = useT();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -250,7 +252,7 @@ export default function DualScrollHero({
           className="pointer-events-none absolute inset-x-0 bottom-5 z-10 text-center text-[12px] font-semibold text-brand-mute"
           style={{ opacity: clamp01(1 - p * 3) }}
         >
-          Gulir untuk membuka
+          {t("Gulir untuk membuka")}
         </p>
       </section>
 

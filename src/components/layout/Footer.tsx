@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/Link";
 import Image from "next/image";
 import {
   ADDRESSES,
@@ -14,6 +14,8 @@ import { SERVICE_LINKS } from "@/data/nav";
 import { ARTICLES } from "@/data/articles";
 import ChannelIcon from "@/components/icons/ChannelIcon";
 import PtMark from "@/components/brand/PtMark";
+import type { Lang } from "@/i18n/config";
+import { makeT } from "@/i18n/t";
 
 const companyLinks = [
   { href: "/tentang", label: "Tentang kami" },
@@ -23,7 +25,8 @@ const companyLinks = [
   { href: "/kebijakan-privasi", label: "Kebijakan privasi" },
 ];
 
-export default function Footer() {
+export default function Footer({ lang }: { lang: Lang }) {
+  const t = makeT(lang);
   const channels = activeChannels();
   return (
     <footer className="border-t border-white/10 bg-brand-dark text-white/70">
@@ -32,9 +35,9 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <Image src="/brand/logo-mark-white.png" alt="barumahID" width={427} height={250} className="h-10 w-auto" />
             <p className="mt-4 max-w-xs text-[14px] leading-relaxed text-white/65">
-              Platform Jasa Konstruksi dan Pendamping Kepemilikan Rumah
+              {t("Platform Jasa Konstruksi dan Pendamping Kepemilikan Rumah")}
             </p>
-            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Kanal resmi barumahID">
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label={t("Kanal resmi barumahID")}>
               {channels.map((c) => (
                 <li key={c.id}>
                   <a
@@ -54,7 +57,7 @@ export default function Footer() {
             <div className="mt-6 flex items-center gap-3.5 border-t border-white/10 pt-5">
               <PtMark onDark />
               <div className="leading-tight">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/40">Dinaungi oleh</p>
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/40">{t("Dinaungi oleh")}</p>
                 <p className="mt-1 text-[14px] font-bold text-white/90">{SITE.company}</p>
                 <p className="mt-0.5 text-[12px] text-white/45">
                   make it. <span className="font-semibold text-white/60">Future.</span>
@@ -65,36 +68,36 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
             <div>
-              <p className="type-micro mb-4 text-white/35">Layanan</p>
+              <p className="type-micro mb-4 text-white/35">{t("Layanan")}</p>
               <ul className="space-y-2.5 text-[14px]">
                 {SERVICE_LINKS.map((l) => (
                   <li key={l.href}>
                     <Link href={l.href} className="text-white/75 transition-colors hover:text-white">
-                      {l.label}
+                      {t(l.label)}
                     </Link>
                   </li>
                 ))}
                 <li>
                   <Link href="/layanan/rto#listing" className="text-white/75 transition-colors hover:text-white">
-                    Listing rumah
+                    {t("Listing rumah")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="type-micro mb-4 text-white/35">Perusahaan</p>
+              <p className="type-micro mb-4 text-white/35">{t("Perusahaan")}</p>
               <ul className="space-y-2.5 text-[14px]">
                 {companyLinks.map((l) => (
                   <li key={l.href}>
                     <Link href={l.href} className="text-white/75 transition-colors hover:text-white">
-                      {l.label}
+                      {t(l.label)}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <p className="type-micro mb-4 text-white/35">Kontak</p>
+              <p className="type-micro mb-4 text-white/35">{t("Kontak")}</p>
               <ul className="space-y-2.5 text-[14px]">
                 <li>
                   <a href={`mailto:${EMAIL}`} className="text-white/75 transition-colors hover:text-white">
@@ -125,8 +128,8 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group block transition-colors hover:text-white"
-                      title="Buka di Google Maps"
-                      aria-label={`${a.label}: ${a.lines.join(", ")} (buka di Google Maps)`}
+                      title={t("Buka di Google Maps")}
+                      aria-label={`${a.label}: ${a.lines.join(", ")} ${t("(buka di Google Maps)")}`}
                     >
                       <span className="block font-semibold text-white/70 group-hover:text-white">{a.label}</span>
                       {a.lines.map((line) => (
@@ -143,10 +146,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-5 text-[12px] text-white/40 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {SITE.company}. Hak cipta dilindungi.</p>
+          <p>© {new Date().getFullYear()} {SITE.company}. {t("Hak cipta dilindungi.")}</p>
           <p>
             <Link href="/kebijakan-privasi" className="hover:text-white">
-              Kebijakan privasi
+              {t("Kebijakan privasi")}
             </Link>
           </p>
         </div>

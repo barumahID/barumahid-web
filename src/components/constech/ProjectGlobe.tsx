@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import type { ProjectCity } from "@/data/projects";
+import { useT } from "@/i18n/LangProvider";
 
 // Globe titik (stippled) untuk jejak proyek di /layanan/contech. Arahan user: peta bisa di-zoom seperti
 // Google Earth, referensi visual "AtomicGlobe" (Framer), dibuat ulang sendiri dengan canvas 2D + proyeksi ortografis.
@@ -67,6 +68,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
+  const t = useT();
   const reduce = useReducedMotion();
   const [hover, setHover] = useState<Marker | null>(null);
   const [hint, setHint] = useState(false);
@@ -96,12 +98,12 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
     ...cities.map((c) => ({
       id: c.id,
       title: c.name,
-      sub: c.province,
+      sub: t(c.province),
       lat: c.lat,
       lon: c.lon,
       office: false,
     })),
-    ...offices.map((o) => ({ id: `office-${o.label}`, title: o.label, sub: "Kantor barumahID", lat: o.lat, lon: o.lon, office: true })),
+    ...offices.map((o) => ({ id: `office-${o.label}`, title: o.label, sub: t("Kantor barumahID"), lat: o.lat, lon: o.lon, office: true })),
   ];
   const markersRef = useRef(markers);
   useEffect(() => {
@@ -416,7 +418,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
           ref={canvasRef}
           className="absolute inset-0 h-full w-full cursor-grab touch-pan-y active:cursor-grabbing"
           role="img"
-          aria-label={`Globe interaktif dengan ${cities.length} kota proyek barumahID, serta Base barumahID dan VO`}
+          aria-label={t("Globe interaktif dengan {n} kota proyek barumahID, serta Base barumahID dan VO", { n: cities.length })}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -445,7 +447,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
           }`}
           aria-hidden="true"
         >
-          Tekan Ctrl (atau ⌘) sambil scroll untuk zoom
+          {t("Tekan Ctrl (atau ⌘) sambil scroll untuk zoom")}
         </div>
       </div>
 
@@ -454,19 +456,19 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-white/55">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-brand-red" aria-hidden="true" />
-            Lokasi proyek atau kota klien
+            {t("Lokasi proyek atau kota klien")}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full border border-dashed border-white" aria-hidden="true" />
-            Base &amp; VO barumahID
+            {t("Base & VO barumahID")}
           </span>
-          <span className="hidden md:inline">Geser untuk memutar, Ctrl + scroll untuk zoom</span>
-          <span className="md:hidden">Geser untuk memutar</span>
+          <span className="hidden md:inline">{t("Geser untuk memutar, Ctrl + scroll untuk zoom")}</span>
+          <span className="md:hidden">{t("Geser untuk memutar")}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <button
             type="button"
-            aria-label="Perbesar"
+            aria-label={t("Perbesar")}
             onClick={() => zoomBy(1.6)}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-[18px] font-bold text-white/80 transition-colors hover:border-white/40 hover:text-white"
           >
@@ -474,7 +476,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
           </button>
           <button
             type="button"
-            aria-label="Perkecil"
+            aria-label={t("Perkecil")}
             onClick={() => zoomBy(1 / 1.6)}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-[18px] font-bold text-white/80 transition-colors hover:border-white/40 hover:text-white"
           >
@@ -485,7 +487,7 @@ export default function ProjectGlobe({ cities, offices }: { cities: ProjectCity[
             onClick={goHome}
             className="ml-1 rounded-full border border-white/15 px-3.5 py-2 text-[12px] font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
           >
-            Fokus Indonesia
+            {t("Fokus Indonesia")}
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { MotionConfig, motion } from "framer-motion";
 import ChannelIcon from "@/components/icons/ChannelIcon";
 import { GAMBAR_FEATURES, PRICE_NOTE, STRUKTUR_FEATURES, TIERS, formatRupiah } from "@/data/pricing";
 import { JURURANCANG, waLink } from "@/data/site";
+import { useLang, useT } from "@/i18n/LangProvider";
 
 // Paket harga ringkas (arahan user Okt 2026: partner Jururancang dan paket harga dibuat compact).
 // Satu kartu: logo dan kontak partner di atas, satu pilihan paket Basic/Plus/Pro untuk dua jasa sekaligus,
@@ -53,6 +54,8 @@ const pill =
   "inline-flex items-center gap-1.5 rounded-full border border-brand-dark/15 px-3 py-1.5 text-[12.5px] font-semibold text-brand-dark transition-colors";
 
 export default function PricingTerrace({ partnerTitle }: { partnerTitle: string }) {
+  const tr = useT();
+  const lang = useLang();
   const [tier, setTier] = useState(0);
   const [mode, setMode] = useState<"m2" | "total">("m2");
   const [area, setArea] = useState(100);
@@ -75,7 +78,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
           <div className="flex items-center gap-4">
             <Image src={JURURANCANG.logo.src} alt={`Logo ${JURURANCANG.name}`} width={JURURANCANG.logo.w} height={JURURANCANG.logo.h} className="h-12 w-auto md:h-14" />
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red">{partnerTitle}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-red">{tr(partnerTitle)}</p>
               <p className="mt-1 text-[17px] font-extrabold tracking-tight text-brand-dark md:text-[19px]">{JURURANCANG.name}</p>
             </div>
           </div>
@@ -84,12 +87,12 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
               <a href={`mailto:${JURURANCANG.email}`} title={JURURANCANG.email} className={`${pill} hover:border-brand-dark hover:bg-brand-dark hover:text-white`}>
                 <ChannelIcon id="email" size={14} />
                 <span className="hidden xl:inline">{JURURANCANG.email}</span>
-                <span className="xl:hidden">Email</span>
+                <span className="xl:hidden">{tr("Email")}</span>
               </a>
             </li>
             <li>
               <a
-                href={waLink("Halo Jururancang, saya dari website barumahID. Saya mau tanya jasa gambar atau analisa struktur.", JURURANCANG.wa)}
+                href={waLink(tr("Halo Jururancang, saya dari website barumahID. Saya mau tanya jasa gambar atau analisa struktur."), JURURANCANG.wa)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${pill} hover:border-[#1FA855] hover:bg-[#1FA855] hover:text-white`}
@@ -113,7 +116,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
               ) : (
                 <span className={`${pill} cursor-default border-dashed text-brand-mute`}>
                   <GlobeIcon />
-                  Website segera hadir
+                  {tr("Website segera hadir")}
                 </span>
               )}
             </li>
@@ -125,7 +128,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
           <div
             className="flex rounded-full bg-brand-cream p-1"
             role="tablist"
-            aria-label="Pilih paket"
+            aria-label={tr("Pilih paket")}
             onKeyDown={(e) => {
               if (e.key === "ArrowRight") pick(tier + 1);
               if (e.key === "ArrowLeft") pick(tier - 1);
@@ -152,11 +155,11 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
               </button>
             ))}
           </div>
-          <p className="text-[13px] font-semibold text-brand-gray">Maksimal {t.maxDays} hari kerja</p>
-          {pro && <span className="rounded-full bg-brand-red/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-red">Paling lengkap</span>}
+          <p className="text-[13px] font-semibold text-brand-gray">{tr("Maksimal {n} hari kerja", { n: t.maxDays })}</p>
+          {pro && <span className="rounded-full bg-brand-red/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-red">{tr("Paling lengkap")}</span>}
 
           {/* Simulasi: harga per m² atau estimasi total dari luas bangunan */}
-          <div className="flex rounded-full border border-brand-dark/10 p-1 lg:ml-auto" role="tablist" aria-label="Cara tampil harga">
+          <div className="flex rounded-full border border-brand-dark/10 p-1 lg:ml-auto" role="tablist" aria-label={tr("Cara tampil harga")}>
             {[
               { id: "m2" as const, label: "Harga per m²" },
               { id: "total" as const, label: "Estimasi total" },
@@ -170,7 +173,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
                 className={`relative rounded-full px-4 py-1.5 text-[12.5px] font-semibold transition-colors ${mode === o.id ? "text-brand-dark" : "text-brand-gray hover:text-brand-dark"}`}
               >
                 {mode === o.id && <motion.span layoutId="mode-pill" className="absolute inset-0 rounded-full bg-brand-cream" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
-                <span className="relative">{o.label}</span>
+                <span className="relative">{tr(o.label)}</span>
               </button>
             ))}
           </div>
@@ -179,10 +182,10 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
         {total && (
           <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-brand-dark/10 px-4 py-3">
             <label htmlFor="luas-bangunan" className="text-[13px] font-bold text-brand-dark">
-              Luas bangunan
+              {tr("Luas bangunan")}
             </label>
             <div className="flex items-center gap-1.5">
-              <button type="button" aria-label="Kurangi 10 m²" onClick={() => setA(area - 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
+              <button type="button" aria-label={tr("Kurangi 10 m²")} onClick={() => setA(area - 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
                 −
               </button>
               <input
@@ -196,7 +199,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
                 className="w-20 rounded-lg border border-brand-dark/15 bg-white px-2 py-1.5 text-center text-[15px] font-bold text-brand-dark"
               />
               <span className="text-[13px] font-semibold text-brand-gray">m²</span>
-              <button type="button" aria-label="Tambah 10 m²" onClick={() => setA(area + 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
+              <button type="button" aria-label={tr("Tambah 10 m²")} onClick={() => setA(area + 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
                 +
               </button>
             </div>
@@ -207,7 +210,7 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
               step={5}
               value={Math.min(area, 500)}
               onChange={(e) => setA(Number(e.target.value))}
-              aria-label="Geser luas bangunan"
+              aria-label={tr("Geser luas bangunan")}
               className="rto-slider min-w-[160px] flex-1 accent-brand-red"
             />
           </div>
@@ -216,39 +219,41 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {services.map((sv) => (
             <article key={sv.title} className={`flex flex-col rounded-2xl bg-brand-cream p-4 transition-shadow md:p-5 ${pro ? "ring-1 ring-brand-red/40" : ""}`}>
-              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-gray">{sv.title}</p>
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-gray">{tr(sv.title)}</p>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-tight text-brand-dark">
-                    <Rolling text={formatRupiah(total ? sv.rate * area : sv.rate)} />
+                    <Rolling text={formatRupiah(total ? sv.rate * area : sv.rate, lang)} />
                     {!total && <span className="ml-1 text-[13px] font-semibold text-brand-gray">/m²</span>}
                   </p>
                   {total && (
                     <p className="mt-1 text-[12px] text-brand-gray">
-                      Estimasi {area} m² × {formatRupiah(sv.rate)}
+                      {tr("Estimasi {luas} m² × {harga}", { luas: area, harga: formatRupiah(sv.rate, lang) })}
                     </p>
                   )}
                 </div>
                 <a
                   href={waLink(
-                    `Halo Jururancang, saya dari website barumahID. Saya mau pesan paket ${sv.title} ${t.name}` + (total ? ` untuk bangunan sekitar ${area} m².` : "."),
+                    total
+                      ? tr("Halo Jururancang, saya dari website barumahID. Saya mau pesan paket {jasa} {paket} untuk bangunan sekitar {luas} m².", { jasa: tr(sv.title), paket: t.name, luas: area })
+                      : tr("Halo Jururancang, saya dari website barumahID. Saya mau pesan paket {jasa} {paket}.", { jasa: tr(sv.title), paket: t.name }),
                     JURURANCANG.wa,
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand-dark px-4 py-2 text-[12.5px] font-bold text-white transition-colors hover:bg-brand-red"
                 >
-                  Pesan {t.name}
+                  {tr("Pesan {paket}", { paket: t.name })}
                   <span aria-hidden="true">→</span>
                 </a>
               </div>
-              <ul className="mt-3 flex flex-wrap gap-1 md:mt-4 md:gap-1.5" aria-label={`Isi paket ${sv.title} ${t.name}`}>
+              <ul className="mt-3 flex flex-wrap gap-1 md:mt-4 md:gap-1.5" aria-label={tr("Isi paket {jasa} {paket}", { jasa: tr(sv.title), paket: t.name })}>
                 {sv.features.map((f) => (
                   <li key={f} className="rounded-full bg-white px-2 py-0.5 text-[11.5px] font-medium text-brand-dark/80 md:px-2.5 md:py-1 md:text-[12px]">
-                    {f}
+                    {tr(f)}
                   </li>
                 ))}
-                {sv.extra && <li className="rounded-full bg-brand-red px-2 py-0.5 text-[11.5px] font-semibold text-white md:px-2.5 md:py-1 md:text-[12px]">+ {sv.extra}</li>}
+                {sv.extra && <li className="rounded-full bg-brand-red px-2 py-0.5 text-[11.5px] font-semibold text-white md:px-2.5 md:py-1 md:text-[12px]">+ {tr(sv.extra)}</li>}
               </ul>
             </article>
           ))}
@@ -256,15 +261,15 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
 
         {/* Catatan harga dan ajakan chat admin WhatsApp */}
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-xl text-[12.5px] leading-relaxed text-brand-gray">* {PRICE_NOTE}</p>
+          <p className="max-w-xl text-[12.5px] leading-relaxed text-brand-gray">* {tr(PRICE_NOTE)}</p>
           <a
-            href={waLink("Halo barumahID, saya mau tanya paket jasa gambar atau analisa struktur.")}
+            href={waLink(tr("Halo barumahID, saya mau tanya paket jasa gambar atau analisa struktur."))}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[#1FA855] px-4 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-[#178a45] sm:self-auto"
           >
             <ChannelIcon id="whatsapp" size={16} />
-            Lebih nyaman lewat WhatsApp? Chat admin
+            {tr("Lebih nyaman lewat WhatsApp? Chat admin")}
           </a>
         </div>
       </div>

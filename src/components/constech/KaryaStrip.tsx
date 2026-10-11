@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import type { Karya } from "@/data/contech";
+import { useT } from "@/i18n/LangProvider";
 
 // Strip karya desain rumah dan analisa struktur (arahan user Okt 2026): bergeser sendiri pelan, bisa digeser
 // dengan mouse atau jari, dan tombol panah. Semua gambar setinggi sama, lebarnya mengikuti rasio asli
@@ -16,6 +17,7 @@ const SPEED = 0.45; // px per frame
 export default function KaryaStrip({ items, label }: { items: Karya[]; label: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const t = useT();
   const reduce = useReducedMotion();
   const st = useRef({ x: 0, v: 0, target: null as number | null, dragging: false, lastX: 0, hover: false, half: 0 });
 
@@ -96,14 +98,14 @@ export default function KaryaStrip({ items, label }: { items: Karya[]; label: st
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <p className="type-micro text-brand-red">{label}</p>
+        <p className="type-micro text-brand-red">{t(label)}</p>
         <div className="flex gap-2">
           {([-1, 1] as const).map((d) => (
             <button
               key={d}
               type="button"
               onClick={() => step(d)}
-              aria-label={d < 0 ? "Karya sebelumnya" : "Karya berikutnya"}
+              aria-label={d < 0 ? t("Karya sebelumnya") : t("Karya berikutnya")}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-dark/15 text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -118,7 +120,7 @@ export default function KaryaStrip({ items, label }: { items: Karya[]; label: st
         ref={wrapRef}
         className="mt-5 cursor-grab touch-pan-y select-none overflow-hidden active:cursor-grabbing [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]"
         role="region"
-        aria-label={label}
+        aria-label={t(label)}
         onMouseEnter={() => (st.current.hover = true)}
         onMouseLeave={() => (st.current.hover = false)}
         onPointerDown={(e) => {
@@ -148,10 +150,10 @@ export default function KaryaStrip({ items, label }: { items: Karya[]; label: st
               className="relative h-[200px] shrink-0 overflow-hidden rounded-2xl bg-white md:h-[280px]"
               style={{ aspectRatio: `${k.w} / ${k.h}` }}
             >
-              <Image src={k.src} alt={i < items.length ? k.alt : ""} fill sizes="(min-width: 768px) 640px, 420px" className="object-cover" draggable={false} />
+              <Image src={k.src} alt={i < items.length ? t(k.alt) : ""} fill sizes="(min-width: 768px) 640px, 420px" className="object-cover" draggable={false} />
               <figcaption className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-brand-dark/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
                 <span className={`h-1.5 w-1.5 rounded-full ${k.tag === "Desain rumah" ? "bg-white" : "bg-brand-red"}`} aria-hidden="true" />
-                {k.tag} · {k.title}
+                {t(k.tag)} · {t(k.title)}
               </figcaption>
             </figure>
           ))}

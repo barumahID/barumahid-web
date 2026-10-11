@@ -3,6 +3,7 @@ import { SITE } from "@/data/site";
 import { ARTICLES } from "@/data/articles";
 import { LISTINGS } from "@/data/listings";
 import { PARTNER_ROLES } from "@/data/roles";
+import { TRANSLATED_PATHS } from "@/i18n/en";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = SITE.url;
@@ -22,5 +23,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...(ARTICLES.length ? [{ path: "/artikel", priority: 0.6 }] : []),
     ...ARTICLES.map((a) => ({ path: `/artikel/${a.slug}`, priority: 0.5 })),
   ];
-  return pages.map((p) => ({ url: `${base}${p.path}`, lastModified: now, priority: p.priority }));
+  // Halaman yang sudah diterjemahkan juga punya versi /en, dicantumkan sebagai alternatif bahasa
+  const translated = (path: string) => TRANSLATED_PATHS.includes(path || "/");
+  const en = (path: string) => `${base}/en${path}`;
+  return pages.flatMap((p) => {
+    const id = { url: `${base}${p.path}`, lastModified: now, priority: p.priority };
+    if (!translated(p.path)) return [id];
+    const languages = { id: `${base}${p.path}`, en: en(p.path) };
+    return [
+      { ...id, alternates: { languages } },
+      { url: en(p.path), lastModified: now, priority: p.priority, alternates: { languages } },
+    ];
+  });
 }

@@ -2,6 +2,7 @@
 
 import { MotionConfig, motion, type Variants } from "framer-motion";
 import { HOME_HISTORY } from "@/data/beranda";
+import { useT } from "@/i18n/LangProvider";
 
 // Roadmap histori singkat di beranda (arahan user: minimalis, beranimasi).
 // Saat masuk layar, berurutan per langkah: titik muncul, teks masuk, garis merah tumbuh ke langkah berikutnya.
@@ -25,14 +26,15 @@ const dot: Variants = {
 };
 
 export default function HistoryRoadmap() {
+  const t = useT();
   return (
     <MotionConfig reducedMotion="user">
       <div className="relative overflow-hidden rounded-3xl border border-brand-dark/10 bg-white p-7 shadow-[0_24px_60px_-36px_rgba(20,20,20,0.35)] md:p-9">
         <div className="pattern-dots pointer-events-none absolute inset-0" aria-hidden="true" />
         <div className="relative">
           <div className="flex items-baseline justify-between gap-4">
-            <p className="type-micro whitespace-nowrap text-brand-red">Perjalanan barumahID</p>
-            <p className="hidden whitespace-nowrap text-[12px] font-semibold text-brand-mute sm:block">sejak 2018</p>
+            <p className="type-micro whitespace-nowrap text-brand-red">{t("Perjalanan barumahID")}</p>
+            <p className="hidden whitespace-nowrap text-[12px] font-semibold text-brand-mute sm:block">{t("sejak 2018")}</p>
           </div>
 
           <motion.div variants={list} className="relative mt-8" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.35 }}>
@@ -56,9 +58,9 @@ export default function HistoryRoadmap() {
                       <span className={`h-2 w-2 rounded-full ${s.current ? "bg-white" : "bg-brand-red"}`} />
                     </span>
                   </motion.span>
-                  <p className="text-[12px] font-bold tracking-wide text-brand-red">{s.period}</p>
-                  <p className="mt-1 text-[18px] font-extrabold leading-snug text-brand-dark md:text-[19px]">{s.title}</p>
-                  <p className="mt-1.5 text-[14px] leading-relaxed text-brand-gray">{s.body}</p>
+                  <p className="text-[12px] font-bold tracking-wide text-brand-red">{t(s.period)}</p>
+                  <p className="mt-1 text-[18px] font-extrabold leading-snug text-brand-dark md:text-[19px]">{t(s.title)}</p>
+                  <p className="mt-1.5 text-[14px] leading-relaxed text-brand-gray">{t(s.body)}</p>
                 </motion.li>
               ))}
             </ol>

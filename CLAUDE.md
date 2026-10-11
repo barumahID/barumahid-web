@@ -41,7 +41,17 @@ Sumber isi: **PRD Website barumahID v1** dan **Brief & Copy halaman Tentang v1**
 
 Redirect permanen di `next.config.ts`: `/rto`, `/program-rto`, `/ekosistem` ke `/layanan/rto`; `/portofolio` (halaman dihapus) ke `/layanan/contech`; `/services/*` dan `/layanan/constech` (nama lama, sebelum ConsTech diganti ConTech) ke `/layanan/contech`; `/mitra` ke `/kemitraan`; `/daftar` ke `/masuk`.
 
-SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts`, `robots.ts`, `opengraph-image.jpg`, JSON-LD LocalBusiness (layout) dan FAQPage (`/tentang`, dari `FaqTestimonials`).
+SEO: metadata per halaman dengan template `"%s | barumahID"`, `sitemap.ts` (halaman yang sudah diterjemahkan ikut versi /en + hreflang), `robots.ts`, `public/opengraph-image.jpg` (dipasang di metadata layout), JSON-LD LocalBusiness (layout) dan FAQPage (`/tentang`, dari `FaqTestimonials`).
+
+## Bahasa (ID/EN)
+Arahan user Okt 2026: tombol ID/EN di pojok kanan atas navbar, untuk semua halaman. Terjemahan ditulis manual, dikerjakan bertahap.
+- Semua halaman ada di `src/app/[lang]/` (layout utama juga di sana, `<html lang>` ikut bahasa). Dua bahasa dibangun statis.
+- `src/proxy.ts`: alamat tanpa awalan (`/tentang`) ditulis ulang ke `/id/...` tanpa mengubah URL; `/id/...` dialihkan ke alamat tanpa awalan; `/en/...` = bahasa Inggris. Cookie `barumahid-lang=en` (diisi tombol EN) mengarahkan kunjungan berikutnya ke `/en`.
+- Teks Indonesia tetap sumber utama (data dan komponen). Terjemahan di `src/i18n/en/*.ts`, kuncinya teks Indonesia persis. Komponen server: `pageLang(params)` dari `src/i18n/server.ts` lalu `t("...")`; komponen client: `useT()`. Variabel ditulis `{nama}`. **Kalau teks Indonesia diubah, ubah juga kuncinya di kamus**, kalau tidak versi Inggris kembali ke teks Indonesia. Di mode dev, teks yang belum ada terjemahannya dicatat di console ("[i18n] belum diterjemahkan").
+- Link internal pakai `@/i18n/Link` (bukan `next/link`), otomatis diberi awalan /en. Pakai `alternates(lang, path)` untuk canonical + hreflang di `generateMetadata`.
+- Nilai pilihan form yang dikirim tetap bahasa Indonesia (dicocokkan dengan CRM); yang diterjemahkan hanya teks tampil.
+- `TRANSLATED_PATHS` di `src/i18n/en/index.ts` = halaman yang sudah selesai (sekarang `/` dan `/layanan/contech`). Halaman lain di /en tampil bahasa Indonesia dengan pemberitahuan kecil (`TranslationNotice`). Setelah halaman diterjemahkan, tambahkan rutenya di sana.
+- Alamat lama di `next.config.ts` juga punya versi /en. Alamat yang tidak ada ditangani `[lang]/[...rest]` (404 di dalam layout bahasa).
 
 ## Data konten (`src/data/`)
 Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
@@ -99,7 +109,7 @@ Token Tailwind v4 di `@theme inline`, `src/app/globals.css`:
 
 Warna segmen: `credit` #2D7A4F, `build` #C25E20, `buy-blue` #1A5C9A. Utility tipografi `type-display`, `type-h1` sampai `type-h3`, `type-body`, `type-small`, `type-micro`, dan garis `hairline`, juga di `globals.css`.
 
-Font: Montserrat lewat `next/font/google` di `src/app/layout.tsx`, jadi default `font-sans`.
+Font: Montserrat lewat `next/font/google` di `src/app/[lang]/layout.tsx`, jadi default `font-sans`.
 
 ## Catatan teknis
 - Next.js 16.2 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. Library `three` sudah dihapus.

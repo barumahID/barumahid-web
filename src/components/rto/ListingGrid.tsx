@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/i18n/Link";
 import { useMemo, useState } from "react";
 import { RTO_PATHS, RTO_RATE, type RtoCategory } from "@/data/rto";
 import { STATUS_LABEL, listingPrice, type Listing } from "@/data/listings";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "@/i18n/Link";
 import { usePathname } from "next/navigation";
 import {
   FORMS,
@@ -11,6 +11,7 @@ import {
   type LeadRole,
 } from "@/lib/leads";
 import { waLink } from "@/data/site";
+import { useT } from "@/i18n/LangProvider";
 import Turnstile from "./Turnstile";
 
 type Status = "idle" | "sending" | "success" | "error";
@@ -31,6 +32,7 @@ function Field({
   onChange: (v: string) => void;
   idPrefix: string;
 }) {
+  const t = useT();
   const id = `${idPrefix}-${def.name.replace(/[^a-z0-9]/gi, "-").toLowerCase()}`;
   const describedBy = [def.help ? `${id}-help` : "", error ? `${id}-err` : ""].filter(Boolean).join(" ") || undefined;
   const border = error ? "border-brand-red" : "border-brand-dark/15";
@@ -38,7 +40,7 @@ function Field({
   return (
     <div className={def.half ? "sm:col-span-1" : "sm:col-span-2"}>
       <label htmlFor={id} className="mb-1.5 block text-[13px] font-semibold text-brand-dark">
-        {def.label}
+        {t(def.label)}
         {def.required && <span className="text-brand-red"> *</span>}
       </label>
       {def.type === "select" ? (
@@ -51,10 +53,10 @@ function Field({
           aria-describedby={describedBy}
           className={`${inputBase} ${border} ${value ? "" : "text-brand-mute"}`}
         >
-          <option value="">Pilih</option>
+          <option value="">{t("Pilih")}</option>
           {def.options?.map((o) => (
             <option key={o} value={o} className="text-brand-dark">
-              {o}
+              {t(o)}
             </option>
           ))}
         </select>
@@ -66,7 +68,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           required={def.required}
           maxLength={def.maxLength}
-          placeholder={def.placeholder}
+          placeholder={def.placeholder && t(def.placeholder)}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className={`${inputBase} ${border}`}
@@ -81,7 +83,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           required={def.required}
           maxLength={def.maxLength}
-          placeholder={def.placeholder}
+          placeholder={def.placeholder && t(def.placeholder)}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className={`${inputBase} ${border}`}
@@ -89,12 +91,12 @@ function Field({
       )}
       {def.help && !error && (
         <p id={`${id}-help`} className="mt-1.5 text-[12px] text-brand-gray">
-          {def.help}
+          {t(def.help)}
         </p>
       )}
       {error && (
         <p id={`${id}-err`} className="mt-1.5 text-[12px] font-medium text-brand-red">
-          {error}
+          {t(error)}
         </p>
       )}
     </div>
@@ -110,6 +112,7 @@ export default function LeadForm({
   tone?: "light" | "card";
   compact?: boolean;
 }) {
+  const t = useT();
   const def = FORMS[role];
   const idPrefix = useId().replace(/:/g, "");
   const pathname = usePathname();
@@ -189,19 +192,19 @@ export default function LeadForm({
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </span>
-        <p className="mt-5 text-xl font-extrabold text-brand-dark">{def.successTitle}</p>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-brand-gray">{def.successBody}</p>
+        <p className="mt-5 text-xl font-extrabold text-brand-dark">{t(def.successTitle)}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-brand-gray">{t(def.successBody)}</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className={wrapper} aria-label={def.title}>
-      {!compact && <p className="mb-6 text-lg font-extrabold text-brand-dark">{def.title}</p>}
+    <form onSubmit={onSubmit} noValidate className={wrapper} aria-label={t(def.title)}>
+      {!compact && <p className="mb-6 text-lg font-extrabold text-brand-dark">{t(def.title)}</p>}
 
       {/* Honeypot: disembunyikan dari manusia, bot biasanya mengisinya */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor={`${idPrefix}-company-website`}>Website perusahaan</label>
+        <label htmlFor={`${idPrefix}-company-website`}>{t("Website perusahaan")}</label>
         <input
           id={`${idPrefix}-company-website`}
           tabIndex={-1}
@@ -238,7 +241,7 @@ export default function LeadForm({
             >
               +
             </span>
-            {showExtra ? "Sembunyikan info tambahan" : "Tambah info (opsional), biar kami lebih cepat bantu"}
+            {showExtra ? t("Sembunyikan info tambahan") : t("Tambah info (opsional), biar kami lebih cepat bantu")}
           </button>
           {showExtra && (
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
@@ -270,23 +273,23 @@ export default function LeadForm({
             aria-invalid={consentError}
           />
           <span>
-            Saya setuju data ini dipakai barumahID untuk menghubungi saya terkait permintaan ini, sesuai{" "}
+            {t("Saya setuju data ini dipakai barumahID untuk menghubungi saya terkait permintaan ini, sesuai")}{" "}
             <Link href="/kebijakan-privasi" className="font-semibold text-brand-dark underline underline-offset-2 hover:text-brand-red">
-              Kebijakan Privasi
+              {t("Kebijakan Privasi")}
             </Link>
             .
           </span>
         </label>
-        {consentError && <p className="mt-1.5 text-[12px] font-medium text-brand-red">Centang persetujuan dulu ya.</p>}
+        {consentError && <p className="mt-1.5 text-[12px] font-medium text-brand-red">{t("Centang persetujuan dulu ya.")}</p>}
       </div>
 
       <Turnstile onToken={setTurnstileToken} />
 
       {status === "error" && (
         <div className="mt-6 rounded-2xl border border-brand-red/30 bg-brand-red/5 p-5" role="alert">
-          <p className="text-sm font-semibold text-brand-dark">{message}</p>
+          <p className="text-sm font-semibold text-brand-dark">{t(message)}</p>
           <p className="mt-1 text-[13px] text-brand-gray">
-            Supaya datamu tidak hilang, kirim isian ini lewat WhatsApp. Pesannya sudah kami siapkan.
+            {t("Supaya datamu tidak hilang, kirim isian ini lewat WhatsApp. Pesannya sudah kami siapkan.")}
           </p>
           <a
             href={fallbackHref}
@@ -294,7 +297,7 @@ export default function LeadForm({
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#1f9d55] px-5 py-2.5 text-[13px] font-bold text-white hover:bg-[#188a49]"
           >
-            Kirim lewat WhatsApp
+            {t("Kirim lewat WhatsApp")}
           </a>
         </div>
       )}
@@ -304,14 +307,14 @@ export default function LeadForm({
         disabled={status === "sending"}
         className="group mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-red px-7 py-4 text-sm font-bold text-white transition-colors hover:bg-brand-red-dark disabled:cursor-wait disabled:opacity-70 sm:w-auto"
       >
-        {status === "sending" ? "Mengirim..." : def.submitLabel}
+        {status === "sending" ? t("Mengirim...") : t(def.submitLabel)}
         {status !== "sending" && (
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" />
           </svg>
         )}
       </button>
-      <p className="mt-3 text-[12px] text-brand-mute">Kolom bertanda * wajib diisi.</p>
+      <p className="mt-3 text-[12px] text-brand-mute">{t("Kolom bertanda * wajib diisi.")}</p>
     </form>
   );
 }
