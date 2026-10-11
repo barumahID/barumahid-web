@@ -1,5 +1,6 @@
 import {
   BARUMAHID_INTRO as B,
+  CARA_KERJA as C,
   EKOSISTEM_HERO as H,
   GROUP_SUBTITLE,
   GROUP_TITLE,
@@ -8,11 +9,7 @@ import {
   MASALAH as M,
   MISSIONS,
   PILLARS,
-  PILLARS_SUBTITLE,
-  PILLARS_TITLE,
   VALUES,
-  VALUES_SUBTITLE,
-  VALUES_TITLE,
   VISION,
 } from "@/data/company";
 import { HOME_FAQ } from "@/data/faq";
@@ -33,8 +30,8 @@ export const EKOSISTEM: Record<string, string> = {
   // Hero
   [H.label]: "The barumahID ecosystem",
   ...pairs(H.body, [
-    "A construction company established on January 9, 2024. We handle drawing & modelling, renovation & construction, and structural design & analysis.",
-    "We work as a general contractor and a construction consultant. Our way of working keeps up with technology through LBAG: Lean Construction, BIM, AI and AR/VR, and Green Construction. We are applying these four concepts step by step to make the construction ecosystem easier, tidier, and more open.",
+    "We are a construction company officially established on January 9, 2024. Day to day, we handle drawing and modelling, renovation and construction, all the way to structural design and analysis.",
+    "We work as a general contractor and a construction consultant. We love trying new ways of working, and our compass is called LBAG: Lean Construction, BIM, AI and AR/VR, and Green Construction. We believe these four concepts will disrupt Indonesia's construction business ecosystem for the better in the years ahead.",
   ]),
   "Renovasi & Bangun Konstruksi": "Renovation & Construction",
   ...pairs(
@@ -42,52 +39,64 @@ export const EKOSISTEM: Record<string, string> = {
     [
       "The barumahID team with Startup Hour participants",
       "barumahID presenting its idea to the judges",
-      "barumahID pitching at the 1000 Startup Digital program",
+      "barumahID name plate at the Youth Economic Leadership Program 2019",
       "barumahID name card at the Gerakan Nasional 1000 Startup Digital hackathon",
     ],
   ),
 
   // barumahID itu apa
   [B.label]: "About barumahID",
-  [B.title]: "A startup that makes construction and property simpler.",
+  [B.title]: "Making building and owning a home a lot simpler.",
   ...pairs(B.body, [
-    "barumahID is a startup focused on building a technology-driven construction ecosystem in Indonesia. We work in two lines: ConTech for building, and PropTech for owning.",
-    "Everything runs in one flow, from design and renovation to construction. Our principle is simple: your project, made easy.",
+    "barumahID is a startup building a technology-driven construction ecosystem in Indonesia. We run on two lines: ConTech for building, and PropTech for owning.",
+    "Whether you want to design, renovate, or build from scratch, it all starts in one place. Our principle is simple: your project, made easy.",
   ]),
-  Desain: "Design",
-  Pembangunan: "Construction",
+  ...pairs(
+    B.lines.map((l) => l.label),
+    ["End to End Services", "Partnership", "Rent To Own"],
+  ),
+  ...pairs(
+    B.lines.map((l) => l.body),
+    [
+      "Drawings, renovation, and construction in one flow.",
+      "Builders, foremen, suppliers, and developers growing together.",
+      "Rent first, and part of your rent becomes your down payment balance.",
+    ],
+  ),
   [B.innovation.label]: "Flagship innovation",
-  [B.innovation.body]: "We are preparing an easier, more affordable way to own a home. Stay tuned, it is coming soon.",
+  [B.innovation.body]:
+    "We want to walk with you every step of the way to a home of your own. From renting, to slowly building up your down payment, until the home is finally yours. The program is being prepared and coming soon.",
 
   // Masalah
   [M.label]: "Common problems",
-  [M.title]: "Building and owning a home is still a headache.",
-  [M.intro]: "On the ground, these are the four problems we see most often.",
+  [M.title]: "Let's be honest, building and owning a home is still a headache.",
+  [M.intro]: "From talking with clients and our own experience on site, these four things hold projects back the most.",
   ...pairs(
     M.items.map((x) => x.title),
     [
-      "It is hard to find design and construction services you can trust.",
-      "Costs are unclear, then change halfway through.",
-      "Projects run late, with weak supervision and communication.",
-      "Owning a home is still hard and rigid.",
+      "Not sure which service you can trust.",
+      "Costs are unclear and keep changing halfway through.",
+      "Projects run late and communication keeps breaking down.",
+      "Owning your own home feels further and further away.",
     ],
   ),
   ...pairs(
     M.items.map((x) => x.body),
     [
-      "There are many options, but it is hard to judge their quality, portfolio, and track record.",
-      "Without open calculations, budgets balloon and become hard to control.",
-      "Weak coordination delays the work and the result falls short of expectations.",
-      "House prices keep rising, while easy and affordable paths to ownership are still few.",
+      "There are plenty of options, but it is hard to tell who is truly skilled. Portfolios and track records are often unclear, so in the end you choose on trust alone.",
+      "Without open calculations from the start, budgets balloon easily. Suddenly there are extra costs nobody ever talked about.",
+      "Loose supervision and poor coordination delay the work. The end result is often different from what you pictured.",
+      "House prices keep rising, the down payment feels heavy, and flexible paths to ownership are still few.",
     ],
   ),
-  [M.answerTitle]: "barumahID is here to solve all of them.",
-  [M.answerBody]: "Through one ecosystem: trusted partners, a transparent process, efficient technology, and an easier, more flexible path to owning a home.",
+  [M.answerTitle]: "That is why barumahID exists.",
+  [M.answerBody]:
+    "We bring it all together in one ecosystem: trusted partners, transparent costs, technology that makes work efficient, and a path to owning a home that is kinder to your wallet.",
 
   // Keunggulan
   [K.label]: "Why us",
   [K.title]: "Why work with barumahID?",
-  [K.intro]: "We want building to feel easy, safe, and trustworthy. Here is how.",
+  [K.intro]: "We want building to feel calm, not stressful. Here is what we offer.",
   ...pairs(
     K.items.map((x) => x.title),
     [
@@ -106,37 +115,39 @@ export const EKOSISTEM: Record<string, string> = {
   ...pairs(
     K.items.map((x) => x.body),
     [
-      "From planning to execution, our team is responsive and ready to answer.",
-      "Fair and transparent prices. No hidden costs.",
-      "Lean Construction and BIM make projects more efficient and accurate.",
-      "3D visuals help you see the result first. We are adding AI and AR/VR step by step.",
-      "Green Construction practices for more environmentally friendly buildings.",
-      "A solid network of construction partners, so every project runs smoothly.",
-      "With BIM, everyone works from the same model, so delays are less likely.",
+      "From planning to execution, our team is easy to talk to and quick to answer.",
+      "Fair prices, calculated in the open. No hidden costs.",
+      "Lean Construction and BIM make projects more efficient and calculations more accurate.",
+      "3D visuals help you see the result first. AI and AR/VR are coming step by step.",
+      "Green Construction for buildings that are more environmentally friendly and last longer.",
+      "Backed by a solid network of construction partners, so projects run smoothly.",
+      "With BIM, everyone works from the same model. Fewer misunderstandings, less risk of delays.",
       "Waste is cut through Lean Construction, so your costs go down too.",
-      "Services can be tailored to your project's needs.",
+      "Services can be tailored to your project's needs and conditions.",
       "Being prepared: a path to owning a home without waiting for a big down payment upfront.",
     ],
   ),
   Segera: "Soon",
   [K.closingTitle]: "We do not just build homes, we build trust.",
-  [K.closingBody]: "The right solution, an easy process, quality results.",
+  [K.closingBody]: "The right solution, an easy process, results you can rely on.",
 
   // Visi dan misi
   Visi: "Vision",
   Misi: "Mission",
   [VISION]: "To be a pioneer and leader in building a technology-driven construction business ecosystem in Indonesia.",
   ...pairs(MISSIONS, [
-    "Bring the latest technology to every project through LBAG (Lean Construction, BIM, AI and AR/VR, Green Construction), so work is more productive and sustainable.",
-    "Provide services that are comfortable, safe, and fairly priced for clients and project owners.",
-    "Build a solid partnership network among construction businesses.",
-    "Make construction services easy to access, from information and consultation to quality results, for clients and partners.",
+    "Bring the latest technology to every project through LBAG, so work is more productive and sustainable.",
+    "Provide services that are comfortable, safe, and fairly priced, for clients and project owners alike.",
+    "Bring construction businesses together into a solid partnership network.",
+    "Make construction services easy to access, from finding information and consultation to quality results.",
   ]),
 
-  // LBAG
-  "Empat pilar LBAG": "The four LBAG pillars",
-  [PILLARS_TITLE]: "LBAG, four ways we build better.",
-  [PILLARS_SUBTITLE]: "Four concepts we bring into our business process, and keep developing step by step.",
+  // Cara kami bekerja: LBAG dan BUILD
+  [C.label]: "How we work",
+  [C.title]: "LBAG and BUILD, our compass on every project.",
+  [C.subtitle]: "LBAG is how we work, BUILD is what we stand for. Hover over or tap a letter.",
+  [C.lbagLabel]: "LBAG · Four technology pillars",
+  [C.buildLabel]: "BUILD · Our five values",
   "Artinya buat kamu": "What it means for you",
   "Building Information Modeling (BIM)": "Building Information Modeling (BIM)",
   "Lean Construction": "Lean Construction",
@@ -145,9 +156,9 @@ export const EKOSISTEM: Record<string, string> = {
   ...pairs(
     PILLARS.map((p) => p.body),
     [
-      "Construction processes are optimized so nothing goes to waste.",
-      "Planning, design, and project management through a digital model of the building.",
-      "AI and AR/VR help you see the design more realistically. We are applying them step by step.",
+      "Processes are tidied up from the start so nothing goes to waste.",
+      "The building is modelled digitally first, from planning to project management.",
+      "See the design more realistically before it is built. We are applying this step by step.",
       "We steer every project to be more environmentally friendly.",
     ],
   ),
@@ -156,24 +167,23 @@ export const EKOSISTEM: Record<string, string> = {
     [
       "Time, materials, and costs become more efficient.",
       "Problems show up on screen, not on site.",
-      "Better decisions before construction starts.",
-      "Energy-efficient, sustainable buildings.",
+      "More accurate, more confident decisions.",
+      "Energy-efficient buildings that last.",
     ],
   ),
-
-  // BUILD
-  "Nilai kami": "Our values",
-  "Nilai BUILD": "BUILD values",
-  [VALUES_TITLE]: "BUILD. Five values we hold.",
-  [VALUES_SUBTITLE]: "These values shape how we work on every project.",
+  "Bold Innovation": "Bold Innovation",
+  "United Ecosystem": "United Ecosystem",
+  Integrity: "Integrity",
+  "Long-term Thinking": "Long-term Thinking",
+  "Driven by Impact": "Driven by Impact",
   ...pairs(
     VALUES.map((v) => v.body),
     [
-      "We dare to try new ways. Technology like BIM and Lean Construction is used on real projects, not just as jargon.",
-      "Clients, team, and partners move in one flow. Everyone knows their role, so projects run more smoothly.",
-      "The numbers in our cost estimates can be accounted for. What we agree on at the start is what we deliver.",
+      "We dare to try new ways. BIM and Lean Construction are used on real projects, not just as jargon.",
+      "Clients, team, and partners move together in one flow. Everyone knows their role, so projects run more smoothly.",
+      "Every number in our cost estimate can be accounted for. What we agree on at the start is what we deliver.",
       "Buildings are used for decades. We choose methods and materials that last, not just what is cheap today.",
-      "Every project built the right way helps families and businesses grow more securely. That is how we measure our work.",
+      "Every building that stands the right way helps families and businesses grow with more peace of mind. That is how we measure our work.",
     ],
   ),
   "Motto kami:": "Our motto:",

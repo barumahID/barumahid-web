@@ -3,12 +3,12 @@ import Image from "next/image";
 import Link from "@/i18n/Link";
 import Reveal from "@/components/Reveal";
 import PageHero from "@/components/ui/PageHero";
-import PillarCards from "@/components/about/PillarCards";
-import ValueLetters from "@/components/about/ValueLetters";
+import LetterShowcase from "@/components/about/LetterShowcase";
 import LineIcon from "@/components/about/LineIcon";
 import FaqTestimonials from "@/components/home/FaqTestimonials";
 import {
   BARUMAHID_INTRO,
+  CARA_KERJA,
   EKOSISTEM_HERO,
   GROUP_SUBTITLE,
   GROUP_TITLE,
@@ -18,11 +18,7 @@ import {
   MISSIONS,
   MOTTO,
   PILLARS,
-  PILLARS_SUBTITLE,
-  PILLARS_TITLE,
   VALUES,
-  VALUES_SUBTITLE,
-  VALUES_TITLE,
   VISION,
 } from "@/data/company";
 import { alternates, pageLang } from "@/i18n/server";
@@ -103,26 +99,44 @@ export default async function EkosistemPage({ params }: Props) {
             </div>
           </Reveal>
           <Reveal className="lg:col-span-6" delay={100}>
-            <div className="grid grid-cols-3 gap-3">
-              {BARUMAHID_INTRO.steps.map((s, i) => (
-                <div key={s.label} className="flex flex-col items-center gap-3 rounded-3xl bg-white px-3 py-6 text-center card-shadow">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red/10 text-brand-red">
-                    <LineIcon name={s.icon} size={28} />
+            {/* Tiga lini barumahID. Catatan inovasi unggulan menempel di bawah Rent To Own (kolom ketiga). */}
+            <div className="grid gap-3 sm:grid-cols-3">
+              {BARUMAHID_INTRO.lines.map((l, i) => (
+                <Link
+                  key={l.label}
+                  href={l.href}
+                  className={`group flex flex-col rounded-3xl p-5 transition-transform duration-300 hover:-translate-y-1 ${
+                    i === BARUMAHID_INTRO.lines.length - 1 ? "bg-brand-dark text-white" : "bg-white text-brand-dark card-shadow"
+                  }`}
+                >
+                  <span
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      i === BARUMAHID_INTRO.lines.length - 1 ? "bg-brand-red text-white" : "bg-brand-red/10 text-brand-red"
+                    }`}
+                  >
+                    <LineIcon name={l.icon} size={24} />
                   </span>
-                  <span className="text-[11px] font-bold text-brand-mute">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="-mt-2 text-[14px] font-extrabold text-brand-dark md:text-[15px]">{t(s.label)}</span>
-                </div>
+                  <span className="mt-4 text-[15px] font-extrabold leading-snug">{t(l.label)}</span>
+                  <span className={`mt-1.5 text-[13px] leading-relaxed ${i === BARUMAHID_INTRO.lines.length - 1 ? "text-white/70" : "text-brand-gray"}`}>{t(l.body)}</span>
+                  <span className="mt-auto pt-4 text-[12px] font-bold text-brand-red transition-transform group-hover:translate-x-1" aria-hidden="true">
+                    →
+                  </span>
+                </Link>
               ))}
             </div>
-            <div className="mt-3 flex gap-5 rounded-3xl bg-brand-dark p-6 text-white md:p-7">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-red">
-                <LineIcon name="lampu" size={24} />
-              </span>
-              <div>
-                <p className="inline-flex rounded-full bg-brand-red px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em]">
-                  {t(BARUMAHID_INTRO.innovation.label)}
-                </p>
-                <p className="mt-3 text-[15px] leading-relaxed text-white/80">{t(BARUMAHID_INTRO.innovation.body)}</p>
+            <div className="relative mt-4 rounded-3xl border border-brand-red/30 bg-white p-6 card-shadow md:p-7">
+              {/* Penunjuk kecil ke kartu Rent To Own di atasnya */}
+              <span className="absolute -top-2 right-[16.6%] hidden h-4 w-4 translate-x-1/2 rotate-45 border-l border-t border-brand-red/30 bg-white sm:block" aria-hidden="true" />
+              <div className="flex gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-red text-white">
+                  <LineIcon name="lampu" size={22} />
+                </span>
+                <div>
+                  <p className="inline-flex rounded-full bg-brand-red px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+                    {t(BARUMAHID_INTRO.innovation.label)}
+                  </p>
+                  <p className="mt-3 text-[15px] leading-relaxed text-brand-dark/80">{t(BARUMAHID_INTRO.innovation.body)}</p>
+                </div>
               </div>
             </div>
           </Reveal>
@@ -232,35 +246,33 @@ export default async function EkosistemPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 6. LBAG */}
-      <section className="bg-brand-cream-warm">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <Reveal>
-            <SectionTitle label={t("Empat pilar LBAG")} title={t(PILLARS_TITLE)} subtitle={t(PILLARS_SUBTITLE)} />
-          </Reveal>
-          <div className="mt-12">
-            <PillarCards pillars={PILLARS} />
-          </div>
-        </div>
-      </section>
-
-      {/* 7. BUILD */}
+      {/* 6. LBAG dan BUILD dalam satu bagian (arahan user: satu halaman, proporsional, tetap beranimasi) */}
       <section className="relative isolate overflow-hidden bg-brand-dark text-white">
         <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
+        <div className="pointer-events-none absolute -right-40 -top-40 -z-10 h-[420px] w-[420px] rounded-full bg-brand-red/20 blur-3xl" aria-hidden="true" />
+        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24 lg:px-14">
           <Reveal>
-            <SectionTitle label={t("Nilai kami")} title={t(VALUES_TITLE)} subtitle={t(VALUES_SUBTITLE)} dark />
+            <SectionTitle label={t(CARA_KERJA.label)} title={t(CARA_KERJA.title)} subtitle={t(CARA_KERJA.subtitle)} dark />
           </Reveal>
-          <div className="mt-12">
-            <ValueLetters values={VALUES} />
+          <div className="mt-10 grid gap-4 lg:grid-cols-2 lg:gap-5">
+            <Reveal className="h-full">
+              <LetterShowcase
+                label={CARA_KERJA.lbagLabel}
+                items={PILLARS.map((p) => ({ letter: p.letter, name: p.name, body: p.body, note: p.benefit }))}
+                noteLabel="Artinya buat kamu"
+              />
+            </Reveal>
+            <Reveal className="h-full" delay={100}>
+              <LetterShowcase label={CARA_KERJA.buildLabel} items={VALUES} accent="light" interval={5200} />
+            </Reveal>
           </div>
-          <p className="mt-10 border-t border-white/10 pt-6 text-[14px] text-white/55">
+          <p className="mt-8 border-t border-white/10 pt-6 text-[14px] text-white/55">
             {t("Motto kami:")} <span className="font-bold italic text-white">{MOTTO}</span>
           </p>
         </div>
       </section>
 
-      {/* 8. Grup usaha (menunggu revisi user) */}
+      {/* 7. Grup usaha (menunggu revisi user) */}
       <section className="bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
           <Reveal>
@@ -304,7 +316,7 @@ export default async function EkosistemPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 9. Tanya jawab (testimoni otomatis tampil kalau datanya ada) */}
+      {/* 8. Tanya jawab (testimoni otomatis tampil kalau datanya ada) */}
       <FaqTestimonials lang={lang} />
     </>
   );
