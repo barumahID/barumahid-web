@@ -9,9 +9,10 @@ import KaryaStrip from "@/components/constech/KaryaStrip";
 import DrawingCanvas from "@/components/constech/DrawingCanvas";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
+import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
-import { CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN } from "@/data/contech";
+import { CONTECH_FAQ, CONTECH_HERO, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN } from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -227,6 +228,13 @@ export default function ContechPage() {
               <p className="mt-3 text-[13px] text-white/55">
                 Sketsa tersimpan di browsermu. Unduh lewat tombol panah bawah, lalu kirimkan ke admin WhatsApp kami setelah mengisi data.
               </p>
+              {/* FAQ singkat supaya kolom kiri tidak kosong di samping form */}
+              <div className="mt-10">
+                <p className="type-micro text-brand-red">Yang sering ditanyakan</p>
+                <div className="mt-3">
+                  <AccordionFAQ items={CONTECH_FAQ} compact dark />
+                </div>
+              </div>
             </div>
             <div className="lg:col-span-5">
               <LeadForm role="konsultasi" tone="card" compact />

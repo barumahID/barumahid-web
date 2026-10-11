@@ -9,7 +9,8 @@ import { JURURANCANG, waLink } from "@/data/site";
 
 // Paket harga ringkas (arahan user Okt 2026: partner Jururancang dan paket harga dibuat compact).
 // Satu kartu: logo dan kontak partner di atas, satu pilihan paket Basic/Plus/Pro untuk dua jasa sekaligus,
-// angka harga berputar saat ganti paket, isi paket berupa chip, lalu ajakan chat admin WhatsApp di bawah.
+// simulasi "Harga per m²" atau "Estimasi total" dari luas bangunan yang diisi, angka harga berputar saat
+// berubah, isi paket berupa chip, lalu ajakan chat admin WhatsApp di bawah.
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -53,9 +54,13 @@ const pill =
 
 export default function PricingTerrace({ partnerTitle }: { partnerTitle: string }) {
   const [tier, setTier] = useState(0);
+  const [mode, setMode] = useState<"m2" | "total">("m2");
+  const [area, setArea] = useState(100);
   const t = TIERS[tier];
   const pro = t.id === "pro";
+  const total = mode === "total";
   const pick = (i: number) => setTier(Math.max(0, Math.min(TIERS.length - 1, i)));
+  const setA = (v: number) => setArea(Math.max(20, Math.min(1000, Math.round(v || 0))));
 
   const services = [
     { title: "Gambar & Modelling", rate: t.gambar, features: GAMBAR_FEATURES, extra: t.gambarExtra },
@@ -149,19 +154,86 @@ export default function PricingTerrace({ partnerTitle }: { partnerTitle: string 
           </div>
           <p className="text-[13px] font-semibold text-brand-gray">Maksimal {t.maxDays} hari kerja</p>
           {pro && <span className="rounded-full bg-brand-red/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-red">Paling lengkap</span>}
+
+          {/* Simulasi: harga per m² atau estimasi total dari luas bangunan */}
+          <div className="flex rounded-full border border-brand-dark/10 p-1 lg:ml-auto" role="tablist" aria-label="Cara tampil harga">
+            {[
+              { id: "m2" as const, label: "Harga per m²" },
+              { id: "total" as const, label: "Estimasi total" },
+            ].map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                role="tab"
+                aria-selected={mode === o.id}
+                onClick={() => setMode(o.id)}
+                className={`relative rounded-full px-4 py-1.5 text-[12.5px] font-semibold transition-colors ${mode === o.id ? "text-brand-dark" : "text-brand-gray hover:text-brand-dark"}`}
+              >
+                {mode === o.id && <motion.span layoutId="mode-pill" className="absolute inset-0 rounded-full bg-brand-cream" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
+                <span className="relative">{o.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
+
+        {total && (
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-brand-dark/10 px-4 py-3">
+            <label htmlFor="luas-bangunan" className="text-[13px] font-bold text-brand-dark">
+              Luas bangunan
+            </label>
+            <div className="flex items-center gap-1.5">
+              <button type="button" aria-label="Kurangi 10 m²" onClick={() => setA(area - 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
+                −
+              </button>
+              <input
+                id="luas-bangunan"
+                type="number"
+                inputMode="numeric"
+                min={20}
+                max={1000}
+                value={area}
+                onChange={(e) => setA(Number(e.target.value))}
+                className="w-20 rounded-lg border border-brand-dark/15 bg-white px-2 py-1.5 text-center text-[15px] font-bold text-brand-dark"
+              />
+              <span className="text-[13px] font-semibold text-brand-gray">m²</span>
+              <button type="button" aria-label="Tambah 10 m²" onClick={() => setA(area + 10)} className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-dark/15 font-bold text-brand-dark hover:border-brand-dark">
+                +
+              </button>
+            </div>
+            <input
+              type="range"
+              min={20}
+              max={500}
+              step={5}
+              value={Math.min(area, 500)}
+              onChange={(e) => setA(Number(e.target.value))}
+              aria-label="Geser luas bangunan"
+              className="rto-slider min-w-[160px] flex-1 accent-brand-red"
+            />
+          </div>
+        )}
 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {services.map((sv) => (
             <article key={sv.title} className={`flex flex-col rounded-2xl bg-brand-cream p-4 transition-shadow md:p-5 ${pro ? "ring-1 ring-brand-red/40" : ""}`}>
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-gray">{sv.title}</p>
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <p className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-tight text-brand-dark">
-                  <Rolling text={formatRupiah(sv.rate)} />
-                  <span className="ml-1 text-[13px] font-semibold text-brand-gray">/m²</span>
-                </p>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-tight text-brand-dark">
+                    <Rolling text={formatRupiah(total ? sv.rate * area : sv.rate)} />
+                    {!total && <span className="ml-1 text-[13px] font-semibold text-brand-gray">/m²</span>}
+                  </p>
+                  {total && (
+                    <p className="mt-1 text-[12px] text-brand-gray">
+                      Estimasi {area} m² × {formatRupiah(sv.rate)}
+                    </p>
+                  )}
+                </div>
                 <a
-                  href={waLink(`Halo Jururancang, saya dari website barumahID. Saya mau pesan paket ${sv.title} ${t.name}.`, JURURANCANG.wa)}
+                  href={waLink(
+                    `Halo Jururancang, saya dari website barumahID. Saya mau pesan paket ${sv.title} ${t.name}` + (total ? ` untuk bangunan sekitar ${area} m².` : "."),
+                    JURURANCANG.wa,
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand-dark px-4 py-2 text-[12.5px] font-bold text-white transition-colors hover:bg-brand-red"

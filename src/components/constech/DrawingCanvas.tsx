@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // Kanvas sketsa untuk "Ceritakan proyekmu" (referensi visual "Drawing Canvas" dari user, dibuat ulang).
 // Pengunjung bisa menggambar ide proyeknya: pena, penghapus, garis, kotak, lingkaran, 5 warna brand,
 // 3 ukuran, grid gambar kerja, undo/redo (Ctrl+Z / Ctrl+Shift+Z), hapus, dan unduh PNG.
+// Bisa dipakai dengan mouse/trackpad, pen (tebal ikut tekanan, ujung penghapus pen menghapus), atau jari.
 // Sketsa tersimpan otomatis di browser pengunjung (localStorage), bukan dikirim ke server.
 
 type Tool = "pen" | "eraser" | "line" | "rect" | "circle";
@@ -47,7 +48,20 @@ export default function DrawingCanvas() {
   const [undoable, setUndoable] = useState(false);
   const [redoable, setRedoable] = useState(false);
   const hist = useRef<{ stack: ImageData[]; redo: ImageData[] }>({ stack: [], redo: [] });
-  const stroke = useRef({ active: false, sx: 0, sy: 0, lx: 0, ly: 0, snap: null as ImageData | null });
+  const stroke = useRef({
+    active: false,
+    id: -1,
+    free: true,
+    erase: false,
+    sx: 0,
+    sy: 0,
+    lx: 0,
+    ly: 0,
+    mx: 0,
+    my: 0,
+    snap: null as ImageData | null,
+  });
+  const lastPen = useRef(0);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const ctx = () => canvasRef.current?.getContext("2d") ?? null;
@@ -124,12 +138,24 @@ export default function DrawingCanvas() {
     syncButtons();
   };
 
-  const style = (c: CanvasRenderingContext2D) => {
+  const style = (c: CanvasRenderingContext2D, erase: boolean, width: number) => {
     c.lineCap = "round";
     c.lineJoin = "round";
-    c.globalCompositeOperation = tool === "eraser" ? "destination-out" : "source-over";
+    c.globalCompositeOperation = erase ? "destination-out" : "source-over";
     c.strokeStyle = color;
-    c.lineWidth = tool === "eraser" ? size * 4 : size;
+    c.lineWidth = width;
+  };
+
+  // Posisi dari clientX/Y (offsetX tidak selalu akurat untuk sentuhan dan pen di semua browser)
+  const pos = (e: { clientX: number; clientY: number }, el: HTMLCanvasElement) => {
+    const r = el.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+
+  // Pen: tebal garis mengikuti tekanan. Mouse dan jari: tebal tetap.
+  const widthFor = (e: PointerEvent, erase: boolean) => {
+    const base = erase ? size * 4 : size;
+    return e.pointerType === "pen" && e.pressure > 0 ? base * (0.35 + e.pressure * 1.3) : base;
   };
 
   const shape = (c: CanvasRenderingContext2D, x: number, y: number) => {
@@ -146,15 +172,28 @@ export default function DrawingCanvas() {
     c.stroke();
   };
 
+  // Mouse, trackpad, pen (stylus), dan jari lewat pointer events. Satu goresan sekaligus: jari kedua diabaikan,
+  // sentuhan diabaikan sesaat setelah pen dipakai (telapak tangan yang menempel layar tidak ikut menggambar).
   const onDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const c = ctx();
-    if (!c) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    if (!c || stroke.current.active) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (e.pointerType === "pen") lastPen.current = performance.now();
+    if (e.pointerType === "touch" && performance.now() - lastPen.current < 800) return;
+    e.preventDefault();
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // pointer sudah tidak aktif; goresan tetap jalan tanpa capture
+    }
     pushHistory();
-    const x = e.nativeEvent.offsetX, y = e.nativeEvent.offsetY;
-    stroke.current = { active: true, sx: x, sy: y, lx: x, ly: y, snap: tool === "pen" || tool === "eraser" ? null : snapshot() };
-    style(c);
-    if (tool === "pen" || tool === "eraser") {
+    const { x, y } = pos(e, e.currentTarget);
+    // Ujung penghapus pen (tombol 32) langsung menghapus
+    const erase = tool === "eraser" || (e.pointerType === "pen" && (e.buttons & 32) !== 0);
+    const free = tool === "pen" || erase;
+    stroke.current = { active: true, id: e.pointerId, free, erase, sx: x, sy: y, lx: x, ly: y, mx: x, my: y, snap: free ? null : snapshot() };
+    style(c, erase, free ? widthFor(e.nativeEvent, erase) : size);
+    if (free) {
       c.beginPath();
       c.moveTo(x, y);
       c.lineTo(x + 0.01, y + 0.01);
@@ -164,28 +203,48 @@ export default function DrawingCanvas() {
   };
 
   const onMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === "pen") lastPen.current = performance.now();
     const s = stroke.current;
     const c = ctx();
-    if (!s.active || !c) return;
-    const x = e.nativeEvent.offsetX, y = e.nativeEvent.offsetY;
-    style(c);
-    if (tool === "pen" || tool === "eraser") {
-      c.beginPath();
-      c.moveTo(s.lx, s.ly);
-      c.lineTo(x, y);
-      c.stroke();
-      s.lx = x;
-      s.ly = y;
+    if (!s.active || e.pointerId !== s.id || !c) return;
+    const el = e.currentTarget;
+    if (s.free) {
+      // Semua titik antara dua frame (coalesced) dipakai supaya goresan pen dan jari tetap halus,
+      // lalu disambung dengan kurva lewat titik tengah.
+      const coalesced = e.nativeEvent.getCoalescedEvents?.() ?? [];
+      const points = coalesced.length ? coalesced : [e.nativeEvent];
+      for (const p of points) {
+        const { x, y } = pos(p, el);
+        const mx = (s.lx + x) / 2, my = (s.ly + y) / 2;
+        style(c, s.erase, widthFor(p, s.erase));
+        c.beginPath();
+        c.moveTo(s.mx, s.my);
+        c.quadraticCurveTo(s.lx, s.ly, mx, my);
+        c.stroke();
+        s.lx = x;
+        s.ly = y;
+        s.mx = mx;
+        s.my = my;
+      }
     } else if (s.snap) {
+      const { x, y } = pos(e, el);
       c.putImageData(s.snap, 0, 0);
+      style(c, false, size);
       shape(c, x, y);
     }
   };
 
-  const onUp = () => {
-    if (!stroke.current.active) return;
-    stroke.current.active = false;
+  const onUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const s = stroke.current;
+    if (!s.active || e.pointerId !== s.id) return;
     const c = ctx();
+    if (c && s.free) {
+      c.beginPath();
+      c.moveTo(s.mx, s.my);
+      c.lineTo(s.lx, s.ly);
+      c.stroke();
+    }
+    s.active = false;
     if (c) c.globalCompositeOperation = "source-over";
     autosave();
   };
@@ -337,7 +396,7 @@ export default function DrawingCanvas() {
       </div>
 
       {/* Bidang gambar */}
-      <div ref={wrapRef} className="relative aspect-[4/3] w-full">
+      <div ref={wrapRef} className="relative aspect-square w-full sm:aspect-[4/3]">
         {grid && (
           <div
             className="pointer-events-none absolute inset-0"
@@ -351,13 +410,15 @@ export default function DrawingCanvas() {
         )}
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 h-full w-full touch-none"
-          style={{ cursor: tool === "eraser" ? "cell" : "crosshair" }}
+          className="absolute inset-0 h-full w-full touch-none select-none"
+          style={{ cursor: tool === "eraser" ? "cell" : "crosshair", WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
           aria-label="Kanvas sketsa proyek. Gambar denah kasar, ukuran, atau bentuk bangunan yang kamu inginkan."
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
+          onLostPointerCapture={onUp}
+          onContextMenu={(e) => e.preventDefault()}
         />
         {empty && (
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center" aria-hidden="true">
@@ -366,6 +427,7 @@ export default function DrawingCanvas() {
             </span>
             <p className="text-[15px] font-bold text-brand-dark/70">Gambarkan ide proyekmu di sini</p>
             <p className="max-w-xs text-[13px] text-brand-gray">Denah kasar, ukuran ruangan, atau bentuk bangunan. Tidak perlu rapi.</p>
+            <p className="max-w-xs text-[12px] font-semibold text-brand-dark/50">Bisa pakai mouse, trackpad, pen, atau jari.</p>
           </div>
         )}
       </div>
