@@ -4,7 +4,7 @@ import Link from "@/i18n/Link";
 import Reveal from "@/components/Reveal";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import ChannelIcon from "@/components/icons/ChannelIcon";
-import { ALUR, FORM_GROUPS, GALERI, JALUR, KEMITRAAN_FAQ, KEMITRAAN_HERO, PERUBAHAN, type JalurId } from "@/data/kemitraan";
+import { ALUR, FORM_GROUPS, JALUR, KEMITRAAN_FAQ, KEMITRAAN_HERO, type JalurId } from "@/data/kemitraan";
 import { GFORMS } from "@/data/google-forms";
 import { JURURANCANG, waLink } from "@/data/site";
 import { alternates, pageLang } from "@/i18n/server";
@@ -22,8 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Halaman Kemitraan (arahan user Okt 2026): tampilan formal, padat informasi, ukuran huruf sedang.
+// Halaman Kemitraan (arahan user Okt 2026): tampilan formal, padat informasi, ukuran huruf sedang. Hero memakai foto
+// mitra di lapangan sebagai latar yang berganti pelan (sudah diburamkan di file, animasi CSS .hero-slide).
 // Portal Mitra ada di /portal (di luar rute bahasa). Link dari @/i18n/Link tidak memberi awalan /en untuk /portal.
+
+const SLIDE_SECONDS = 6;
 
 const STATUS_TONE: Record<JalurId, string> = {
   konstruksi: "bg-[#2D7A4F]/10 text-[#2D7A4F]",
@@ -57,13 +60,25 @@ export default async function KemitraanPage({ params }: Props) {
 
   return (
     <>
-      {/* HERO */}
-      <section className="bg-brand-dark text-white">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 pb-16 pt-32 md:px-10 md:pb-20 md:pt-36 lg:grid-cols-12 lg:px-14">
-          <div className="lg:col-span-6">
+      {/* HERO: foto mitra di lapangan berganti pelan di belakang teks */}
+      <section className="relative isolate overflow-hidden bg-brand-dark text-white">
+        <div
+          className="hero-slides absolute inset-0 -z-20"
+          style={{ ["--slide-cycle" as string]: `${KEMITRAAN_HERO.slides.length * SLIDE_SECONDS}s` }}
+          aria-hidden="true"
+        >
+          {KEMITRAAN_HERO.slides.map((src, i) => (
+            <div key={src} className="hero-slide absolute inset-0" style={{ animationDelay: `${i * SLIDE_SECONDS - 1}s` }}>
+              <Image src={src} alt="" fill priority={i === 0} sizes="100vw" className="object-cover" />
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/90 via-brand-dark/70 to-brand-dark/45" aria-hidden="true" />
+        <div className="mx-auto max-w-[1280px] px-5 pb-20 pt-36 md:px-10 md:pb-24 md:pt-40 lg:px-14">
+          <div className="max-w-2xl">
             <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">{t(KEMITRAAN_HERO.label)}</p>
             <h1 className="mt-4 text-[clamp(2rem,3.6vw,2.8rem)] font-extrabold leading-[1.1] tracking-[-0.02em]">{t(KEMITRAAN_HERO.title)}</h1>
-            <p className="mt-5 max-w-xl text-[15.5px] leading-relaxed text-white/70">{t(KEMITRAAN_HERO.body)}</p>
+            <p className="mt-5 max-w-xl text-[15.5px] leading-relaxed text-white/75">{t(KEMITRAAN_HERO.body)}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#jalur" className="rounded-full bg-brand-red px-5 py-3 text-[14px] font-bold text-white transition-colors hover:bg-brand-red-dark">
                 {t("Lihat jalur kemitraan")}
@@ -71,15 +86,10 @@ export default async function KemitraanPage({ params }: Props) {
               <a href="#formulir" className="rounded-full border border-white/25 px-5 py-3 text-[14px] font-bold text-white transition-colors hover:bg-white/10">
                 {t("Formulir pendaftaran")}
               </a>
-              <Link href="/portal" className="rounded-full px-3 py-3 text-[14px] font-bold text-white/75 underline-offset-4 hover:text-white hover:underline">
+              <Link href="/portal" className="rounded-full px-3 py-3 text-[14px] font-bold text-white/80 underline-offset-4 hover:text-white hover:underline">
                 {t("Masuk Portal Mitra →")}
               </Link>
             </div>
-          </div>
-          <div className="lg:col-span-6">
-            <figure className="overflow-hidden rounded-2xl border border-white/10">
-              <Image src={KEMITRAAN_HERO.image} alt={t(KEMITRAAN_HERO.imageAlt)} width={1600} height={1200} priority sizes="(min-width: 1024px) 560px, 100vw" className="h-auto w-full" />
-            </figure>
           </div>
         </div>
       </section>
@@ -190,47 +200,12 @@ export default async function KemitraanPage({ params }: Props) {
         </div>
       </section>
 
-      {/* STRUKTUR DAN ALUR */}
+      {/* ALUR KEMITRAAN */}
       <section className="bg-brand-cream-warm">
-        <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-16 md:px-10 md:py-20 lg:grid-cols-12 lg:px-14">
-          <div className="lg:col-span-6">
-            <SectionHead label={t(PERUBAHAN.label)} title={t(PERUBAHAN.title)} body={t(PERUBAHAN.body)} />
-            <div className="mt-6 overflow-hidden rounded-2xl border border-brand-dark/10 bg-white">
-              <table className="w-full text-left text-[13.5px]">
-                <thead className="bg-brand-dark/[0.04] text-[11px] font-bold uppercase tracking-[0.12em] text-brand-gray">
-                  <tr>
-                    <th className="px-4 py-3 font-bold">{t("Sebelumnya")}</th>
-                    <th className="px-4 py-3 font-bold">{t("Sekarang")}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-dark/[0.07]">
-                  {PERUBAHAN.rows.map((r) => (
-                    <tr key={r.before}>
-                      <td className="px-4 py-3 align-top text-brand-gray">{r.before}</td>
-                      <td className="px-4 py-3 align-top">
-                        <span className="block font-bold text-brand-dark">{t(r.after)}</span>
-                        <span className="text-[12px] text-brand-mute">{t(r.note)}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="lg:col-span-6">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <SectionHead label={t("Alur kemitraan")} title={t("Dari pendaftaran hingga aktif.")} />
-            <ol className="mt-6 border-t border-brand-dark/10">
-              {ALUR.map((a, i) => (
-                <li key={a.title} className="flex gap-4 border-b border-brand-dark/10 py-4">
-                  <span className="pt-0.5 font-mono text-[12px] font-bold text-brand-red">{String(i + 1).padStart(2, "0")}</span>
-                  <span>
-                    <span className="block text-[15px] font-bold text-brand-dark">{t(a.title)}</span>
-                    <span className="mt-0.5 block text-[13.5px] leading-relaxed text-brand-gray">{t(a.body)}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link href="/portal/daftar" className="rounded-full bg-brand-dark px-5 py-2.5 text-[13.5px] font-bold text-white transition-colors hover:bg-brand-red">
                 {t("Buat akun mitra")}
               </Link>
@@ -239,20 +214,15 @@ export default async function KemitraanPage({ params }: Props) {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* GALERI MITRA */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
-          <SectionHead label={t("Di lapangan")} title={t("Mitra yang bekerja bersama kami.")} />
-          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {GALERI.map((g) => (
-              <figure key={g.src} className="overflow-hidden rounded-xl bg-brand-cream">
-                <Image src={g.src} alt={t(g.alt)} width={g.w} height={g.h} sizes="(min-width: 768px) 25vw, 50vw" className="aspect-[4/5] h-full w-full object-cover" />
-              </figure>
+          <ol className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {ALUR.map((a, i) => (
+              <li key={a.title} className="rounded-2xl border border-brand-dark/10 bg-white p-5">
+                <span className="font-mono text-[12px] font-bold text-brand-red">{String(i + 1).padStart(2, "0")}</span>
+                <span className="mt-2 block text-[15px] font-bold text-brand-dark">{t(a.title)}</span>
+                <span className="mt-1 block text-[13.5px] leading-relaxed text-brand-gray">{t(a.body)}</span>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 

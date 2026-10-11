@@ -25,8 +25,8 @@ Isi website yang sengaja belum diisi, disembunyikan, atau masih perlu dicek. Jan
 | Website Jururancang | Belum ada, tampil "Website segera hadir" | `src/data/site.ts` (`JURURANCANG.website`) |
 | Kebijakan privasi | DRAF v1, perlu review orang hukum | `src/app/kebijakan-privasi/page.tsx` |
 | Batch rekrutmen berikutnya | Batch Juli 2026 sudah tutup. Halaman tampil status tutup dan email untuk kirim CV. | `src/data/karier.ts` (`BATCH`) |
-| Status personil yang namanya samar di Job Desk (CMO, CSO, CARO, CFO, CPO, CHCO, APAC Finance, APAC Engineer QS) | Dicatat "perlu konfirmasi" di Portal | Portal, tab Tim (database) |
-| Developer RTO: Agung Perdana Pulungan (direktur CV. Mulia Jaya Strukturindo) dan Satria Mudana (pesero CV. Sakato Sand) sama dengan personil barumahID? | Dicatat di catatan developer | Portal, tab Developer RTO (database) |
+| Apps Script pengirim jawaban Google Form ke Portal | Skrip sudah disiapkan, belum dipasang di akun Google pemilik form. Sebelum dipasang, tab "Formulir masuk" kosong | script.google.com (akun pemilik form) |
+| Form penyewa/pelanggan RTO (F11 pendaftaran, F12 survei kelayakan, F13 feedback) | Dikeluarkan dari halaman Kemitraan, belum dipasang di halaman RTO | `src/app/[lang]/layanan/rto`, `src/data/google-forms.ts` |
 | Pengaturan Supabase Auth untuk Portal: Site URL, Redirect URLs (`/portal/auth/callback` untuk domain dan preview), SMTP email | Belum diatur, email konfirmasi bisa tidak terkirim ke mitra | Dashboard Supabase > Authentication |
 | Status dan periode Magang Arsitektur | Brosur tidak menyebut periode atau durasi. Halaman tampil "Menerima lamaran" (`MAGANG.open = true`) sampai ada kabar ditutup | `src/data/karier.ts` (`MAGANG`) |
 

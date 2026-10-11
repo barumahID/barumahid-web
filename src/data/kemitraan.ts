@@ -4,7 +4,8 @@ import type { FormLink } from "./google-forms";
 // sendiri. Tampilan solid, profesional, formal, ukuran huruf tidak terlalu besar. Konsep baru:
 // - mitrabarumahID Konstruksi tetap aktif -> Mitra Jasa Konstruksi (tenaga kerja, kontraktor & mandor, supplier & vendor)
 // - mitrabarumahID Projectlink dan Knowledges -> dilebur ke Jururancang Engineering Mahaksa (freelancer, fresh graduate)
-// - mitrabarumahID Kosanesia -> menjadi program Rent-to-Own (penyedia kos, developer mitra, penyewa sebagai pelanggan)
+// - mitrabarumahID Kosanesia -> menjadi program Rent-to-Own (penyedia kos dan developer mitra; form penyewa/pelanggan
+//   F11-F13 dipindah ke halaman RTO nanti)
 // Lini bisnis barumahID kini fokus ke Jasa Konstruksi dan Rent-to-Own. RTO masih pra-peluncuran: copy tidak boleh
 // mengklaim program sudah berjalan.
 
@@ -12,21 +13,8 @@ export const KEMITRAAN_HERO = {
   label: "Kemitraan",
   title: "Kemitraan barumahID",
   body: "barumahID membuka kerja sama pada dua lini bisnis: Jasa Konstruksi dan Rent-to-Own. Pilih jalur kemitraan yang sesuai, lengkapi formulir pendaftaran, lalu tim kami melakukan verifikasi sebelum akun Portal Mitra Anda diaktifkan.",
-  image: "/images/kemitraan/mitra-konstruksi-2.webp",
-  imageAlt: "Mitra Jasa Konstruksi barumahID",
-};
-
-// Penyesuaian struktur kemitraan (dulu empat mitrabarumahID)
-export const PERUBAHAN = {
-  label: "Penyesuaian struktur",
-  title: "Struktur kemitraan yang lebih terfokus.",
-  body: "Sebelumnya kemitraan barumahID terbagi dalam empat program mitrabarumahID. Kini strukturnya kami sesuaikan agar setiap mitra ditangani oleh unit yang paling relevan.",
-  rows: [
-    { before: "mitrabarumahID Konstruksi", after: "Mitra Jasa Konstruksi barumahID", note: "Tetap aktif" },
-    { before: "mitrabarumahID Projectlink", after: "Jururancang Engineering Mahaksa", note: "Dilebur" },
-    { before: "mitrabarumahID Knowledges", after: "Jururancang Engineering Mahaksa", note: "Dilebur" },
-    { before: "mitrabarumahID Kosanesia", after: "Mitra Program Rent-to-Own", note: "Bagian dari RTO" },
-  ],
+  // Foto mitra di lapangan sebagai latar yang berganti pelan, sudah diburamkan di file (arahan user Okt 2026)
+  slides: [1, 2, 3, 4, 5].map((n) => `/images/kemitraan/latar-${n}.webp`),
 };
 
 export type JalurId = "konstruksi" | "jururancang" | "rto";
@@ -70,11 +58,10 @@ export const JALUR: Jalur[] = [
     no: "03",
     name: "Mitra Rent-to-Own",
     status: "Pra-peluncuran",
-    body: "Kemitraan untuk program Rent-to-Own yang sedang kami siapkan, menghubungkan penyedia hunian, developer, dan calon pemilik rumah.",
+    body: "Kemitraan bagi penyedia hunian dan developer untuk program Rent-to-Own yang sedang kami siapkan.",
     members: [
       { name: "Penyedia Kos & Rumah Sewa", body: "Pemilik kos, kontrakan, atau rumah sewa yang unitnya dapat masuk program." },
       { name: "Developer Mitra", body: "Developer yang bersedia mengalokasikan unit bagi peserta program." },
-      { name: "Penyewa (pelanggan)", body: "Calon pemilik rumah yang menyewa sambil mengumpulkan DP." },
     ],
   },
 ];
@@ -115,7 +102,7 @@ export const FORM_GROUPS: FormGroup[] = [
     note: "Pendaftaran awal untuk program yang sedang kami siapkan. Tim kami menghubungi Anda sebelum program dibuka.",
     sections: [
       {
-        label: "Penyedia hunian & developer",
+        label: "Pendaftaran",
         forms: [
           { code: "F14", title: "Penyedia Kos / Rumah Sewa", body: "Daftarkan unit kos, kontrakan, atau rumah sewa." },
           { code: "F16", title: "Developer Mitra", body: "Pendaftaran developer mitra program." },
@@ -123,18 +110,10 @@ export const FORM_GROUPS: FormGroup[] = [
         ],
       },
       {
-        label: "Penyewa (pelanggan)",
-        forms: [
-          { code: "F11", title: "Pendaftaran Calon Penyewa", body: "Daftar minat sebagai peserta program." },
-          { code: "F12", title: "Survei Kelayakan Penyewa", body: "Gambaran kemampuan dan kebutuhan hunian." },
-        ],
-      },
-      {
-        label: "Umpan balik mitra & pelanggan",
+        label: "Umpan balik mitra aktif",
         forms: [
           { code: "F15", title: "Feedback Penyedia Kos", body: "Evaluasi kerja sama penyedia hunian." },
           { code: "F18", title: "Feedback Developer Mitra", body: "Evaluasi kerja sama developer." },
-          { code: "F13", title: "Feedback Pelanggan RTO", body: "Pengalaman peserta program." },
         ],
       },
     ],
@@ -146,13 +125,6 @@ export const ALUR = [
   { title: "Buat akun Portal Mitra", body: "Gunakan email dan nomor WhatsApp yang sama dengan formulir." },
   { title: "Verifikasi oleh tim barumahID", body: "Kami menghubungi Anda untuk memastikan data dan kesiapan kerja sama." },
   { title: "Dashboard mitra aktif", body: "Status kemitraan dan informasi kerja sama dapat dipantau dari Portal Mitra." },
-];
-
-export const GALERI = [
-  { src: "/images/kemitraan/mitra-konstruksi-1.webp", w: 1280, h: 960, alt: "Mitra Jasa Konstruksi barumahID di Base barumahID" },
-  { src: "/images/kemitraan/mitra-konstruksi-3.webp", w: 1280, h: 960, alt: "Penyerahan kaos mitrabarumahID kepada mitra" },
-  { src: "/images/kemitraan/mitra-konstruksi-4.webp", w: 960, h: 1280, alt: "Mitra Jasa Konstruksi barumahID" },
-  { src: "/images/kemitraan/kolaborasi-akademisi.webp", w: 1053, h: 770, alt: "Kegiatan kolaborasi bersama akademisi" },
 ];
 
 export const KEMITRAAN_FAQ = [

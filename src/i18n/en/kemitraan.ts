@@ -1,4 +1,4 @@
-import { ALUR, FORM_GROUPS, GALERI, JALUR, KEMITRAAN_FAQ, KEMITRAAN_HERO, PERUBAHAN } from "@/data/kemitraan";
+import { ALUR, FORM_GROUPS, JALUR, KEMITRAAN_FAQ, KEMITRAAN_HERO } from "@/data/kemitraan";
 import { FORM_KLIEN } from "@/data/contech";
 
 // Terjemahan Inggris: halaman Kemitraan (/kemitraan), formulir klien di ConTech, dan pilihan Masuk/Portal.
@@ -30,11 +30,10 @@ const JALUR_EN = [
   {
     name: "Rent-to-Own Partners",
     status: "Pre-launch",
-    body: "Partnerships for the Rent-to-Own program we are preparing, connecting housing providers, developers, and future homeowners.",
+    body: "Partnerships for housing providers and developers in the Rent-to-Own program we are preparing.",
     members: [
       ["Boarding House & Rental Owners", "Owners of boarding houses or rental homes whose units can join the program."],
       ["Partner Developers", "Developers willing to allocate units for program participants."],
-      ["Tenants (customers)", "Future homeowners who rent while building up a down payment."],
     ],
   },
 ];
@@ -52,9 +51,8 @@ const GROUP_EN = [
     title: "Rent-to-Own",
     note: "Early registration for the program we are preparing. Our team will contact you before the program opens.",
     sections: [
-      { label: "Housing providers & developers", forms: [["Boarding House / Rental Home Owners", "Register boarding house, rental, or house units."], ["Partner Developers", "Registration for program partner developers."], ["Developer Interest Survey", "Developers' views on the RTO scheme."]] },
-      { label: "Tenants (customers)", forms: [["Prospective Tenant Registration", "Register your interest as a program participant."], ["Tenant Eligibility Survey", "An overview of your capacity and housing needs."]] },
-      { label: "Partner & customer feedback", forms: [["Boarding House Owner Feedback", "Housing provider partnership evaluation."], ["Partner Developer Feedback", "Developer partnership evaluation."], ["RTO Customer Feedback", "Participants' experience."]] },
+      { label: "Registration", forms: [["Boarding House / Rental Home Owners", "Register boarding house, rental, or house units."], ["Partner Developers", "Registration for program partner developers."], ["Developer Interest Survey", "Developers' views on the RTO scheme."]] },
+      { label: "Feedback from active partners", forms: [["Boarding House Owner Feedback", "Housing provider partnership evaluation."], ["Partner Developer Feedback", "Developer partnership evaluation."]] },
     ],
   },
 ];
@@ -88,7 +86,6 @@ export const KEMITRAAN: Record<string, string> = {
   [KEMITRAAN_HERO.title]: "barumahID Partnership",
   [KEMITRAAN_HERO.body]:
     "barumahID offers partnerships in two business lines: Construction Services and Rent-to-Own. Choose the partnership path that fits, complete the registration form, and our team will verify it before your Partner Portal account is activated.",
-  [KEMITRAAN_HERO.imageAlt]: "barumahID Construction Services partners",
   "Lihat jalur kemitraan": "See partnership paths",
   "Formulir pendaftaran": "Registration forms",
   "Masuk Portal Mitra →": "Partner Portal sign in →",
@@ -114,19 +111,7 @@ export const KEMITRAAN: Record<string, string> = {
   "Pertanyaan lain seputar kemitraan:": "Other questions about partnerships:",
   "Formulir Kontak & Pertanyaan Umum (F19)": "Contact & General Questions Form (F19)",
 
-  // Struktur dan alur
-  [PERUBAHAN.label]: "Structure update",
-  [PERUBAHAN.title]: "A more focused partnership structure.",
-  [PERUBAHAN.body]:
-    "barumahID partnerships used to be split across four mitrabarumahID programs. We have now adjusted the structure so every partner is handled by the most relevant unit.",
-  Sebelumnya: "Before",
-  Sekarang: "Now",
-  ...Object.fromEntries(
-    PERUBAHAN.rows.flatMap((r) => [
-      [r.after, { "Mitra Jasa Konstruksi barumahID": "barumahID Construction Services Partners", "Jururancang Engineering Mahaksa": "Jururancang Engineering Mahaksa", "Mitra Program Rent-to-Own": "Rent-to-Own Program Partners" }[r.after] ?? r.after],
-      [r.note, { "Tetap aktif": "Still active", Dilebur: "Merged", "Bagian dari RTO": "Part of RTO" }[r.note] ?? r.note],
-    ]),
-  ),
+  // Alur
   "Alur kemitraan": "Partnership flow",
   "Dari pendaftaran hingga aktif.": "From registration to active.",
   ...zip(
@@ -146,17 +131,6 @@ export const KEMITRAAN: Record<string, string> = {
   "Masuk Portal Mitra": "Partner Portal sign in",
 
   // Galeri dan FAQ
-  "Di lapangan": "On site",
-  "Mitra yang bekerja bersama kami.": "Partners who work with us.",
-  ...zip(
-    GALERI.map((g) => g.alt),
-    [
-      "barumahID Construction Services partners at Base barumahID",
-      "Handing over mitrabarumahID shirts to partners",
-      "barumahID Construction Services partner",
-      "A collaboration activity with academics",
-    ],
-  ),
   "Tanya jawab": "FAQ",
   "Sebelum Anda mendaftar.": "Before you register.",
   ...zip(

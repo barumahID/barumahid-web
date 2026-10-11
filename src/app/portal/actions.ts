@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { portalClient, portalConfigured } from "@/lib/supabase/server";
 import { getPortalSession } from "@/lib/portal-session";
-import { isCategory, isTeam, type MitraStatus, type Role } from "@/lib/portal";
+import { FORM_META, answerText, isCategory, isTeam, type FormSubmission, type MitraStatus, type Role, type SubmissionStatus } from "@/lib/portal";
 
 // Server action Portal barumahID. Semua akses data lewat sesi pengguna, jadi izin ditegakkan RLS di database.
 // Pesan untuk pengguna ditulis formal (portal dipakai mitra dan tim).
@@ -181,5 +181,93 @@ export async function setRole(fd: FormData) {
   const role = text(fd, "role", 10) as Role;
   if (!userId || !["admin", "tim", "mitra"].includes(role)) return;
   await supabase.rpc("portal_set_role", { target: userId, new_role: role });
+  revalidatePath("/portal/dashboard");
+}
+
+// ---- Formulir masuk: verifikasi mitra dari jawaban Google Form ----
+
+const SUB_STATUSES: SubmissionStatus[] = ["baru", "diproses", "diverifikasi", "ditolak"];
+
+export async function setSubmissionStatus(fd: FormData) {
+  const { supabase, user } = await requireTeam();
+  const id = text(fd, "id", 60);
+  const status = text(fd, "status", 20) as SubmissionStatus;
+  if (!id || !SUB_STATUSES.includes(status)) return;
+  await supabase
+    .from("portal_form_submissions")
+    .update({ status, handled_by: user!.id, handled_at: new Date().toISOString() })
+    .eq("id", id);
+  revalidatePath("/portal/dashboard");
+}
+
+/** Buat data mitra terverifikasi dari jawaban form pendaftaran, lalu hubungkan akun portal dengan email yang sama. */
+export async function verifySubmission(fd: FormData) {
+  const { supabase, user } = await requireTeam();
+  const id = text(fd, "id", 60);
+  const target = text(fd, "mitra_id", 60) || "baru";
+  if (!id) return;
+  const { data } = await supabase.from("portal_form_submissions").select("*").eq("id", id).maybeSingle();
+  const sub = data as FormSubmission | null;
+  if (!sub) return;
+  const now = new Date().toISOString();
+  let mitraId = target;
+
+  if (target === "baru") {
+    const meta = FORM_META[sub.form_code];
+    if (!meta?.category) return;
+    let accountId: string | null = null;
+    if (sub.respondent_email) {
+      const { data: acc } = await supabase.from("portal_profiles").select("user_id, role").eq("email", sub.respondent_email.toLowerCase()).maybeSingle();
+      if (acc && acc.role === "mitra") {
+        const { data: taken } = await supabase.from("portal_mitra").select("id").eq("user_id", acc.user_id).maybeSingle();
+        if (!taken) accountId = acc.user_id;
+      }
+    }
+    const jawaban = (sub.answers ?? []).slice(0, 40).map((x) => `${x.q}: ${answerText(x.a)}`.slice(0, 400));
+    const { data: created } = await supabase
+      .from("portal_mitra")
+      .insert({
+        category: meta.category,
+        name: sub.name || sub.respondent_email || "Tanpa nama",
+        phone: sub.phone,
+        email: sub.respondent_email,
+        status: "terverifikasi",
+        source: `Google Form ${sub.form_code}`,
+        profile: { formulir: `${sub.form_code} ${meta.title}`, jawaban },
+        user_id: accountId,
+        verified_at: now,
+        verified_by: user!.id,
+      })
+      .select("id")
+      .single();
+    if (!created) return;
+    mitraId = created.id;
+  }
+
+  await supabase
+    .from("portal_form_submissions")
+    .update({ mitra_id: mitraId, status: "diverifikasi", handled_by: user!.id, handled_at: now })
+    .eq("id", id);
+  revalidatePath("/portal/dashboard");
+}
+
+// ---- Undangan anggota tim (khusus admin): akun dengan email ini otomatis jadi tim/admin setelah email dikonfirmasi ----
+
+export async function inviteStaff(fd: FormData) {
+  const { supabase, profile } = await requireTeam();
+  if (profile?.role !== "admin") return;
+  const email = text(fd, "email", 160).toLowerCase();
+  const role = text(fd, "role", 10);
+  if (!/^\S+@\S+\.\S+$/.test(email) || !["admin", "tim"].includes(role)) return;
+  await supabase.from("portal_staff_invites").upsert({ email, role });
+  revalidatePath("/portal/dashboard");
+}
+
+export async function removeInvite(fd: FormData) {
+  const { supabase, profile } = await requireTeam();
+  if (profile?.role !== "admin") return;
+  const email = text(fd, "email", 160).toLowerCase();
+  if (!email) return;
+  await supabase.from("portal_staff_invites").delete().eq("email", email);
   revalidatePath("/portal/dashboard");
 }
