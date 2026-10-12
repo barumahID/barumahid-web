@@ -38,6 +38,9 @@ export const TEAM_STATUS: Record<TeamStatus, { label: string; tone: string; dot:
   kosong: { label: "Belum terisi", tone: "border border-dashed border-brand-dark/25 text-brand-mute", dot: "border border-brand-dark/40 bg-transparent" },
 };
 
+/** Pilihan status yang bisa diubah admin (tanpa "kosong"). */
+export const TEAM_STATUS_OPTIONS = (["aktif", "nonaktif", "ditunda"] as const).map((v) => ({ value: v, label: TEAM_STATUS[v].label }));
+
 export interface TeamMember {
   id: string;
   level_id: string;

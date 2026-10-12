@@ -3,7 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { setTeamStatus } from "@/app/portal/actions";
-import { TEAM_STATUS, type OrgLevel, type TeamMember } from "@/lib/portal";
+import { TEAM_STATUS, TEAM_STATUS_OPTIONS, type OrgLevel, type TeamMember } from "@/lib/portal";
+import AutoSelect from "./AutoSelect";
 
 // Bagan struktur organisasi barumahID (mengikuti bagan "Organisasi Kami" dari user, Okt 2026).
 // Desktop: pohon dengan garis komando yang tergambar berurutan (SVG, pathLength=1) dan titik yang mengalir ke bawah;
@@ -391,17 +392,7 @@ export default function OrgChart({ levels, team, isAdmin }: { levels: OrgLevel[]
                       {p.notes && <span className="block text-[12px] text-brand-mute">{p.notes}</span>}
                     </span>
                     {p.name && isAdmin ? (
-                      <form action={setTeamStatus} className="flex items-center gap-1.5">
-                        <input type="hidden" name="id" value={p.id} />
-                        <select name="status" defaultValue={p.status} className="rounded-md border border-brand-dark/15 bg-white px-2 py-1 text-[12.5px]" aria-label={`Status ${p.name}`}>
-                          <option value="aktif">Aktif</option>
-                          <option value="nonaktif">Nonaktif</option>
-                          <option value="ditunda">Ditunda</option>
-                        </select>
-                        <button type="submit" className="rounded-md bg-brand-dark px-2.5 py-1 text-[12px] font-bold text-white hover:bg-brand-red">
-                          Simpan
-                        </button>
-                      </form>
+                      <AutoSelect action={setTeamStatus} fields={{ id: p.id }} name="status" value={p.status} label={`Status ${p.name}`} options={TEAM_STATUS_OPTIONS} />
                     ) : (
                       <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-bold ${TEAM_STATUS[p.status].tone}`}>{TEAM_STATUS[p.status].label}</span>
                     )}

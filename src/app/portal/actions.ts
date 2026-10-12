@@ -116,22 +116,29 @@ async function requireTeam() {
   return s;
 }
 
+/** Hentikan aksi dengan pesan; dipakai pilihan status (AutoSelect) untuk mengembalikan nilai dan menampilkan "Gagal". */
+function fail(message: string): never {
+  throw new Error(message);
+}
+
 const STATUSES: MitraStatus[] = ["terdaftar", "bersedia", "terverifikasi", "aktif", "nonaktif"];
 
 export async function setMitraStatus(fd: FormData) {
   const { supabase, user } = await requireTeam();
   const id = text(fd, "id", 60);
   const status = text(fd, "status", 20) as MitraStatus;
-  if (!id || !STATUSES.includes(status)) return;
+  if (!id || !STATUSES.includes(status)) fail("Status tidak valid");
   const verified = status === "terverifikasi" || status === "aktif";
-  await supabase
+  const { data, error } = await supabase
     .from("portal_mitra")
     .update({
       status,
       updated_at: new Date().toISOString(),
       ...(verified ? { verified_at: new Date().toISOString(), verified_by: user!.id } : {}),
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
+  if (error || !data?.length) fail("Status mitra gagal disimpan");
   revalidatePath("/portal/dashboard");
 }
 
@@ -176,11 +183,12 @@ export async function unlinkAccount(fd: FormData) {
 
 export async function setRole(fd: FormData) {
   const { supabase, profile } = await requireTeam();
-  if (profile?.role !== "admin") return;
+  if (profile?.role !== "admin") fail("Khusus admin");
   const userId = text(fd, "user_id", 60);
   const role = text(fd, "role", 10) as Role;
-  if (!userId || !["admin", "tim", "mitra"].includes(role)) return;
-  await supabase.rpc("portal_set_role", { target: userId, new_role: role });
+  if (!userId || !["admin", "tim", "mitra"].includes(role)) fail("Peran tidak valid");
+  const { error } = await supabase.rpc("portal_set_role", { target: userId, new_role: role });
+  if (error) fail("Peran gagal disimpan");
   revalidatePath("/portal/dashboard");
 }
 
@@ -192,11 +200,13 @@ export async function setSubmissionStatus(fd: FormData) {
   const { supabase, user } = await requireTeam();
   const id = text(fd, "id", 60);
   const status = text(fd, "status", 20) as SubmissionStatus;
-  if (!id || !SUB_STATUSES.includes(status)) return;
-  await supabase
+  if (!id || !SUB_STATUSES.includes(status)) fail("Status tidak valid");
+  const { data, error } = await supabase
     .from("portal_form_submissions")
     .update({ status, handled_by: user!.id, handled_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
+  if (error || !data?.length) fail("Status formulir gagal disimpan");
   revalidatePath("/portal/dashboard");
 }
 
@@ -276,10 +286,16 @@ export async function removeInvite(fd: FormData) {
 
 export async function setTeamStatus(fd: FormData) {
   const { supabase, profile } = await requireTeam();
-  if (profile?.role !== "admin") return;
+  if (profile?.role !== "admin") fail("Khusus admin");
   const id = text(fd, "id", 60);
   const status = text(fd, "status", 20);
-  if (!id || !["aktif", "nonaktif", "ditunda"].includes(status)) return;
-  await supabase.from("portal_team").update({ status, updated_at: new Date().toISOString() }).eq("id", id).not("name", "is", null);
+  if (!id || !["aktif", "nonaktif", "ditunda"].includes(status)) fail("Status tidak valid");
+  const { data, error } = await supabase
+    .from("portal_team")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .not("name", "is", null)
+    .select("id");
+  if (error || !data?.length) fail("Status personil gagal disimpan");
   revalidatePath("/portal/dashboard");
 }

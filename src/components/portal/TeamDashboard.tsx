@@ -12,6 +12,7 @@ import {
 } from "@/app/portal/actions";
 import { waHref } from "./PortalShell";
 import OrgChart from "./OrgChart";
+import AutoSelect from "./AutoSelect";
 import { Bars, CountUp, Donut } from "./Viz";
 import {
   CATEGORY_LABEL,
@@ -22,6 +23,7 @@ import {
   STATUS_TONE,
   SUBMISSION_STATUS,
   TEAM_STATUS,
+  TEAM_STATUS_OPTIONS,
   answerText,
   phoneKey,
   type AccountMeta,
@@ -105,7 +107,6 @@ const th = "px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.12em
 const td = "px-4 py-3 align-middle text-[13.5px]";
 const select = "rounded-md border border-brand-dark/15 bg-white px-2 py-1 text-[12.5px]";
 const btnDark = "rounded-md bg-brand-dark px-2.5 py-1 text-[12px] font-bold text-white hover:bg-brand-red";
-const btnLine = "rounded-md border border-brand-dark/20 px-2.5 py-1 text-[12px] font-bold hover:border-brand-dark";
 
 const TZ = "Asia/Jakarta";
 const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: TZ }) : "-");
@@ -657,19 +658,14 @@ function Formulir({
                           </button>
                         </form>
                       )}
-                      <form action={setSubmissionStatus} className="flex items-center gap-1.5">
-                        <input type="hidden" name="id" value={s.id} />
-                        <select name="status" defaultValue={s.status} className={select} aria-label="Status formulir">
-                          {(Object.keys(SUBMISSION_STATUS) as SubmissionStatus[]).map((st) => (
-                            <option key={st} value={st}>
-                              {SUBMISSION_STATUS[st].label}
-                            </option>
-                          ))}
-                        </select>
-                        <button type="submit" className={btnLine}>
-                          Simpan
-                        </button>
-                      </form>
+                      <AutoSelect
+                        action={setSubmissionStatus}
+                        fields={{ id: s.id }}
+                        name="status"
+                        value={s.status}
+                        label="Status formulir"
+                        options={(Object.keys(SUBMISSION_STATUS) as SubmissionStatus[]).map((st) => ({ value: st, label: SUBMISSION_STATUS[st].label }))}
+                      />
                     </div>
                   </div>
                   <details className="group mt-3">
@@ -700,19 +696,14 @@ function Formulir({
 
 function StatusForm({ m }: { m: Mitra }) {
   return (
-    <form action={setMitraStatus} className="flex items-center gap-1.5">
-      <input type="hidden" name="id" value={m.id} />
-      <select name="status" defaultValue={m.status} className={select} aria-label={`Status ${m.name}`}>
-        {(Object.keys(STATUS_LABEL) as MitraStatus[]).map((s) => (
-          <option key={s} value={s}>
-            {STATUS_LABEL[s]}
-          </option>
-        ))}
-      </select>
-      <button type="submit" className={btnDark}>
-        Simpan
-      </button>
-    </form>
+    <AutoSelect
+      action={setMitraStatus}
+      fields={{ id: m.id }}
+      name="status"
+      value={m.status}
+      label={`Status ${m.name}`}
+      options={(Object.keys(STATUS_LABEL) as MitraStatus[]).map((s) => ({ value: s, label: STATUS_LABEL[s] }))}
+    />
   );
 }
 
@@ -926,6 +917,11 @@ function Developers({ developers }: { developers: Mitra[] }) {
 
 // ---------------- Akun portal ----------------
 
+const ROLE_OPTIONS = [
+  { value: "mitra", label: "Mitra" },
+  { value: "tim", label: "Tim" },
+  { value: "admin", label: "Admin" },
+];
 const ROLE_TONE = { admin: "bg-brand-red/10 text-brand-red", tim: "bg-[#1A5C9A]/10 text-[#1A5C9A]", mitra: "bg-brand-dark/[0.06] text-brand-dark" } as const;
 
 function Akun({
@@ -1038,17 +1034,7 @@ function Akun({
                   </td>
                   <td className={td}>
                     {isAdmin && a.user_id !== meId ? (
-                      <form action={setRole} className="flex items-center gap-1.5">
-                        <input type="hidden" name="user_id" value={a.user_id} />
-                        <select name="role" defaultValue={a.role} className={select} aria-label={`Peran ${a.email}`}>
-                          <option value="mitra">Mitra</option>
-                          <option value="tim">Tim</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                        <button type="submit" className={btnLine}>
-                          Ubah
-                        </button>
-                      </form>
+                      <AutoSelect action={setRole} fields={{ user_id: a.user_id }} name="role" value={a.role} label={`Peran ${a.email}`} options={ROLE_OPTIONS} />
                     ) : (
                       <Badge tone={ROLE_TONE[a.role]}>{a.role === "admin" ? "Admin" : a.role === "tim" ? "Tim" : "Mitra"}</Badge>
                     )}
@@ -1159,17 +1145,7 @@ function Tim({ levels, team, isAdmin }: { levels: OrgLevel[]; team: TeamMember[]
               </td>
               <td className={td}>
                 {isAdmin && t.name ? (
-                  <form action={setTeamStatus} className="flex items-center gap-1.5">
-                    <input type="hidden" name="id" value={t.id} />
-                    <select name="status" defaultValue={t.status} className={select} aria-label={`Status ${t.name}`}>
-                      <option value="aktif">Aktif</option>
-                      <option value="nonaktif">Nonaktif</option>
-                      <option value="ditunda">Ditunda</option>
-                    </select>
-                    <button type="submit" className={btnDark}>
-                      Simpan
-                    </button>
-                  </form>
+                  <AutoSelect action={setTeamStatus} fields={{ id: t.id }} name="status" value={t.status} label={`Status ${t.name}`} options={TEAM_STATUS_OPTIONS} />
                 ) : (
                   <Badge tone={TEAM_STATUS[t.status].tone}>{TEAM_STATUS[t.status].label}</Badge>
                 )}
