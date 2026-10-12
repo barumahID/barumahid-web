@@ -72,7 +72,7 @@ export default function HeroBackdrop() {
             className="building-drift relative h-full w-full opacity-60 mix-blend-multiply"
             style={{ maskImage: BUILDING_MASK, WebkitMaskImage: BUILDING_MASK }}
           >
-            <Image src="/images/beranda/gedung.webp" alt="" fill sizes="(min-width: 768px) 30vw, 52vw" className="object-cover object-left-top" />
+            <Image src="/images/beranda/gedung.webp" alt="" fill loading="eager" sizes="(min-width: 768px) 30vw, 52vw" className="object-cover object-left-top" />
           </div>
         </motion.div>
 
