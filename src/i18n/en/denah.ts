@@ -1,0 +1,148 @@
+// Terjemahan Inggris: miniCAD (denah otomatis) di bagian "Ceritakan proyekmu" halaman ConTech.
+// Kuncinya teks Indonesia persis dari src/components/constech/minicad dan src/lib/denah.
+
+export const DENAH_EN: Record<string, string> = {
+  // Tab dan langkah
+  "Ceritakan rumah yang kamu mau, kami susun jadi denah, tampak, dan visual 3D gratis. Atau gambar sendiri di sketsa bebas. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.":
+    "Tell us about the house you want and we turn it into a floor plan, front elevation, and 3D visual for free. Or draw it yourself in the free sketch. Then fill in the form next to it and we will reply on WhatsApp with questions and a quote.",
+  "Cara menggambar": "How to draw",
+  "Denah otomatis": "Auto floor plan",
+  "Sketsa bebas": "Free sketch",
+  "gambar tangan": "hand drawing",
+  "Langkah miniCAD": "miniCAD steps",
+  Cerita: "Story",
+  "Denah 2D": "2D plan",
+  Tampak: "Elevation",
+  "3D": "3D",
+  "2D": "2D",
+
+  // 01 Cerita
+  "Ceritakan rumah yang kamu mau": "Describe the house you want",
+  "Tulis bebas, nanti kami susun jadi denah, tampak, dan visual 3D. Atau atur angkanya langsung di bawah.":
+    "Write freely and we will turn it into a floor plan, elevation, and 3D visual. Or set the numbers directly below.",
+  "Contoh: lahan 8x15, rumah 2 lantai, 4 kamar tidur, 3 kamar mandi, carport 1 mobil, ada mushola dan tempat jemur, atap pelana.":
+    "Example: 8x15 lot, 2-storey house, 4 bedrooms, 3 bathrooms, carport for 1 car, a prayer room and a laundry area, gable roof.",
+  "Sedang membaca ceritamu...": "Reading your story...",
+  "Susun denah dari cerita": "Build a plan from my story",
+  "atau atur langsung": "or set it directly",
+  "Lebar lahan (m)": "Lot width (m)",
+  "Panjang lahan (m)": "Lot depth (m)",
+  "Jumlah lantai": "Storeys",
+  "{n} lantai": "{n} storey(s)",
+  "Jumlah kamar tidur": "Bedrooms",
+  "Jumlah kamar mandi": "Bathrooms",
+  "Kamar tidur": "Bedroom",
+  Carport: "Carport",
+  Tanpa: "None",
+  "{n} mobil": "{n} car(s)",
+  Atap: "Roof",
+  Pelana: "Gable",
+  Perisai: "Hip",
+  "Dak datar": "Flat slab",
+  pelana: "gable",
+  perisai: "hip",
+  "dak datar": "flat slab",
+  Tambahan: "Extras",
+  Mushola: "Prayer room",
+  "Ruang kerja": "Study",
+  Gudang: "Storage",
+  "Cuci & jemur": "Laundry & drying",
+  Kurangi: "Decrease",
+  Tambah: "Increase",
+  "Gambar denah": "Draw floor plan",
+  "Gambar ulang denah": "Redraw floor plan",
+  "Menggambar ulang akan mengganti perubahan dinding yang sudah kamu buat.": "Redrawing replaces the wall changes you have made.",
+  "Denah disusun AI dari ceritamu.": "AI built this plan from your story.",
+  "Disusun dari kata kunci di ceritamu: {list}. Sisanya pakai pengaturan di bawah.": "Built from keywords in your story: {list}. Everything else uses the settings below.",
+  "Belum ada ukuran atau jumlah ruang yang terbaca. Denah memakai pengaturan di bawah, silakan ubah angkanya.":
+    "We could not read a lot size or room count yet. The plan uses the settings below, so adjust the numbers.",
+  lahan: "lot",
+  lantai: "storeys",
+  kamar: "bedrooms",
+  "kamar mandi": "bathrooms",
+  carport: "carport",
+  mushola: "prayer room",
+  "ruang kerja": "study",
+  gudang: "storage",
+  "cuci jemur": "laundry",
+  atap: "roof",
+
+  // 02 Denah
+  "Alat denah": "Plan tools",
+  "Lt {n}": "Fl {n}",
+  Ukuran: "Dimensions",
+  Perabot: "Furniture",
+  Label: "Labels",
+  Urungkan: "Undo",
+  Ulangi: "Redo",
+  "Urungkan (Ctrl+Z)": "Undo (Ctrl+Z)",
+  "Ulangi (Ctrl+Shift+Z)": "Redo (Ctrl+Shift+Z)",
+  Perkecil: "Zoom out",
+  Perbesar: "Zoom in",
+  Pas: "Fit",
+  Otomatis: "Auto",
+  Tutup: "Close",
+  Ruang: "Room",
+  "Ganti fungsi ruang": "Change room use",
+  "Klik ruang untuk ganti fungsinya. Geser garis dinding untuk ubah ukuran. Ctrl + scroll atau dua jari untuk zoom.":
+    "Click a room to change its use. Drag a wall line to resize. Ctrl + scroll or two fingers to zoom.",
+  "Lahan {w} × {d} m · {f} lantai · {kt} KT · {km} KM · ± {a} m²": "Lot {w} × {d} m · {f} storey(s) · {kt} bed · {km} bath · ± {a} m²",
+  "{ruang} di lantai {lantai} tidak muat di lahan ini. Coba tambah ukuran lahan atau pilih 2 lantai.":
+    "{ruang} on floor {lantai} does not fit on this lot. Try a larger lot or 2 storeys.",
+  "Lahan cukup pendek, ruang jadi lebih sempit dari ukuran ideal.": "The lot is quite short, so rooms are smaller than ideal.",
+  "Lantai 2 belum punya kamar mandi. Tambah jumlah kamar mandi kalau perlu.": "Floor 2 has no bathroom yet. Add a bathroom if needed.",
+  "{ruang} belum punya akses pintu. Geser dindingnya supaya menempel ke ruang lain.": "{ruang} has no door access yet. Move its walls so it touches another room.",
+
+  // Nama ruang
+  Teras: "Porch",
+  Taman: "Garden",
+  Balkon: "Balcony",
+  "Ruang tamu": "Living room",
+  "Ruang keluarga & makan": "Family & dining room",
+  "Ruang tamu & keluarga": "Living & family room",
+  "Ruang santai": "Lounge",
+  Dapur: "Kitchen",
+  "Kamar utama": "Master bedroom",
+  "KM/WC": "Bathroom",
+  Tangga: "Stairs",
+
+  // Gambar
+  NAIK: "UP",
+  TURUN: "DOWN",
+  JALAN: "STREET",
+  "DENAH LANTAI 1": "FLOOR PLAN 1",
+  "DENAH LANTAI 2": "FLOOR PLAN 2",
+  "TAMPAK DEPAN": "FRONT ELEVATION",
+  "Lahan {w} × {d} m": "Lot {w} × {d} m",
+  "Luas lantai ± {a} m²": "Floor area ± {a} m²",
+  "Atap {atap}": "{atap} roof",
+  "miniCAD · gambar konsep": "miniCAD · concept drawing",
+  "Bukan gambar kerja. Gambar kerja detail: Jururancang.": "Not a construction drawing. Detailed drawings: Jururancang.",
+  "barumahID miniCAD - gambar konsep, bukan gambar kerja": "barumahID miniCAD - concept drawing, not a construction drawing",
+
+  // 04 3D
+  "Visual 3D rumah konsep": "3D visual of the concept house",
+  Putar: "Play",
+  "Dari denah 2D ke 3D": "From 2D plan to 3D",
+  "Lantai 2": "Floor 2",
+  "Geser untuk memutar": "Drag to rotate",
+
+  // Unduh, lampiran, ajakan
+  Unduh: "Download",
+  "Bisa dibuka di AutoCAD": "Opens in AutoCAD",
+  "Lampirkan ke form konsultasi": "Attach to the consultation form",
+  "Ini gambar konsep gratis.": "This is a free concept drawing.",
+  "Untuk gambar kerja lengkap (denah detail, tampak empat sisi, potongan, detail, dan struktur), pesan paket gambar bersama partner kami, Jururancang.":
+    "For full construction drawings (detailed plans, four elevations, sections, details, and structure), order a drawing package with our partner, Jururancang.",
+  "Lihat paket gambar": "See drawing packages",
+  "Chat admin Jururancang": "Chat with Jururancang",
+  "Halo admin Jururancang, saya sudah coba denah konsep di website barumahID ({ringkasan}). Saya mau pesan gambar kerja detailnya.":
+    "Hello Jururancang admin, I tried the concept floor plan on the barumahID website ({ringkasan}). I would like to order the detailed construction drawings.",
+
+  // Lampiran di form
+  "Denah konsep ikut terkirim": "Concept floor plan attached",
+  "Lepas lampiran denah": "Remove the floor plan attachment",
+  Lepas: "Remove",
+  "Denah konsep (miniCAD)": "Concept floor plan (miniCAD)",
+  Pilih: "Select",
+};
