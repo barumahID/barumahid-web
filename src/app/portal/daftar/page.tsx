@@ -3,13 +3,14 @@ import Link from "next/link";
 import AuthShell from "@/components/portal/AuthShell";
 import { SignupForm } from "@/components/portal/AuthForms";
 
-export const metadata: Metadata = { title: "Buat akun mitra" };
+export const metadata: Metadata = { title: "Buat akun" };
 
-export default function PortalSignupPage() {
+export default async function PortalSignupPage({ searchParams }: { searchParams: Promise<{ akun?: string }> }) {
+  const { akun } = await searchParams;
   return (
     <AuthShell
-      title="Buat akun mitra"
-      subtitle="Akun baru berstatus menunggu verifikasi. Dashboard mitra aktif setelah data Anda diverifikasi tim barumahID."
+      title="Buat akun"
+      subtitle="Penyewa: pantau level, sewa, dan saldo DP program Rent-to-Own. Mitra: dashboard aktif setelah data Anda diverifikasi tim barumahID."
       footer={
         <>
           Sudah punya akun?{" "}
@@ -19,7 +20,7 @@ export default function PortalSignupPage() {
         </>
       }
     >
-      <SignupForm />
+      <SignupForm initial={akun === "mitra" ? "mitra" : "penyewa"} />
     </AuthShell>
   );
 }

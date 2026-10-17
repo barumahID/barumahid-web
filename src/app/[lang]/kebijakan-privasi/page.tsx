@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 // DRAF v1. Wajib dicek konsultan hukum sebelum dianggap final (UU No. 27 Tahun 2022 tentang
 // Pelindungan Data Pribadi). Kalau ada perubahan alur data (misalnya pindah ke Supabase), perbarui halaman ini.
 const UPDATED = "Oktober 2026";
+// Okt 2026: ditambah data akun Portal dan akun penyewa RTO (Supabase, akses per akun lewat RLS).
 
 const sections: { title: string; body: React.ReactNode }[] = [
   {
@@ -32,6 +33,11 @@ const sections: { title: string; body: React.ReactNode }[] = [
           kami pakai untuk menilai kecocokan program, bukan untuk keputusan kredit.
         </li>
         <li>Untuk mitra: data usaha, keahlian, properti, atau institusi yang kamu daftarkan.</li>
+        <li>
+          Untuk akun Portal: email, peran akun, waktu masuk terakhir, dan persetujuan syarat yang kamu berikan. Untuk akun penyewa juga
+          riwayat sewa dan pembayaran, saldo DP yang tercatat, status verifikasi KTP, dan hasil asesmen Skor Siap Punya Rumah. Foto KTP
+          tidak kami simpan di website; verifikasi dilakukan tim lewat WhatsApp atau tatap muka.
+        </li>
         <li>Data teknis terbatas untuk keamanan, misalnya alamat IP saat mengirim formulir, untuk mencegah spam.</li>
       </ul>
     ),
@@ -61,8 +67,9 @@ const sections: { title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          Data formulir disimpan di Google Sheets milik perusahaan dan hanya bisa dibuka tim barumahID yang bertugas.
-          Website berjalan di Vercel, dan anti-spam memakai layanan Cloudflare bila diaktifkan.
+          Data formulir dan akun Portal disimpan di basis data Supabase dan Google Sheets milik perusahaan. Akses dibatasi per akun: penyewa
+          hanya melihat datanya sendiri, pemilik unit hanya melihat sewa di unitnya, dan data lengkap hanya bisa dibuka tim barumahID yang
+          bertugas. Website berjalan di Vercel, dan anti-spam memakai layanan Cloudflare bila diaktifkan.
         </p>
         <p>
           Kami tidak menjual data pribadimu. Data hanya dibagikan ke mitra bila diperlukan untuk layanan yang kamu minta,

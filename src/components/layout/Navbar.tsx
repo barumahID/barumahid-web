@@ -276,7 +276,7 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <p className="mx-3 mb-2 mt-2 border-t border-brand-dark/10 pt-3 text-[12px] leading-relaxed text-brand-gray">
-                  {t("Mitra dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
+                  {t("Penyewa, mitra, dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
                 </p>
               </div>
             </div>

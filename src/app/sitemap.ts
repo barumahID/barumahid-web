@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/kontak", priority: 0.5 },
     { path: "/rekrutmen", priority: 0.3 },
     { path: "/kebijakan-privasi", priority: 0.2 },
+    { path: "/syarat-ketentuan", priority: 0.2 },
     ...LISTINGS.map((l) => ({ path: `/layanan/rto/${l.slug}`, priority: 0.8 })),
     ...(ARTICLES.length ? [{ path: "/artikel", priority: 0.6 }] : []),
     ...ARTICLES.map((a) => ({ path: `/artikel/${a.slug}`, priority: 0.5 })),

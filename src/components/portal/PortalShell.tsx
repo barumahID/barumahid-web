@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/app/portal/actions";
-import type { Profile } from "@/lib/portal";
-
-const ROLE_LABEL = { admin: "Admin", tim: "Tim barumahID", mitra: "Mitra" } as const;
+import { ROLE_LABEL, type Profile } from "@/lib/portal";
 
 export default function PortalShell({ profile, email, children }: { profile: Profile | null; email: string; children: React.ReactNode }) {
   return (

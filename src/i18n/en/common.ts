@@ -58,6 +58,7 @@ export const COMMON: Record<string, string> = {
   "Tentang kami": "About us",
   Karier: "Careers",
   "Kebijakan privasi": "Privacy policy",
+  "Syarat dan ketentuan": "Terms and conditions",
   "Buka di Google Maps": "Open in Google Maps",
   "(buka di Google Maps)": "(open in Google Maps)",
   "Hak cipta dilindungi.": "All rights reserved.",
