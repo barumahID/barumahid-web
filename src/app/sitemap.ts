@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "", priority: 1 },
     { path: "/layanan", priority: 0.7 },
     { path: "/layanan/rto", priority: 0.9 },
+    { path: "/layanan/rto/panduan", priority: 0.6 },
     { path: "/layanan/contech", priority: 0.9 },
     { path: "/kemitraan", priority: 0.8 },
     { path: "/tentang", priority: 0.6 },
