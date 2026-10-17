@@ -23,7 +23,9 @@ import {
 } from "@/lib/rto";
 import AutoSelect from "./AutoSelect";
 import { waHref } from "./PortalShell";
-import { ActionButton, InspectionForm, LedgerForm, RecordPaymentForm, TenancyForm, TenantPlanForm } from "./RtoForms";
+import { ActionButton, DescriptionForm, InspectionForm, LedgerForm, LocationForm, RecordPaymentForm, TenancyForm, TenantPlanForm } from "./RtoForms";
+import UnitPhotos from "./UnitPhotos";
+import { unitPhotoUrl } from "@/lib/rto-listing";
 
 // Tab Rent-to-Own di Portal tim: penyewa (verifikasi KTP, rencana, keputusan RTO, sewa, pembayaran, saldo DP) dan unit
 // penyedia kos (inspeksi, tayang). Pencatatan 25% sewa jadi saldo DP dilakukan fungsi database saat pembayaran dikonfirmasi.
@@ -321,10 +323,42 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                       <span className="text-brand-gray">Status</span>
                       <AutoSelect action={setUnitStatus} fields={{ id: u.id }} name="status" value={u.status} label={`Status unit ${u.title}`} options={UNIT_OPTIONS} />
                     </div>
+                    <p className="mt-1.5 text-[12px] text-brand-gray">
+                      Tayang dan Penuh butuh hasil inspeksi Layak. Unit tayang langsung muncul di halaman cari unit.
+                      {(u.status === "tayang" || u.status === "penuh") && (
+                        <>
+                          {" "}
+                          <a href={`/layanan/rto/${u.slug}`} target="_blank" rel="noopener" className="font-bold text-brand-dark underline underline-offset-2">
+                            Lihat di website
+                          </a>
+                        </>
+                      )}
+                    </p>
+                    {(u.status === "tayang" || u.status === "penuh") && u.photos.length === 0 && (
+                      <p className="mt-1.5 text-[12px] font-semibold text-brand-red">Unit tayang tanpa foto. Tambahkan foto di bawah.</p>
+                    )}
                   </Panel>
                   <Panel title="Inspeksi (20 poin, minimal 8 foto)">
                     <InspectionForm unit={u} />
                   </Panel>
+                  <Panel title={`Foto listing (${u.photos.length})`}>
+                    <UnitPhotos
+                      unitId={u.id}
+                      editable
+                      photos={u.photos.flatMap((p) => {
+                        const url = unitPhotoUrl(p);
+                        return url ? [{ path: p, url }] : [];
+                      })}
+                    />
+                  </Panel>
+                  <div className="grid gap-3">
+                    <Panel title="Deskripsi listing">
+                      <DescriptionForm unit={u} />
+                    </Panel>
+                    <Panel title="Titik peta (area perkiraan)">
+                      <LocationForm unit={u} />
+                    </Panel>
+                  </div>
                 </div>
               </details>
             ))}

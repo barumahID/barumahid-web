@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getPortalSession } from "@/lib/portal-session";
 import { isTeam } from "@/lib/portal";
+import { RTO_UNITS_TAG } from "@/lib/rto-listing";
 import type { FormState } from "./actions";
 
 // Server action platform RTO di Portal. Semua akses lewat sesi pengguna, izin ditegakkan RLS dan fungsi database
@@ -34,6 +35,12 @@ const KNOWN = [
   "Jawaban belum lengkap",
   "Sewa tidak ditemukan",
   "Pembayaran tidak ditemukan",
+  "Unit tidak bisa diubah",
+  "Maksimal 12 foto",
+  "Foto belum terunggah",
+  "Nama file tidak valid",
+  "Foto tidak dikenal",
+  "Foto ganda",
 ];
 function dbMessage(msg: string | undefined, fallback: string) {
   const hit = KNOWN.find((k) => msg?.includes(k));
@@ -49,6 +56,13 @@ function done(message: string): FormState {
 function fail(message: string): never {
   throw new Error(message);
 }
+
+/** Listing publik dibaca ulang dari database pada kunjungan berikutnya (unit tayang, foto, deskripsi, peta) */
+function refreshListing() {
+  revalidateTag(RTO_UNITS_TAG, { expire: 0 });
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 async function requireTeam() {
   const s = await getPortalSession();
@@ -138,9 +152,146 @@ export async function submitUnit(_: FormState, fd: FormData): Promise<FormState>
     rooms: rooms > 0 && rooms <= 500 ? rooms : null,
     facilities,
     rto_ready: fd.get("rto_ready") === "on",
+    description: text(fd, "description", 1500) || null,
   });
   if (error) return { error: "Unit belum tersimpan. Pastikan akun Anda terdaftar sebagai penyedia kos." };
-  return done("Unit terkirim. Tim barumahID menghubungi Anda untuk jadwal inspeksi.");
+  return done("Unit terkirim. Tambahkan foto lewat daftar Unit Anda. Tim barumahID menghubungi Anda untuk jadwal inspeksi.");
+}
+
+// ---------------- Foto, deskripsi, dan titik peta unit (pemilik sebelum tayang, tim kapan saja) ----------------
+
+const PHOTO_TYPES: Record<string, { ext: string; magic: (b: Uint8Array) => boolean }> = {
+  "image/webp": {
+    ext: "webp",
+    magic: (b) => b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50,
+  },
+  "image/jpeg": { ext: "jpg", magic: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  "image/png": { ext: "png", magic: (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 },
+};
+
+export async function uploadUnitPhoto(fd: FormData): Promise<{ error?: string }> {
+  const { supabase, user } = await getPortalSession();
+  if (!user) return { error: "Sesi berakhir. Silakan masuk lagi." };
+  const unit = text(fd, "unit_id", 40);
+  const file = fd.get("file");
+  if (!UUID.test(unit) || !(file instanceof File)) return { error: "Data foto tidak lengkap." };
+  const type = PHOTO_TYPES[file.type];
+  if (!type) return { error: "Format foto harus WebP, JPG, atau PNG." };
+  if (file.size > 1_000_000) return { error: "Foto terlalu besar." };
+  // Bucket ini publik: pastikan isinya benar-benar gambar, bukan file lain yang diberi nama foto
+  if (!type.magic(new Uint8Array(await file.slice(0, 12).arrayBuffer()))) return { error: "File ini bukan foto." };
+  const path = `${unit}/${crypto.randomUUID()}.${type.ext}`;
+  const bucket = supabase.storage.from("rto-units");
+  const up = await bucket.upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });
+  if (up.error) return { error: "Foto belum terunggah. Setelah unit tayang, foto hanya bisa diubah tim barumahID." };
+  const { error } = await supabase.rpc("rto_unit_add_photo", { p_unit: unit, p_path: path });
+  if (error) {
+    await bucket.remove([path]);
+    return { error: dbMessage(error.message, "Foto belum tersimpan. Coba lagi.") };
+  }
+  revalidatePath("/portal/dashboard");
+  refreshListing();
+  return {};
+}
+
+/** Susun ulang atau hapus foto. Foto yang tidak ada lagi di daftar ikut dihapus dari penyimpanan. */
+export async function setUnitPhotos(fd: FormData): Promise<{ error?: string }> {
+  const { supabase, user } = await getPortalSession();
+  if (!user) return { error: "Sesi berakhir. Silakan masuk lagi." };
+  const unit = text(fd, "unit_id", 40);
+  let next: unknown;
+  try {
+    next = JSON.parse(String(fd.get("photos") ?? "[]"));
+  } catch {
+    next = null;
+  }
+  if (!UUID.test(unit) || !Array.isArray(next) || next.length > 12 || !next.every((p) => typeof p === "string")) {
+    return { error: "Data foto tidak valid." };
+  }
+  const list = next as string[];
+  const { data: row } = await supabase.from("rto_units").select("photos").eq("id", unit).maybeSingle();
+  const before = (row as { photos: string[] } | null)?.photos ?? [];
+  const { error } = await supabase.rpc("rto_unit_set_photos", { p_unit: unit, p_photos: list });
+  if (error) return { error: dbMessage(error.message, "Foto belum tersimpan. Coba lagi.") };
+  const removed = before.filter((p) => !list.includes(p));
+  if (removed.length) await supabase.storage.from("rto-units").remove(removed);
+  revalidatePath("/portal/dashboard");
+  refreshListing();
+  return {};
+}
+
+export async function setUnitDescription(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase, user } = await getPortalSession();
+  if (!user) return { error: "Sesi berakhir. Silakan masuk lagi." };
+  const unit = text(fd, "id", 40);
+  if (!UUID.test(unit)) return { error: "Unit tidak dikenal." };
+  const { error } = await supabase.rpc("rto_unit_set_description", { p_unit: unit, p_text: text(fd, "description", 1500) });
+  if (error) return { error: dbMessage(error.message, "Deskripsi belum tersimpan.") };
+  refreshListing();
+  return done("Deskripsi tersimpan.");
+}
+
+const MAPS_HOSTS = ["maps.app.goo.gl", "goo.gl", "google.com", "www.google.com", "maps.google.com", "www.google.co.id", "google.co.id"];
+
+/** Ambil koordinat dari link Google Maps atau teks "lat, lng". Link pendek diikuti maksimal 3 kali, hanya ke domain Google. */
+async function parseLocation(input: string): Promise<[number, number] | null> {
+  const fromText = (s: string): [number, number] | null => {
+    let t = s.replace(/\+/g, " ");
+    try {
+      t = decodeURIComponent(t);
+    } catch {
+      // biarkan apa adanya
+    }
+    const pin = t.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (pin) return [Number(pin[1]), Number(pin[2])];
+    const at = t.match(/@(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+    if (at) return [Number(at[1]), Number(at[2])];
+    const plain = t.match(/(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{2,3}\.\d{3,})/);
+    if (plain) return [Number(plain[1]), Number(plain[2])];
+    return null;
+  };
+  let current = input.trim();
+  for (let hop = 0; hop < 4; hop++) {
+    const found = fromText(current);
+    if (found) return found;
+    let url: URL;
+    try {
+      url = new URL(current);
+    } catch {
+      return null;
+    }
+    if (url.protocol !== "https:" || !MAPS_HOSTS.includes(url.hostname)) return null;
+    const res = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(5_000) }).catch(() => null);
+    const location = res?.headers.get("location");
+    if (!location) return null;
+    current = new URL(location, url).toString();
+  }
+  return null;
+}
+
+export async function setUnitLocation(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase } = await requireTeam();
+  const unit = text(fd, "id", 40);
+  const raw = text(fd, "location", 600);
+  if (!UUID.test(unit)) return { error: "Unit tidak dikenal." };
+  if (!raw) return { error: "Tempel link Google Maps atau koordinat." };
+  const point = await parseLocation(raw);
+  if (!point) return { error: "Koordinat tidak terbaca. Salin link dari Google Maps, atau tulis seperti -0.9471, 100.4172." };
+  const [lat, lng] = point;
+  if (!(lat > -11.5 && lat < 6.5 && lng > 94.5 && lng < 141.5)) return { error: "Titik berada di luar Indonesia." };
+  // Geser acak 120 sampai 300 m supaya peta publik hanya menunjukkan area; yang disimpan hanya titik hasil geseran
+  const d = 120 + Math.random() * 180;
+  const angle = Math.random() * 2 * Math.PI;
+  const approxLat = Number((lat + (d * Math.cos(angle)) / 111_320).toFixed(5));
+  const approxLng = Number((lng + (d * Math.sin(angle)) / (111_320 * Math.cos((lat * Math.PI) / 180))).toFixed(5));
+  const { data, error } = await supabase
+    .from("rto_units")
+    .update({ approx_lat: approxLat, approx_lng: approxLng, updated_at: new Date().toISOString() })
+    .eq("id", unit)
+    .select("id");
+  if (error || !data?.length) return { error: "Titik peta belum tersimpan." };
+  refreshListing();
+  return done("Titik peta tersimpan (sudah digeser, bukan lokasi persis).");
 }
 
 // ---------------- Tim barumahID ----------------
@@ -307,6 +458,7 @@ export async function setUnitStatus(fd: FormData) {
   const { data, error } = await supabase.from("rto_units").update({ status, updated_at: new Date().toISOString() }).eq("id", id).select("id");
   if (error || !data?.length) fail("Status unit gagal disimpan");
   revalidatePath("/portal/dashboard");
+  refreshListing();
 }
 
 export async function setUnitInspection(_: FormState, fd: FormData): Promise<FormState> {
@@ -319,6 +471,7 @@ export async function setUnitInspection(_: FormState, fd: FormData): Promise<For
     .update({ inspection_result: result, inspection_note: text(fd, "inspection_note", 1000) || null, updated_at: new Date().toISOString() })
     .eq("id", id)
     .select("id");
+  if (error?.code === "23514") return { error: "Unit masih tayang. Ubah statusnya dulu sebelum menandai tidak layak." };
   if (error || !data?.length) return { error: "Hasil inspeksi belum tersimpan." };
   return done("Hasil inspeksi tersimpan.");
 }

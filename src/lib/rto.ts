@@ -50,8 +50,34 @@ export interface RtoUnit {
   status: UnitStatus;
   inspection_result: "layak" | "layak_catatan" | "tidak_layak" | null;
   inspection_note: string | null;
+  /** Dibuat database saat unit dibuat, dipakai di alamat listing /layanan/rto/<slug> */
+  slug: string;
+  description: string | null;
+  /** Path foto di bucket rto-units, urutan pertama = sampul */
+  photos: string[];
+  /** Titik perkiraan (sudah digeser), bukan lokasi persis */
+  approx_lat: number | null;
+  approx_lng: number | null;
   created_at: string;
 }
+
+/** Fasilitas yang bisa dipilih penyedia kos; dipakai juga untuk filter dan ikon di listing publik */
+export const UNIT_FACILITIES = [
+  "WiFi",
+  "AC",
+  "Kamar mandi dalam",
+  "Kamar mandi bersama",
+  "Parkir motor",
+  "Parkir mobil",
+  "Dapur bersama",
+  "Laundry",
+  "Penjaga",
+  "Tempat tidur",
+  "Lemari",
+] as const;
+
+/** Unit yang pemiliknya masih bisa mengubah foto dan deskripsi (setelah tayang hanya tim) */
+export const UNIT_OWNER_EDITABLE: UnitStatus[] = ["diajukan", "inspeksi", "perbaikan"];
 
 export interface RtoTenancy {
   id: string;

@@ -15,6 +15,10 @@ export const RTO_UNLOCK_MONTHS = 6;
 export const RTO_UNLOCK_SCORE = 36;
 export const RTO_PROGRAM_FEE = 0.09;
 
+/** Sewa program RTO = harga sewa mitra + biaya program. Saldo DP dicatat dari sewa program yang lunas. */
+export const programRent = (rent: number) => Math.round(rent * (1 + RTO_PROGRAM_FEE));
+export const dpPerMonth = (rent: number) => Math.round(programRent(rent) * RTO_RATE);
+
 export type RtoCategory = "siap-berdaya" | "siap-bangun" | "siap-beli";
 
 export interface RtoPath {

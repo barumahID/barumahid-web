@@ -1,16 +1,18 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/data/site";
 import { ARTICLES } from "@/data/articles";
-import { LISTINGS } from "@/data/listings";
+import { getAllListings } from "@/lib/rto-listing";
 import { TRANSLATED_PATHS } from "@/i18n/en";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const listings = await getAllListings();
   const base = SITE.url;
   const now = new Date();
   const pages: { path: string; priority: number }[] = [
     { path: "", priority: 1 },
     { path: "/layanan", priority: 0.7 },
     { path: "/layanan/rto", priority: 0.9 },
+    { path: "/layanan/rto/cari", priority: 0.8 },
     { path: "/layanan/rto/panduan", priority: 0.6 },
     { path: "/layanan/contech", priority: 0.9 },
     { path: "/kemitraan", priority: 0.8 },
@@ -19,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/rekrutmen", priority: 0.3 },
     { path: "/kebijakan-privasi", priority: 0.2 },
     { path: "/syarat-ketentuan", priority: 0.2 },
-    ...LISTINGS.map((l) => ({ path: `/layanan/rto/${l.slug}`, priority: 0.8 })),
+    ...listings.map((l) => ({ path: `/layanan/rto/${l.slug}`, priority: 0.7 })),
     ...(ARTICLES.length ? [{ path: "/artikel", priority: 0.6 }] : []),
     ...ARTICLES.map((a) => ({ path: `/artikel/${a.slug}`, priority: 0.5 })),
   ];

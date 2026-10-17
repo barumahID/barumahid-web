@@ -4,7 +4,7 @@ import PageHero from "@/components/ui/PageHero";
 import ButtonLink from "@/components/ui/ButtonLink";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import DPSimulator from "@/components/rto/DPSimulator";
-import ListingGrid from "@/components/rto/ListingGrid";
+import ListingRows from "@/components/rto/listing/ListingRows";
 import LevelJourney from "@/components/rto/LevelJourney";
 import Link from "@/i18n/Link";
 import {
@@ -22,7 +22,7 @@ import {
   RTO_UNLOCK_SCORE,
 } from "@/data/rto";
 import { GFORMS } from "@/data/google-forms";
-import { LISTINGS } from "@/data/listings";
+import { getAllListings } from "@/lib/rto-listing";
 import { waLink } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -58,7 +58,8 @@ const ARROW = (
   </svg>
 );
 
-export default function RtoPage() {
+export default async function RtoPage() {
+  const listings = await getAllListings();
   const maxAspect = Math.max(...READINESS_ASPECTS.map((a) => a.max));
   return (
     <>
@@ -364,7 +365,7 @@ export default function RtoPage() {
             />
           </Reveal>
           <div className="mt-10">
-            <ListingGrid listings={LISTINGS} />
+            <ListingRows listings={listings} />
           </div>
         </div>
       </section>

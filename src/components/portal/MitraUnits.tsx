@@ -1,5 +1,7 @@
-import { UNIT_STATUS_LABEL, UNIT_STATUS_TONE, monthLabel, rupiah, type RtoPayment, type RtoTenancy, type RtoUnit } from "@/lib/rto";
-import { UnitSubmitForm } from "./RtoForms";
+import { UNIT_OWNER_EDITABLE, UNIT_STATUS_LABEL, UNIT_STATUS_TONE, monthLabel, rupiah, type RtoPayment, type RtoTenancy, type RtoUnit } from "@/lib/rto";
+import { unitPhotoUrl } from "@/lib/rto-listing";
+import { DescriptionForm, UnitSubmitForm } from "./RtoForms";
+import UnitPhotos from "./UnitPhotos";
 
 // Bagian unit untuk mitra penyedia kos (arahan user Okt 2026: listing kos dengan penyedia dan penyewa).
 // Penyedia melihat unitnya, status inspeksi, sewa aktif, dan pembayaran di unitnya. Data penyewa (nama, kontak)
@@ -48,6 +50,37 @@ export default function MitraUnits({ units, tenancies, payments }: { units: RtoU
                   <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-bold ${UNIT_STATUS_TONE[u.status]}`}>{UNIT_STATUS_LABEL[u.status]}</span>
                 </div>
                 {u.inspection_note && <p className="text-[12.5px] text-brand-gray md:col-span-12">Catatan inspeksi: {u.inspection_note}</p>}
+                <details className="md:col-span-12" open={UNIT_OWNER_EDITABLE.includes(u.status) && u.photos.length === 0}>
+                  <summary className="cursor-pointer text-[12.5px] font-bold text-brand-dark">
+                    Foto dan deskripsi untuk website ({u.photos.length} foto)
+                    {(u.status === "tayang" || u.status === "penuh") && (
+                      <>
+                        {" · "}
+                        <a href={`/layanan/rto/${u.slug}`} target="_blank" rel="noopener" className="underline underline-offset-2">
+                          Lihat di website
+                        </a>
+                      </>
+                    )}
+                  </summary>
+                  <div className="mt-3 grid gap-4 lg:grid-cols-2">
+                    <UnitPhotos
+                      unitId={u.id}
+                      editable={UNIT_OWNER_EDITABLE.includes(u.status)}
+                      photos={u.photos.flatMap((p) => {
+                        const url = unitPhotoUrl(p);
+                        return url ? [{ path: p, url }] : [];
+                      })}
+                    />
+                    {UNIT_OWNER_EDITABLE.includes(u.status) ? (
+                      <DescriptionForm unit={u} />
+                    ) : (
+                      <div className="text-[13px] text-brand-gray">
+                        <p className="whitespace-pre-line text-brand-dark">{u.description || "Belum ada deskripsi."}</p>
+                        <p className="mt-2 text-[12px]">Unit sudah diperiksa. Untuk mengubah foto atau deskripsi, hubungi tim barumahID.</p>
+                      </div>
+                    )}
+                  </div>
+                </details>
               </li>
             ))}
           </ul>

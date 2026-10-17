@@ -10,11 +10,13 @@ import {
   recordPayment,
   reportPayment,
   setTenantPlan,
+  setUnitDescription,
   setUnitInspection,
+  setUnitLocation,
   submitAssessment,
   submitUnit,
 } from "@/app/portal/rto-actions";
-import { ASSESSMENT_QUESTIONS, type RtoTenancy, type RtoTenant, type RtoUnit } from "@/lib/rto";
+import { ASSESSMENT_QUESTIONS, UNIT_FACILITIES, type RtoTenancy, type RtoTenant, type RtoUnit } from "@/lib/rto";
 
 // Form platform RTO di Portal (penyewa, mitra penyedia kos, dan tim). Validasi akhir ada di server action dan database.
 
@@ -141,7 +143,6 @@ export function ApplyRtoForm() {
 
 // ---------------- Mitra penyedia kos ----------------
 
-const FACILITIES = ["WiFi", "AC", "Kamar mandi dalam", "Kamar mandi bersama", "Parkir motor", "Parkir mobil", "Dapur bersama", "Laundry", "Penjaga", "Tempat tidur", "Lemari"];
 
 export function UnitSubmitForm() {
   const [state, action] = useActionState(submitUnit, {});
@@ -190,10 +191,23 @@ export function UnitSubmitForm() {
         </label>
         <textarea id="u-addr" name="address_private" rows={2} maxLength={400} className={input} />
       </div>
+      <div>
+        <label htmlFor="u-desc" className={label}>
+          Deskripsi untuk website <span className="font-normal text-brand-mute">(opsional, bisa diubah sebelum tayang)</span>
+        </label>
+        <textarea
+          id="u-desc"
+          name="description"
+          rows={3}
+          maxLength={1500}
+          placeholder="Contoh: kos putri 2 lantai, 5 menit jalan kaki ke kampus, kamar 3x4 m, listrik token per kamar."
+          className={input}
+        />
+      </div>
       <fieldset>
         <legend className={label}>Fasilitas</legend>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {FACILITIES.map((f) => (
+          {UNIT_FACILITIES.map((f) => (
             <label key={f} className="cursor-pointer rounded-full border border-brand-dark/15 px-3 py-1 text-[12.5px] text-brand-dark has-[:checked]:border-brand-dark has-[:checked]:bg-brand-dark has-[:checked]:text-white">
               <input type="checkbox" name="facilities" value={f} className="sr-only" />
               {f}
@@ -205,7 +219,50 @@ export function UnitSubmitForm() {
         <input type="checkbox" name="rto_ready" className="mt-0.5 h-4 w-4 accent-[#C53B3B]" />
         Bersedia unit ini diikutkan program Rent-to-Own (dibuat addendum terpisah)
       </label>
+      <p className="text-[12px] text-brand-gray">Foto unit diunggah setelah unit tersimpan, lewat daftar Unit Anda di atas.</p>
       <Submit tone="red">Kirim unit untuk diperiksa</Submit>
+    </form>
+  );
+}
+
+/** Deskripsi listing (pemilik sebelum tayang, tim kapan saja) */
+export function DescriptionForm({ unit }: { unit: Pick<RtoUnit, "id" | "description"> }) {
+  const [state, action] = useActionState(setUnitDescription, {});
+  return (
+    <form action={action} className="space-y-2">
+      <Notice state={state} />
+      <input type="hidden" name="id" value={unit.id} />
+      <textarea
+        name="description"
+        rows={4}
+        maxLength={1500}
+        defaultValue={unit.description ?? ""}
+        aria-label="Deskripsi unit"
+        placeholder="Ceritakan unitnya: ukuran kamar, lantai, aturan, jarak ke kampus atau kantor terdekat."
+        className={input}
+      />
+      <Submit>Simpan deskripsi</Submit>
+    </form>
+  );
+}
+
+/** Titik peta perkiraan (tim): tempel link Google Maps atau koordinat; server menggeser titik sebelum disimpan */
+export function LocationForm({ unit }: { unit: Pick<RtoUnit, "id" | "approx_lat" | "approx_lng"> }) {
+  const [state, action] = useActionState(setUnitLocation, {});
+  const has = unit.approx_lat !== null && unit.approx_lng !== null;
+  return (
+    <form action={action} className="space-y-2">
+      <Notice state={state} />
+      <input type="hidden" name="id" value={unit.id} />
+      <label className={label}>
+        Link Google Maps atau koordinat
+        <input name="location" placeholder="https://maps.app.goo.gl/... atau -0.9471, 100.4172" className={input} />
+      </label>
+      <p className="text-[12px] text-brand-gray">
+        {has ? `Titik perkiraan tersimpan (${unit.approx_lat}, ${unit.approx_lng}). ` : ""}
+        Yang disimpan hanya titik yang sudah digeser sekitar 250 m. Peta di website menampilkan area, bukan alamat.
+      </p>
+      <Submit>Simpan titik peta</Submit>
     </form>
   );
 }
