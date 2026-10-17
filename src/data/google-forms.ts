@@ -54,7 +54,7 @@ export function f01Prefill(v: { kota?: string; layanan?: string[]; jenisBangunan
   add(F01_ENTRY.jenisBangunan, v.jenisBangunan);
   add(F01_ENTRY.luas, v.luas);
   add(F01_ENTRY.budget, v.budget);
-  add(F01_ENTRY.detail, v.detail?.slice(0, 1800));
+  add(F01_ENTRY.detail, v.detail?.slice(0, 3000));
   return `${GFORMS.F01}?${q.join("&")}`;
 }
 

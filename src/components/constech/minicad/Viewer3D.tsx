@@ -721,6 +721,12 @@ export default function Viewer3D({
     renderer.domElement.style.display = "block";
     renderer.domElement.style.touchAction = "pan-y";
     el.appendChild(renderer.domElement);
+    // Konteks WebGL bisa hilang (HP di latar belakang, GPU reset): pindah ke 3D cadangan (canvas 2D)
+    const lost = (e: Event) => {
+      e.preventDefault();
+      onError?.();
+    };
+    renderer.domElement.addEventListener("webglcontextlost", lost);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#e7edf0");
@@ -804,7 +810,10 @@ export default function Viewer3D({
       if (st.house) disposeGroup(st.house.root);
       Object.values(st.tex).forEach((t) => t.dispose());
       pmrem.dispose();
+      renderer.domElement.removeEventListener("webglcontextlost", lost);
       renderer.dispose();
+      // Lepas konteks segera; browser HP membatasi jumlah konteks WebGL yang aktif
+      renderer.forceContextLoss();
       renderer.domElement.remove();
       state.current = null;
       if (apiRef) apiRef.current = null;

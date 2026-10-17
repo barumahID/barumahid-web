@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { portalClient, portalConfigured } from "@/lib/supabase/server";
 import { getPortalSession } from "@/lib/portal-session";
 import { FORM_META, answerText, isCategory, isTeam, type FormSubmission, type MitraStatus, type Role, type SubmissionStatus } from "@/lib/portal";
+import { SITE } from "@/data/site";
 
 // Server action Portal barumahID. Semua akses data lewat sesi pengguna, jadi izin ditegakkan RLS di database.
 // Pesan untuk pengguna ditulis formal (portal dipakai mitra dan tim).
@@ -18,11 +19,13 @@ export interface FormState {
 
 const NOT_READY = "Portal belum terhubung ke database. Hubungi admin barumahID.";
 
+/** Alamat situs untuk tautan di email. Hanya domain sendiri, preview Vercel tim, atau localhost; selain itu domain utama. */
 async function origin() {
   const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "").toLowerCase();
+  if (/^localhost(:\d+)?$/.test(host)) return `http://${host}`;
+  if (host === "barumahid.com" || host === "www.barumahid.com" || /^[a-z0-9-]+-barumahids-projects\.vercel\.app$/.test(host)) return `https://${host}`;
+  return SITE.url;
 }
 
 function authMessage(msg: string) {

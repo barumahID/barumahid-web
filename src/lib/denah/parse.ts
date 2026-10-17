@@ -127,7 +127,7 @@ export function decodePlan(code: string): Plan | null {
     const brief = normalizeBrief(raw.b);
     const kinds = ["front", "P", "R", "H", "back"];
     const bands = raw.d.map(([kind, d]) => {
-      if (!kinds.includes(kind) || !(d > 0.3 && d < 40)) throw new Error("band");
+      if (!kinds.includes(kind) || typeof d !== "number" || !(d > 0.3 && d < 40)) throw new Error("band");
       return { id: kind, kind: kind as Plan["bands"][number]["kind"], d: Number(d) };
     });
     const D = bands.reduce((s, b) => s + b.d, 0);
@@ -137,8 +137,8 @@ export function decodePlan(code: string): Plan | null {
       if (bandsCells.length !== bands.length) throw new Error("bands");
       return bandsCells.map((cells, bi) => {
         const row = cells.map(([ti, w]) => {
-          const type = TYPES[ti];
-          if (!type || !(w > 0.05)) throw new Error("cell");
+          const type = Number.isInteger(ti) ? TYPES[ti] : undefined;
+          if (!type || typeof w !== "number" || !(w > 0.05)) throw new Error("cell");
           return { id: `f${fi + 1}-${bands[bi].kind}-u${(n++).toString(36)}`, type, w: Number(w) };
         });
         if (Math.abs(row.reduce((s, c) => s + c.w, 0) - brief.landW) > 0.05) throw new Error("width");

@@ -82,7 +82,7 @@ Semua isi halaman diambil dari sini. Ubah data di sini, bukan di komponen.
   - `LEADS_WEBHOOK_URL`, `LEADS_WEBHOOK_SECRET` (opsional, Apps Script)
   - `TURNSTILE_SECRET_KEY` dan `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (opsional, anti-spam)
   - `NEXT_PUBLIC_FORM_REKRUTMEN` (opsional)
-  - `ANTHROPIC_API_KEY` (opsional): mengaktifkan "Susun denah dari cerita" dengan AI Claude di `POST /api/denah` (model `claude-opus-5-5`, effort rendah, keluaran JSON terstruktur, lalu dirapikan `normalizeBrief`). Tanpa key, miniCAD memakai pembaca kata kunci lokal. Pasang batas biaya bulanan di Anthropic Console.
+  - `ANTHROPIC_API_KEY` (opsional): mengaktifkan "Susun denah dari cerita" dengan AI Claude di `POST /api/denah` (model `claude-opus-5-5`, effort rendah, keluaran JSON terstruktur, lalu dirapikan `normalizeBrief`). Tanpa key, miniCAD memakai pembaca kata kunci lokal. Route hanya menerima permintaan dari halaman situs sendiri (header Origin sama dengan host), dibatasi 6 per IP per 10 menit dan 120 per jam per server. Pasang batas biaya bulanan di Anthropic Console.
 - Supabase project khusus website: **`barumahid-web`**. Jangan pakai project Supabase lain.
 - Log server tidak boleh memuat data pribadi pengisi form.
 - Preview Vercel menulis ke tabel yang sama dengan production. Kalau mengetes form, isi nama dengan "TEST", lalu hapus barisnya dari dashboard.
@@ -130,7 +130,7 @@ Warna segmen: `credit` #2D7A4F, `build` #C25E20, `buy-blue` #1A5C9A. Utility tip
 Font: Montserrat lewat `next/font/google` di `src/app/[lang]/layout.tsx`, jadi default `font-sans`.
 
 ## Catatan teknis
-- Next.js 16.2 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. `three` hanya untuk 3D miniCAD (`Viewer3D`), dimuat dinamis tanpa SSR supaya tidak membebani halaman lain.
+- Next.js 16.4 + React 19 + Tailwind CSS v4 (tidak ada `tailwind.config.js`). Animasi pakai `framer-motion`. `three` hanya untuk 3D miniCAD (`Viewer3D`), dimuat dinamis tanpa SSR supaya tidak membebani halaman lain.
 - Versi Next.js ini punya breaking changes dari data latih model. Cek `node_modules/next/dist/docs/` sebelum pakai API yang tidak familiar.
 - ESLint `react-hooks/set-state-in-effect`: untuk mereset state saat prop atau route berubah, simpan nilai sebelumnya di state lalu bandingkan saat render (contoh di `Navbar.tsx`). Jangan `setState` langsung di `useEffect`.
 - Folder `private/` (di-ignore git): file internal berisi kode rahasia, misalnya `private/barumahid-form-ke-portal.gs` (Apps Script pengirim jawaban Google Form ke Portal, dipasang di akun Google pemilik form). Jangan di-commit.
@@ -143,6 +143,7 @@ Font: Montserrat lewat `next/font/google` di `src/app/[lang]/layout.tsx`, jadi d
 - Repo GitHub ini **publik**: jangan commit ID internal, key, URL dokumen internal, atau detail database ke file mana pun (termasuk CLAUDE.md).
 - Satu tempat yang mengubah kode: Claude Code di laptop. Perubahan dari luar (misalnya sesi Claude di cloud) datang lewat branch dan PR, bukan langsung ke `main`.
 - Cek sebelum commit: `npx tsc --noEmit`, `npm run lint`, `npm run build:local`.
+- Keamanan (audit Okt 2026): `npm audit --omit=dev` harus 0. Next 16.2.x punya celah kritis (RCE di Image Optimization dengan AVIF, situs ini memakai AVIF), jadi minimal 16.3.8; sekarang 16.4.2. Sisa temuan audit hanya di alat lint (dev, tidak ikut ke situs). Tautan di email portal hanya ke domain sendiri, preview Vercel tim, atau localhost (`origin()` di `src/app/portal/actions.ts`). Hak TRUNCATE/REFERENCES/TRIGGER untuk `anon` dan `authenticated` sudah dicabut di database. Kalau preview Vercel gagal dengan `module-not-found` di font montserrat, itu unduhan Google Fonts yang gagal sesaat: bangun ulang saja.
 
 ## Status
 - Revamp fase 0 dan 1 (struktur baru sesuai PRD v1) dikerjakan di branch `revamp/fase-0-1`. Merge ke `main` lewat PR setelah dicek di preview Vercel.
