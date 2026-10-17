@@ -33,6 +33,31 @@ export const GFORMS: Record<FormCode, string> = {
   F19: base("1FAIpQLSdi7T0dL8shXLtg2qGRUCs0Azm9PwnK5wTyuQRaFrDk4oFdSw"),
 };
 
+/**
+ * Isian otomatis (prefill) form F01 Survei Kebutuhan & Konsultasi Awal dari miniCAD. Nomor entry diambil dari
+ * halaman responden form yang publik; teks pilihan harus sama persis dengan opsi di form.
+ */
+const F01_ENTRY = {
+  kota: 1031124058,
+  layanan: 192065285,
+  jenisBangunan: 854335422,
+  luas: 1261525533,
+  budget: 1542228918,
+  detail: 2063825428,
+} as const;
+
+export function f01Prefill(v: { kota?: string; layanan?: string[]; jenisBangunan?: string; luas?: string; budget?: string; detail?: string }) {
+  const q: string[] = ["usp=pp_url"];
+  const add = (id: number, val?: string) => val && q.push(`entry.${id}=${encodeURIComponent(val)}`);
+  add(F01_ENTRY.kota, v.kota);
+  (v.layanan ?? []).forEach((l) => add(F01_ENTRY.layanan, l));
+  add(F01_ENTRY.jenisBangunan, v.jenisBangunan);
+  add(F01_ENTRY.luas, v.luas);
+  add(F01_ENTRY.budget, v.budget);
+  add(F01_ENTRY.detail, v.detail?.slice(0, 3000));
+  return `${GFORMS.F01}?${q.join("&")}`;
+}
+
 export interface FormLink {
   code: FormCode;
   title: string;

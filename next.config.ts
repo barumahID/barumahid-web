@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Jangan umumkan framework di header respons
+  poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
   },

@@ -6,14 +6,14 @@ import ButtonLink from "@/components/ui/ButtonLink";
 import ProjectGlobe, { type GlobeOffice } from "@/components/constech/ProjectGlobe";
 import PricingTerrace from "@/components/constech/PricingTerrace";
 import KaryaStrip from "@/components/constech/KaryaStrip";
-import SketchStudio from "@/components/constech/SketchStudio";
-import LeadForm from "@/components/forms/LeadForm";
+import MiniCadSection from "@/components/constech/minicad/MiniCadSection";
+import SurveyCta from "@/components/constech/minicad/SurveyCta";
 import ClosingCta from "@/components/home/ClosingCta";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
 import { GFORMS } from "@/data/google-forms";
-import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
+import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, PROYEK_NON_RUMAH, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 import { alternates, pageLang } from "@/i18n/server";
 
@@ -219,52 +219,6 @@ export default async function ContechPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Form konsultasi */}
-      <section id="konsultasi" className="bg-brand-dark">
-        <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-28 lg:px-14">
-          <div className="max-w-3xl text-white">
-            <p className="type-micro text-brand-red">{t("Konsultasi gratis")}</p>
-            <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.8rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
-              {t("Ceritakan proyekmu.")}
-            </h2>
-            <p className="mt-5 text-[16px] leading-relaxed text-white/70">
-              {t("Ceritakan rumah yang kamu mau, kami susun jadi denah, tampak, dan visual 3D gratis. Atau gambar sendiri di sketsa bebas. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.")}
-            </p>
-          </div>
-          <div className="mt-10 grid gap-6 lg:grid-cols-12">
-            <div className="flex flex-col lg:col-span-7">
-              <SketchStudio />
-              {/* FAQ singkat supaya kolom kiri tidak kosong. FAQ dan daftar "Setelah kamu kirim" sama-sama menempel
-                  di dasar baris, jadi ujung bawahnya selalu sejajar (info tambahan form dibuka atau tidak). */}
-              <div className="mt-10 lg:mt-auto lg:pt-10">
-                <p className="type-micro text-brand-red">{t("Yang sering ditanyakan")}</p>
-                <div className="mt-3">
-                  <AccordionFAQ items={CONTECH_FAQ.map((q) => ({ question: t(q.question), answer: t(q.answer) }))} compact dark />
-                </div>
-              </div>
-            </div>
-            {/* Form, lalu langkah setelah kirim yang menempel di bawah supaya sejajar dengan akhir FAQ */}
-            <div className="flex flex-col lg:col-span-5">
-              <LeadForm role="konsultasi" tone="card" compact />
-              <div className="mt-10 lg:mt-auto lg:pt-10">
-                <p className="type-micro text-brand-red">{t("Setelah kamu kirim")}</p>
-                <ol className="mt-3 border-t border-white/15">
-                  {SETELAH_KIRIM.map((s, i) => (
-                    <li key={s.title} className="flex gap-4 border-b border-white/15 py-3.5">
-                      <span className="pt-0.5 text-[13px] font-black text-brand-red">{String(i + 1).padStart(2, "0")}</span>
-                      <span>
-                        <span className="block text-[15px] font-semibold leading-snug text-white md:text-[16px]">{t(s.title)}</span>
-                        <span className="mt-1 block text-[13.5px] leading-relaxed text-white/60">{t(s.body)}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Formulir klien E2E: tiga tahap, diisi langsung oleh klien */}
       <section id="formulir-klien" className="scroll-mt-20 bg-brand-cream">
         <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
@@ -301,6 +255,65 @@ export default async function ContechPage({ params }: Props) {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      {/* Ceritakan proyekmu: miniCAD (denah, tampak, 3D, estimasi biaya dan durasi), lalu kirim lewat form F01 */}
+      <section id="konsultasi" className="scroll-mt-20 bg-brand-dark">
+        <div className="mx-auto max-w-[1400px] px-4 py-20 md:px-8 md:py-24 lg:px-10">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="text-white lg:col-span-7">
+              <p className="type-micro text-brand-red">{t("Konsultasi gratis")}</p>
+              <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.8rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
+                {t("Ceritakan proyekmu.")}
+              </h2>
+              <p className="mt-5 text-[16px] leading-relaxed text-white/70">
+                {t("Ceritakan rumah yang kamu mau, atau masukkan target budget. Kami susun denah, tampak, visual 3D, estimasi biaya, dan durasi pengerjaannya secara gratis. Lalu kirim lewat Survei Kebutuhan & Konsultasi Awal, isiannya sudah terisi dari denahmu.")}
+              </p>
+            </div>
+            {/* Proyek selain rumah: langsung lewat form F01 */}
+            <aside className="rounded-2xl border border-white/15 bg-white/[0.05] p-5 text-white md:p-6 lg:col-span-5">
+              <p className="type-micro text-brand-red">{t(PROYEK_NON_RUMAH.label)}</p>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-white/75">{t(PROYEK_NON_RUMAH.body)}</p>
+              <a
+                href={GFORMS.F01}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[14px] font-bold text-brand-dark transition-colors hover:bg-brand-cream"
+              >
+                {t(PROYEK_NON_RUMAH.cta)} <span aria-hidden="true">↗</span>
+              </a>
+            </aside>
+          </div>
+          <div className="mt-10">
+            <MiniCadSection />
+          </div>
+          <div className="mt-12 grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <p className="type-micro text-brand-red">{t("Yang sering ditanyakan")}</p>
+              <div className="mt-3">
+                <AccordionFAQ items={CONTECH_FAQ.map((q) => ({ question: t(q.question), answer: t(q.answer) }))} compact dark />
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <p className="type-micro text-brand-red">{t("Kirim ke tim kami")}</p>
+              <div className="mt-3">
+                <SurveyCta />
+              </div>
+              <p className="mt-6 type-micro text-brand-red">{t("Setelah kamu kirim")}</p>
+              <ol className="mt-3 border-t border-white/15">
+                {SETELAH_KIRIM.map((s, i) => (
+                  <li key={s.title} className="flex gap-4 border-b border-white/15 py-3.5">
+                    <span className="pt-0.5 text-[13px] font-black text-brand-red">{String(i + 1).padStart(2, "0")}</span>
+                    <span>
+                      <span className="block text-[15px] font-semibold leading-snug text-white md:text-[16px]">{t(s.title)}</span>
+                      <span className="mt-1 block text-[13.5px] leading-relaxed text-white/60">{t(s.body)}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
         </div>
       </section>
 

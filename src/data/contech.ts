@@ -126,6 +126,14 @@ export const CONTECH_FAQ = [
 
 // Daftar "Setelah kamu kirim" di bawah form konsultasi (arahan user: sejajar dengan FAQ di sebelahnya).
 // Isinya dari pesan sukses form konsultasi dan alur kerja BUILD_STEPS, tanpa janji baru.
+// Catatan di "Ceritakan proyekmu" untuk proyek selain rumah (arahan user Okt 2026): miniCAD khusus rumah tinggal,
+// proyek lain langsung cerita lewat form F01 (tanpa isian otomatis).
+export const PROYEK_NON_RUMAH = {
+  label: "Proyekmu bukan rumah?",
+  body: "miniCAD di bawah khusus rumah tinggal. Untuk ruko, kantor, gudang, sekolah, shelter, atau bangunan lain, langsung ceritakan lewat form Survei Kebutuhan & Konsultasi Awal. Tim kami hubungi kamu untuk tanya detailnya.",
+  cta: "Ceritakan lewat form",
+};
+
 export const SETELAH_KIRIM = [
   { title: "Kami balas lewat WhatsApp", body: "Di jam kerja, biasanya di hari yang sama. Kalau ada sketsa, kirim sekalian di chat." },
   BUILD_STEPS[1],
