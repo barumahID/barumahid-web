@@ -64,7 +64,9 @@ export function specRows(plan: Plan, t: Translate) {
 }
 
 export function EstimateBox({ est, budget, t, lang, dark = false }: { est: Estimate; budget: number | null; t: Translate; lang: string; dark?: boolean }) {
-  const within = budget ? est.min <= budget : null;
+  // Masuk: estimasi bawah tidak melewati budget. Sedikit di atas: sampai 20% di atasnya.
+  const status = budget === null ? null : est.min <= budget ? "masuk" : est.min <= budget * 1.2 ? "sedikit" : "lewat";
+  const within = status === "masuk";
   const muted = dark ? "text-white/60" : "text-brand-gray";
   const jt = (n: number) => Math.round(n / 1_000_000);
   return (
@@ -80,9 +82,11 @@ export function EstimateBox({ est, budget, t, lang, dark = false }: { est: Estim
       </div>
       {budget !== null && (
         <p className={`mt-2.5 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold ${within ? "bg-[#2D7A4F]/12 text-[#2D7A4F]" : "bg-[#C25E20]/12 text-[#C25E20]"}`}>
-          {within
+          {status === "masuk"
             ? t("Masuk target budget {b}.", { b: rupiahSingkat(budget, lang) })
-            : t("Sedikit di atas target budget {b}. Coba kurangi luas atau jumlah ruang.", { b: rupiahSingkat(budget, lang) })}
+            : status === "sedikit"
+              ? t("Sedikit di atas target budget {b}. Coba kurangi luas atau jumlah ruang.", { b: rupiahSingkat(budget, lang) })
+              : t("Di atas target budget {b}. Kurangi jumlah ruang atau lantai, atau sesuaikan budgetnya.", { b: rupiahSingkat(budget, lang) })}
         </p>
       )}
     </div>

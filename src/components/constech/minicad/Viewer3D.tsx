@@ -249,12 +249,16 @@ function buildHouse(plan: Plan, tex: Textures, opts: { roof: boolean; upper: boo
 
   const root = new THREE.Group();
 
-  // Tanah di sekitar lahan
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(Math.max(W, D) * 1.6, 48), color("#e8e3d9", 1));
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -0.01;
-  ground.receiveShadow = true;
-  root.add(ground);
+  // Rumput di sekitar lahan, trotoar dan jalan di depan (seperti suasana perumahan di board)
+  const reach = Math.max(W, D) * 3;
+  const grass = new THREE.Mesh(new THREE.CircleGeometry(reach, 64), textured("grass", reach / 1.5, reach / 1.5, 1));
+  grass.rotation.x = -Math.PI / 2;
+  grass.position.y = -0.02;
+  grass.receiveShadow = true;
+  root.add(grass);
+  root.add(box(-reach, -2.2, W + reach, 0, -0.01, 0.06, textured("paving", (W + 2 * reach) / 2, 1.1, 0.9), false));
+  root.add(box(-reach, -9.2, W + reach, -2.2, -0.01, 0.02, color("#5d6066", 0.95), false));
+  for (let lx = -reach; lx < W + reach; lx += 3) root.add(box(lx, -5.75, lx + 1.6, -5.65, 0.02, 0.03, color("#f2f2ee", 0.8), false));
 
   const furnitureMesh = (it: Item, z0: number, group: THREE.Group) => {
     const add = (m: THREE.Mesh) => group.add(m);
@@ -345,23 +349,44 @@ function buildHouse(plan: Plan, tex: Textures, opts: { roof: boolean; upper: boo
         add(box(x, y, x + w, y + d, z0, z0 + 1.9, woodDark));
         break;
       case "car": {
-        const body = color(tone, 0.25, 0.5);
-        const ins = 0.1;
-        add(box(x + ins, y + 0.1, x + w - ins, y + d - 0.1, z0 + 0.25, z0 + 0.85, body));
-        add(box(x + 0.25, y + d * 0.28, x + w - 0.25, y + d * 0.72, z0 + 0.85, z0 + 1.4, color("#2a3640", 0.08, 0.6)));
-        const wheel = color("#1c1c1c", 0.8);
-        [
-          [x + 0.05, y + 0.6],
-          [x + w - 0.25, y + 0.6],
-          [x + 0.05, y + d - 1.0],
-          [x + w - 0.25, y + d - 1.0],
-        ].forEach(([wx, wy]) => {
-          const m = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.33, 0.22, 20), wheel);
-          m.rotation.z = Math.PI / 2;
-          m.position.set(wx + 0.1 - W / 2, z0 + 0.33, D / 2 - (wy + 0.2));
+        const body = color(tone, 0.22, 0.55);
+        const L = d;
+        const k = L / 4.3;
+        const prof = (pts: number[][]) => {
+          const sh = new THREE.Shape();
+          pts.forEach(([u, v], i) => (i ? sh.lineTo(u * k, v) : sh.moveTo(u * k, v)));
+          sh.closePath();
+          return sh;
+        };
+        const wd = w - 0.12;
+        const ext = (sh: THREE.Shape, depth: number, mat: THREE.Material, dx: number) => {
+          const g = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 2, steps: 1 });
+          const m = new THREE.Mesh(g, mat);
+          m.rotation.y = Math.PI / 2;
+          m.position.set(x + 0.06 + dx - W / 2, z0, D / 2 - y);
           m.castShadow = true;
+          m.receiveShadow = true;
           add(m);
-        });
+        };
+        // Bodi: kap depan, kabin, bagasi
+        ext(prof([[0, 0.32], [0, 0.7], [0.12, 0.86], [0.95, 0.95], [1.5, 1.36], [2.95, 1.4], [3.6, 1.0], [4.3, 0.9], [4.3, 0.32]]), wd, body, 0);
+        // Kaca (sedikit lebih lebar supaya terlihat dari kedua sisi)
+        ext(prof([[1.02, 0.97], [1.53, 1.31], [2.92, 1.34], [3.5, 1.0]]), wd + 0.03, color("#1f2a33", 0.05, 0.7), -0.015);
+        const wheel = color("#161616", 0.85);
+        const rim = color("#a9adb2", 0.3, 0.8);
+        [0.85 * k, L - 0.95 * k].forEach((u) =>
+          [x + 0.02, x + w - 0.24].forEach((wx) => {
+            const tyre = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.33, 0.22, 24), wheel);
+            tyre.rotation.z = Math.PI / 2;
+            tyre.position.set(wx + 0.11 - W / 2, z0 + 0.33, D / 2 - (y + u));
+            tyre.castShadow = true;
+            add(tyre);
+            const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.23, 16), rim);
+            hub.rotation.z = Math.PI / 2;
+            hub.position.copy(tyre.position);
+            add(hub);
+          }),
+        );
         break;
       }
       case "tree": {
@@ -456,6 +481,19 @@ function buildHouse(plan: Plan, tex: Textures, opts: { roof: boolean; upper: boo
         }
         group.add(box(r.x + 0.05, r.y + r.d - 1, r.x + r.w - 0.05, r.y + r.d - 0.05, base, base + FLOOR_H / 2, stepMat));
       });
+    // Plint gelap di kaki dinding luar (lantai 1)
+    if (f === 0)
+      solidWallPieces(g)
+        .filter((w) => w.ext)
+        .forEach((w) => {
+          const t = WALL_T.ext / 2 + 0.015;
+          const horiz = Math.abs(w.y1 - w.y2) < 1e-6;
+          group.add(
+            horiz
+              ? box(Math.min(w.x1, w.x2) - t, w.y1 - t, Math.max(w.x1, w.x2) + t, w.y1 + t, 0, PEIL + 0.02, color("#6f6a63", 0.9))
+              : box(w.x1 - t, Math.min(w.y1, w.y2), w.x1 + t, Math.max(w.y1, w.y2), 0, PEIL + 0.02, color("#6f6a63", 0.9)),
+          );
+        });
     // Dinding (diskalakan saat animasi "naik")
     solidWallPieces(g).forEach((w) => {
       const t = (w.ext ? WALL_T.ext : WALL_T.int) / 2;
@@ -509,11 +547,21 @@ function buildHouse(plan: Plan, tex: Textures, opts: { roof: boolean; upper: boo
   let cx = 0;
   plan.floors[0][0].forEach((c) => {
     if (c.type === "carport" && !cut) {
-      root.add(box(cx, 0.4, cx + c.w, plan.bands[0].d, 2.9, 3.0, color("#e9e5de", 0.7)));
+      const pc = std("polikarbonat", () => new THREE.MeshStandardMaterial({ color: "#dfe8ec", roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.45 }));
+      root.add(box(cx, 0.4, cx + c.w, plan.bands[0].d, 2.94, 2.98, pc, false));
+      root.add(box(cx, 0.35, cx + c.w, 0.5, 2.85, 3.0, frame));
+      root.add(box(cx, 0.4, cx + 0.1, plan.bands[0].d, 2.88, 2.98, frame));
+      root.add(box(cx + c.w - 0.1, 0.4, cx + c.w, plan.bands[0].d, 2.88, 2.98, frame));
       [cx + 0.1, cx + c.w - 0.2].forEach((px) => root.add(box(px, 0.4, px + 0.1, 0.5, 0, 2.9, frame)));
     }
     cx += c.w;
   });
+
+  // Pohon peneduh di halaman samping kiri dan kanan (tidak menutupi fasad)
+  [
+    [-2.2, D * 0.62, 2.8],
+    [W + 1.9, D * 0.32, 2.3],
+  ].forEach(([tx, ty, s]) => furnitureMesh({ kind: "tree", x: tx, y: ty, w: s, d: s }, 0, root));
 
   let upper: THREE.Group | null = null;
   if (geoms[1] && opts.upper) {
@@ -664,9 +712,9 @@ export default function Viewer3D({
     const mobile = window.matchMedia("(max-width: 640px)").matches;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 0.88;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -675,14 +723,15 @@ export default function Viewer3D({
     el.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#eef0ec");
-    scene.fog = new THREE.Fog("#eef0ec", 40, 110);
+    scene.background = new THREE.Color("#e7edf0");
+    scene.fog = new THREE.Fog("#e7edf0", 32, 95);
+    scene.environmentIntensity = 0.55;
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    const hemi = new THREE.HemisphereLight("#ffffff", "#c9c1b2", 0.55);
+    const hemi = new THREE.HemisphereLight("#f4f8ff", "#b9b09f", 0.42);
     scene.add(hemi);
-    const sun = new THREE.DirectionalLight("#fff3e0", 2.4);
+    const sun = new THREE.DirectionalLight("#fff1dc", 2.2);
     sun.castShadow = true;
     sun.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
     sun.shadow.bias = -0.0004;
@@ -808,12 +857,13 @@ export default function Viewer3D({
       h.roof.position.y = (1 - rf) * 4;
     }
     if (!st.userMoved) {
-      const target = new THREE.Vector3(0, 1.2 * cam, 0);
+      const lift = h.upper ? 1.9 : 0;
+      const target = new THREE.Vector3(0, (1.6 + lift) * cam, span * 0.06 * cam);
       const top = new THREE.Vector3(0, span * 2.25, 0.001);
-      const az = (-38 * Math.PI) / 180;
-      const pol = (58 * Math.PI) / 180;
-      const r = span * 1.55;
-      const end = new THREE.Vector3(r * Math.sin(pol) * Math.sin(az), r * Math.cos(pol) + 1.2, r * Math.sin(pol) * Math.cos(az));
+      const az = (-36 * Math.PI) / 180;
+      const pol = (64 * Math.PI) / 180;
+      const r = span * (h.upper ? 1.95 : 1.75);
+      const end = new THREE.Vector3(r * Math.sin(pol) * Math.sin(az), r * Math.cos(pol) + 1.6 + lift, r * Math.sin(pol) * Math.cos(az) + span * 0.06);
       st.camera.position.copy(top.clone().lerp(end, cam));
       st.controls.target.copy(target);
       st.camera.lookAt(target);

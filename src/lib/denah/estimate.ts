@@ -1,5 +1,5 @@
 import { BIAYA_PER_M2, DURASI } from "@/data/estimasi";
-import { clamp, totalArea } from "./layout";
+import { buildPlan, clamp, totalArea } from "./layout";
 import type { Brief, Plan } from "./types";
 
 // Estimasi biaya dan durasi dari denah, dan kebalikannya: kebutuhan rumah dari target budget.
@@ -41,15 +41,26 @@ export function rupiahSingkat(n: number, lang: string) {
 /**
  * Kebutuhan rumah dari target budget: luas = budget / harga tengah per m², lalu jumlah kamar, kamar mandi,
  * dan lantai disesuaikan dengan luas dan lahan. Lahan, carport, atap, dan ruang tambahan tetap pilihan pengguna.
+ * Beberapa susunan dicoba dan denahnya benar-benar disusun, supaya hasil akhirnya masuk budget
+ * (kamar yang terlalu banyak untuk lahan kecil bisa membuat luas melewati target).
  */
 export function briefFromBudget(budget: number, base: Brief): Brief {
   const mid = (BIAYA_PER_M2.min + BIAYA_PER_M2.max) / 2;
   const area = Math.round(clamp(budget / mid, 21, 600));
-  const front = base.carport ? 5 : 1.5;
-  const footprint = base.landW * Math.max(6, base.landD - front - 1);
-  const floors: 1 | 2 = area > footprint * 0.85 ? 2 : 1;
-  const [bedrooms, bathrooms] = area < 45 ? [2, 1] : area < 80 ? [3, 2] : area < 120 ? [4, 2] : area < 170 ? [4, 3] : [5, 3];
-  return { ...base, floors, bedrooms, bathrooms, targetArea: area };
+  const [idealKt, idealKm] = area < 45 ? [2, 1] : area < 80 ? [3, 2] : area < 120 ? [4, 2] : area < 170 ? [4, 3] : [5, 3];
+  let best: { brief: Brief; score: number; fits: boolean; area: number } | null = null;
+  for (const floors of [1, 2] as const)
+    for (let kt = idealKt; kt >= Math.max(1, idealKt - 2); kt--)
+      for (let km = Math.min(idealKm, kt); km >= 1; km--) {
+        const brief: Brief = { ...base, floors, bedrooms: kt, bathrooms: km, targetArea: area };
+        const built = totalArea(buildPlan(brief));
+        const fits = built * mid <= budget * 1.02;
+        // Utamakan luas yang mendekati target, lalu jumlah kamar; 1 lantai sedikit lebih disukai
+        const score = Math.min(built / area, 1) + 0.08 * kt + 0.03 * km - (floors === 2 ? 0.02 : 0);
+        const better = !best || (fits && !best.fits) || (fits === best.fits && (fits ? score > best.score : built < best.area));
+        if (better) best = { brief, score, fits, area: built };
+      }
+  return best!.brief;
 }
 
 /** Pilihan jawaban Google Form F01 (teks harus sama persis dengan opsi di form) */

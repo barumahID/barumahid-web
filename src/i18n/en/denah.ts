@@ -3,13 +3,6 @@
 
 export const DENAH_EN: Record<string, string> = {
   // Tab dan langkah
-  "Ceritakan rumah yang kamu mau, kami susun jadi denah, tampak, dan visual 3D gratis. Atau gambar sendiri di sketsa bebas. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.":
-    "Tell us about the house you want and we turn it into a floor plan, front elevation, and 3D visual for free. Or draw it yourself in the free sketch. Then fill in the form next to it and we will reply on WhatsApp with questions and a quote.",
-  "Cara menggambar": "How to draw",
-  "Denah otomatis": "Auto floor plan",
-  "Sketsa bebas": "Free sketch",
-  "gambar tangan": "hand drawing",
-  "Langkah miniCAD": "miniCAD steps",
   Cerita: "Story",
   "Denah 2D": "2D plan",
   Tampak: "Elevation",
@@ -18,13 +11,10 @@ export const DENAH_EN: Record<string, string> = {
 
   // 01 Cerita
   "Ceritakan rumah yang kamu mau": "Describe the house you want",
-  "Tulis bebas, nanti kami susun jadi denah, tampak, dan visual 3D. Atau atur angkanya langsung di bawah.":
-    "Write freely and we will turn it into a floor plan, elevation, and 3D visual. Or set the numbers directly below.",
   "Contoh: lahan 8x15, rumah 2 lantai, 4 kamar tidur, 3 kamar mandi, carport 1 mobil, ada mushola dan tempat jemur, atap pelana.":
     "Example: 8x15 lot, 2-storey house, 4 bedrooms, 3 bathrooms, carport for 1 car, a prayer room and a laundry area, gable roof.",
   "Sedang membaca ceritamu...": "Reading your story...",
   "Susun denah dari cerita": "Build a plan from my story",
-  "atau atur langsung": "or set it directly",
   "Lebar lahan (m)": "Lot width (m)",
   "Panjang lahan (m)": "Lot depth (m)",
   "Jumlah lantai": "Storeys",
@@ -51,7 +41,6 @@ export const DENAH_EN: Record<string, string> = {
   Tambah: "Increase",
   "Gambar denah": "Draw floor plan",
   "Gambar ulang denah": "Redraw floor plan",
-  "Menggambar ulang akan mengganti perubahan dinding yang sudah kamu buat.": "Redrawing replaces the wall changes you have made.",
   "Denah disusun AI dari ceritamu.": "AI built this plan from your story.",
   "Disusun dari kata kunci di ceritamu: {list}. Sisanya pakai pengaturan di bawah.": "Built from keywords in your story: {list}. Everything else uses the settings below.",
   "Belum ada ukuran atau jumlah ruang yang terbaca. Denah memakai pengaturan di bawah, silakan ubah angkanya.":
@@ -86,7 +75,6 @@ export const DENAH_EN: Record<string, string> = {
   "Ganti fungsi ruang": "Change room use",
   "Klik ruang untuk ganti fungsinya. Geser garis dinding untuk ubah ukuran. Ctrl + scroll atau dua jari untuk zoom.":
     "Click a room to change its use. Drag a wall line to resize. Ctrl + scroll or two fingers to zoom.",
-  "Lahan {w} × {d} m · {f} lantai · {kt} KT · {km} KM · ± {a} m²": "Lot {w} × {d} m · {f} storey(s) · {kt} bed · {km} bath · ± {a} m²",
   "{ruang} di lantai {lantai} tidak muat di lahan ini. Coba tambah ukuran lahan atau pilih 2 lantai.":
     "{ruang} on floor {lantai} does not fit on this lot. Try a larger lot or 2 storeys.",
   "Lahan cukup pendek, ruang jadi lebih sempit dari ukuran ideal.": "The lot is quite short, so rooms are smaller than ideal.",
@@ -130,7 +118,6 @@ export const DENAH_EN: Record<string, string> = {
   // Unduh, lampiran, ajakan
   Unduh: "Download",
   "Bisa dibuka di AutoCAD": "Opens in AutoCAD",
-  "Lampirkan ke form konsultasi": "Attach to the consultation form",
   "Ini gambar konsep gratis.": "This is a free concept drawing.",
   "Untuk gambar kerja lengkap (denah detail, tampak empat sisi, potongan, detail, dan struktur), pesan paket gambar bersama partner kami, Jururancang.":
     "For full construction drawings (detailed plans, four elevations, sections, details, and structure), order a drawing package with our partner, Jururancang.",
@@ -139,10 +126,68 @@ export const DENAH_EN: Record<string, string> = {
   "Halo admin Jururancang, saya sudah coba denah konsep di website barumahID ({ringkasan}). Saya mau pesan gambar kerja detailnya.":
     "Hello Jururancang admin, I tried the concept floor plan on the barumahID website ({ringkasan}). I would like to order the detailed construction drawings.",
 
-  // Lampiran di form
-  "Denah konsep ikut terkirim": "Concept floor plan attached",
-  "Lepas lampiran denah": "Remove the floor plan attachment",
-  Lepas: "Remove",
-  "Denah konsep (miniCAD)": "Concept floor plan (miniCAD)",
   Pilih: "Select",
+
+  // miniCAD v2: board, estimasi, budget, kirim lewat Survei Kebutuhan
+  "Ceritakan rumah yang kamu mau, atau masukkan target budget. Kami susun denah, tampak, visual 3D, estimasi biaya, dan durasi pengerjaannya secara gratis. Lalu kirim lewat Survei Kebutuhan & Konsultasi Awal, isiannya sudah terisi dari denahmu.":
+    "Tell us about the house you want, or enter a target budget. We put together the floor plan, elevation, 3D visual, cost estimate, and build time for free. Then send it through the Needs Survey & Initial Consultation form, already pre-filled from your plan.",
+  "Rancang rumahmu, lihat hasilnya langsung": "Design your house and see it right away",
+  "Cara mengisi": "How to start",
+  "Atur sendiri": "Set it myself",
+  "Dari budget": "From budget",
+  "Target budget bangun (Rp)": "Target build budget (IDR)",
+  "Luas rumah, kamar, dan lantai langsung disesuaikan. Di luar beli tanah.":
+    "House size, rooms, and storeys adjust automatically. Land purchase not included.",
+  "Budget {b} cukup untuk rumah ± {a} m²: {kt} kamar tidur, {km} kamar mandi, {f} lantai.":
+    "A {b} budget fits a house of ± {a} m²: {kt} bed, {km} bath, {f} storey(s).",
+  Budget: "Budget",
+  "Perisai (limasan)": "Hip",
+  "Tampilan hasil": "Result view",
+  Board: "Board",
+  Buka: "Open",
+  "Contoh awal, ubah sesuai kebutuhanmu": "Starter example, adjust it to your needs",
+  "Konsep rumahmu": "Your house concept",
+  "Rumah {n} lantai · LB {a} m²": "{n}-storey house · {a} m² floor area",
+  "Lahan {w} × {d} m · {kt} KT · {km} KM · Atap {atap}": "Lot {w} × {d} m · {kt} bed · {km} bath · {atap} roof",
+  "3D ISOMETRIK": "3D ISOMETRIC",
+  Spesifikasi: "Specifications",
+  "Luas lahan": "Lot area",
+  "Lt 1": "Fl 1",
+  "Lt 2": "Fl 2",
+  "Spesifikasi acuan": "Reference specification",
+  "Disesuaikan saat survei.": "Adjusted during the site survey.",
+  "Pondasi batu kali dan sloof beton": "Stone foundation and concrete tie beams",
+  "Struktur beton bertulang": "Reinforced concrete structure",
+  "Dinding bata ringan, plester, aci, cat": "Lightweight block walls, plaster, skim coat, paint",
+  "Atap rangka baja ringan, genteng beton": "Light steel roof frame, concrete roof tiles",
+  "Lantai granit 60×60": "60×60 granite floor tiles",
+  "Kusen aluminium": "Aluminium frames",
+  "Plafon gypsum": "Gypsum ceiling",
+  "Gambar kerja detail: Jururancang Engineering Mahaksa": "Detailed drawings: Jururancang Engineering Mahaksa",
+  "Estimasi biaya & durasi": "Cost & time estimate",
+  "Estimasi biaya bangun": "Estimated build cost",
+  "± Rp{a}–{b} juta/m² × {m} m², termasuk upah, alat, dan biaya lain":
+    "± IDR {a}–{b} million/m² × {m} m², including labour, equipment, and other costs",
+  "Durasi pengerjaan": "Build time",
+  "± {a}–{b} bulan": "± {a}–{b} months",
+  "Target budget": "Target budget",
+  "Masuk target budget {b}.": "Within the {b} target budget.",
+  "Di atas target budget {b}. Kurangi jumlah ruang atau lantai, atau sesuaikan budgetnya.":
+    "Above the {b} target budget. Reduce the rooms or storeys, or adjust the budget.",
+  "Lahan {w} × {d} m membatasi luas rumah. Perbesar lahan kalau mau rumah lebih luas.":
+    "The {w} × {d} m lot limits the house size. Enlarge the lot for a bigger house.",
+  "Budget {b} belum cukup untuk rumah terkecil yang pas di lahan {w} × {d} m (± {a} m², {kt} kamar tidur, {km} kamar mandi).":
+    "A {b} budget is not yet enough for the smallest house that fits a {w} × {d} m lot (± {a} m², {kt} bed, {km} bath).",
+  "Sedikit di atas target budget {b}. Coba kurangi luas atau jumlah ruang.":
+    "Slightly above the {b} target budget. Try a smaller area or fewer rooms.",
+  "Estimasi kasar untuk perencanaan, sudah termasuk upah, alat, dan biaya lain, di luar beli tanah. Angka pasti dari survei lokasi dan RAB.":
+    "A rough estimate for planning, including labour, equipment, and other costs, excluding land. Final figures come from the site survey and the bill of quantities (RAB).",
+  "Kirim ke tim lewat Survei Kebutuhan": "Send to our team via the Needs Survey",
+  "Isian proyek di form sudah terisi dari denah ini.": "The project fields in the form are pre-filled from this plan.",
+  "Buat denahmu dulu supaya isian form ikut terisi.": "Create your plan first so the form gets pre-filled.",
+  "Kirim ke tim kami": "Send to our team",
+  "Sebelum proyek": "Before the project",
+  "Survei Kebutuhan & Konsultasi Awal": "Needs Survey & Initial Consultation",
+  "Isian proyek sudah terisi dari denahmu.": "Project fields are pre-filled from your plan.",
+  "Isi data diri dan kebutuhan proyekmu dalam satu form.": "Fill in your details and project needs in one form.",
 };

@@ -177,7 +177,7 @@ export function furnishRoom(g: FloorGeom, r: RoomRect, floor: number): Item[] {
     case "carport": {
       if (r.w < 2 || r.d < 4.3) break;
       const cars = r.w >= 5 ? 2 : 1;
-      const colors = ["#f2f2f0", "#5b6470"];
+      const colors = ["#56626f", "#d6d8db"];
       for (let i = 0; i < cars; i++) add({ kind: "car", x: r.x + ((i + 0.5) * r.w) / cars - 0.9, y: r.y + (r.d - 4.3) / 2, w: 1.8, d: 4.3, face: "front", tone: colors[i % 2] });
       break;
     }

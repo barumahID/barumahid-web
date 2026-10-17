@@ -344,16 +344,16 @@ export default function MiniCad({ initialCode }: { initialCode?: string | null }
     budgetTimer.current = setTimeout(() => {
       const b = briefFromBudget(value, { ...brief, targetArea: undefined });
       const p = buildPlan(b);
-      drawFrom(b, {
-        kind: "budget",
-        text: t("Budget {b} cukup untuk rumah ± {a} m²: {kt} kamar tidur, {km} kamar mandi, {f} lantai.", {
-          b: rupiahSingkat(value, lang),
-          a: Math.round(p.floors.reduce((s, _, i) => s + floorArea(p, i), 0)),
-          kt: b.bedrooms,
-          km: b.bathrooms,
-          f: b.floors,
-        }),
-      });
+      const a = Math.round(p.floors.reduce((s, _, i) => s + floorArea(p, i), 0));
+      const target = value / ((BIAYA_PER_M2.min + BIAYA_PER_M2.max) / 2);
+      const vars = { b: rupiahSingkat(value, lang), a, kt: b.bedrooms, km: b.bathrooms, f: b.floors, w: b.landW, d: b.landD };
+      // Lahan bisa membatasi: budget kecil di bawah rumah terkecil yang muat, atau budget besar di lahan kecil
+      const text =
+        a > target * 1.2
+          ? t("Budget {b} belum cukup untuk rumah terkecil yang pas di lahan {w} × {d} m (± {a} m², {kt} kamar tidur, {km} kamar mandi).", vars)
+          : t("Budget {b} cukup untuk rumah ± {a} m²: {kt} kamar tidur, {km} kamar mandi, {f} lantai.", vars) +
+            (a < target * 0.85 ? " " + t("Lahan {w} × {d} m membatasi luas rumah. Perbesar lahan kalau mau rumah lebih luas.", vars) : "");
+      drawFrom(b, { kind: "budget", text });
     }, 650);
   };
 
