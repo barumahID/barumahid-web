@@ -186,6 +186,10 @@ export const DENAH_EN: Record<string, string> = {
   "Isian proyek di form sudah terisi dari denah ini.": "The project fields in the form are pre-filled from this plan.",
   "Buat denahmu dulu supaya isian form ikut terisi.": "Create your plan first so the form gets pre-filled.",
   "Kirim ke tim kami": "Send to our team",
+  "Proyekmu bukan rumah?": "Not a house project?",
+  "miniCAD di bawah khusus rumah tinggal. Untuk ruko, kantor, gudang, sekolah, shelter, atau bangunan lain, langsung ceritakan lewat form Survei Kebutuhan & Konsultasi Awal. Tim kami hubungi kamu untuk tanya detailnya.":
+    "The miniCAD below is for houses. For shophouses, offices, warehouses, schools, shelters, or other buildings, tell us straight away through the Needs Survey & Initial Consultation form. Our team will contact you for the details.",
+  "Ceritakan lewat form": "Tell us via the form",
   "Sebelum proyek": "Before the project",
   "Survei Kebutuhan & Konsultasi Awal": "Needs Survey & Initial Consultation",
   "Isian proyek sudah terisi dari denahmu.": "Project fields are pre-filled from your plan.",

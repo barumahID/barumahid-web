@@ -13,7 +13,7 @@ import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
 import { GFORMS } from "@/data/google-forms";
-import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
+import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, PROYEK_NON_RUMAH, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 import { alternates, pageLang } from "@/i18n/server";
 
@@ -261,14 +261,29 @@ export default async function ContechPage({ params }: Props) {
       {/* Ceritakan proyekmu: miniCAD (denah, tampak, 3D, estimasi biaya dan durasi), lalu kirim lewat form F01 */}
       <section id="konsultasi" className="scroll-mt-20 bg-brand-dark">
         <div className="mx-auto max-w-[1400px] px-4 py-20 md:px-8 md:py-24 lg:px-10">
-          <div className="max-w-3xl text-white">
-            <p className="type-micro text-brand-red">{t("Konsultasi gratis")}</p>
-            <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.8rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
-              {t("Ceritakan proyekmu.")}
-            </h2>
-            <p className="mt-5 text-[16px] leading-relaxed text-white/70">
-              {t("Ceritakan rumah yang kamu mau, atau masukkan target budget. Kami susun denah, tampak, visual 3D, estimasi biaya, dan durasi pengerjaannya secara gratis. Lalu kirim lewat Survei Kebutuhan & Konsultasi Awal, isiannya sudah terisi dari denahmu.")}
-            </p>
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="text-white lg:col-span-7">
+              <p className="type-micro text-brand-red">{t("Konsultasi gratis")}</p>
+              <h2 className="mt-5 text-[clamp(1.9rem,4vw,2.8rem)] font-extrabold leading-[1.06] tracking-[-0.02em]">
+                {t("Ceritakan proyekmu.")}
+              </h2>
+              <p className="mt-5 text-[16px] leading-relaxed text-white/70">
+                {t("Ceritakan rumah yang kamu mau, atau masukkan target budget. Kami susun denah, tampak, visual 3D, estimasi biaya, dan durasi pengerjaannya secara gratis. Lalu kirim lewat Survei Kebutuhan & Konsultasi Awal, isiannya sudah terisi dari denahmu.")}
+              </p>
+            </div>
+            {/* Proyek selain rumah: langsung lewat form F01 */}
+            <aside className="rounded-2xl border border-white/15 bg-white/[0.05] p-5 text-white md:p-6 lg:col-span-5">
+              <p className="type-micro text-brand-red">{t(PROYEK_NON_RUMAH.label)}</p>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-white/75">{t(PROYEK_NON_RUMAH.body)}</p>
+              <a
+                href={GFORMS.F01}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[14px] font-bold text-brand-dark transition-colors hover:bg-brand-cream"
+              >
+                {t(PROYEK_NON_RUMAH.cta)} <span aria-hidden="true">↗</span>
+              </a>
+            </aside>
           </div>
           <div className="mt-10">
             <MiniCadSection />
