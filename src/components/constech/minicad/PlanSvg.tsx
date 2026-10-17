@@ -1,12 +1,14 @@
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import { furnishFloor, type Item } from "@/lib/denah/furniture";
 import { floorGeometry, solidWallPieces, WALL_T, type FloorGeom, type Opening, type RoomRect } from "@/lib/denah/geometry";
 import { floorArea } from "@/lib/denah/layout";
-import { ROOM_META, isOpen, type Plan } from "@/lib/denah/types";
+import { ROOM_META, isOpen, type Plan, type RoomType } from "@/lib/denah/types";
 import { FONT, INK, RED, S, THIN, fmt, tanggal, type Layers, type Translate } from "./draw";
 
-// Denah konsep satu lantai sebagai SVG bergaya gambar CAD: dinding tebal, pintu dengan ayunan, jendela tiga garis,
-// tangga, perabot sederhana, ukuran, dan kop gambar. Elemen bantu edit (pegangan dinding, sorotan) diberi
-// data-ui supaya dibuang saat diekspor.
+// Denah konsep satu lantai bergaya gambar presentasi (acuan board barumahID "Seri Mahaksa" dan "Adaptive Hive"):
+// lantai bertekstur (kayu, keramik, paving, rumput), perabot berwarna, mobil tampak atas, pohon, bayangan lembut
+// di dinding, plus garis CAD (pintu berayun, jendela, ukuran, kop gambar). Elemen bantu edit diberi data-ui
+// supaya dibuang saat diekspor.
 
 export type Handle = { kind: "v"; band: number; index: number } | { kind: "h"; band: number };
 
@@ -19,7 +21,29 @@ export function planSize(plan: Plan) {
   };
 }
 
-const FURN = "#8d8a85";
+const WALL = "#26292c";
+const LINE = "#6f6a63";
+
+/** Pola lantai per jenis ruang */
+const FLOOR_PATTERN: Partial<Record<RoomType, string>> = {
+  kamar: "kayu",
+  kamar_utama: "kayu",
+  keluarga: "kayu",
+  santai: "kayu",
+  tamu_keluarga: "kayu",
+  tamu: "kayu",
+  kerja: "kayu",
+  mushola: "kayu",
+  balkon: "kayu",
+  tangga: "keramik",
+  dapur: "keramik",
+  gudang: "keramik",
+  km: "km",
+  carport: "paving",
+  teras: "paving",
+  jemur: "paving",
+  taman: "rumput",
+};
 
 export default function PlanSvg({
   plan,
@@ -49,8 +73,7 @@ export default function PlanSvg({
   idPrefix?: string;
   className?: string;
 }) {
-  const rumput = `${idPrefix}-rumput`;
-  const dak = `${idPrefix}-dak`;
+  const id = (n: string) => `${idPrefix}-${n}`;
   const W = plan.brief.landW;
   const D = plan.brief.landD;
   const g = floorGeometry(plan, floor);
@@ -59,9 +82,8 @@ export default function PlanSvg({
   const Y = (y: number) => PLAN_M.T + (D - y) * S;
   /** Persegi dalam koordinat denah (x, y = sudut depan kiri) */
   const box = (x: number, y: number, w: number, d: number) => ({ x: X(x), y: Y(y + d), width: w * S, height: d * S });
-
   const rooms = g.rooms;
-  const doorsOf = (r: RoomRect) => g.openings.filter((o) => o.room === r.id && o.kind !== "window");
+  const items = layers.furniture ? furnishFloor(g) : [];
 
   return (
     <svg
@@ -74,47 +96,73 @@ export default function PlanSvg({
       className={className}
       style={{ background: "#ffffff" }}
     >
+      <defs>
+        <pattern id={id("kayu")} width="120" height="40" patternUnits="userSpaceOnUse">
+          <rect width="120" height="20" fill="#dcc19c" />
+          <rect y="20" width="120" height="20" fill="#d4b68e" />
+          <path d="M0 20H120M0 40H120M70 0V20M20 20V40M110 20V40" stroke="#b8956a" strokeWidth="1.1" />
+          <path d="M8 7H52M80 13H112M30 28H64M90 33H104" stroke="#c8a77d" strokeWidth="0.8" />
+        </pattern>
+        <pattern id={id("keramik")} width="60" height="60" patternUnits="userSpaceOnUse">
+          <rect width="60" height="60" fill="#efebe4" />
+          <path d="M0 0H60V60" fill="none" stroke="#d3cdc2" strokeWidth="1.4" />
+        </pattern>
+        <pattern id={id("km")} width="30" height="30" patternUnits="userSpaceOnUse">
+          <rect width="30" height="30" fill="#e2eaee" />
+          <path d="M0 0H30V30" fill="none" stroke="#c3d0d6" strokeWidth="1.1" />
+        </pattern>
+        <pattern id={id("paving")} width="40" height="40" patternUnits="userSpaceOnUse">
+          <rect width="40" height="40" fill="#d8d3ca" />
+          <path d="M0 0H40M0 20H40M0 0V20M20 20V40" stroke="#c0b9ad" strokeWidth="1.2" />
+        </pattern>
+        <pattern id={id("rumput")} width="28" height="28" patternUnits="userSpaceOnUse">
+          <rect width="28" height="28" fill="#a7c38a" />
+          <path d="M4 20l2-6 2 6M15 9l2-6 2 6M22 24l2-5 2 5" fill="none" stroke="#86a868" strokeWidth="1.2" />
+          <circle cx="11" cy="22" r="1.4" fill="#93b475" />
+        </pattern>
+        <pattern id={id("dak")} width="30" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="30" height="30" fill="#f2f0ec" />
+          <line x1="0" y1="0" x2="0" y2="30" stroke="#dcd7cf" strokeWidth="2" />
+        </pattern>
+        <radialGradient id={id("daun")} cx="40%" cy="38%" r="65%">
+          <stop offset="0%" stopColor="#8fbf63" />
+          <stop offset="70%" stopColor="#5f9142" />
+          <stop offset="100%" stopColor="#4a7834" />
+        </radialGradient>
+        <filter id={id("bayang")} x="-5%" y="-5%" width="110%" height="110%">
+          <feDropShadow dx="4" dy="6" stdDeviation="5" floodColor="#000" floodOpacity="0.22" />
+        </filter>
+        <filter id={id("bayang-kecil")} x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="2" dy="3" stdDeviation="2.5" floodColor="#000" floodOpacity="0.18" />
+        </filter>
+      </defs>
+
       <rect x={0} y={0} width={size.w} height={size.h} fill="#ffffff" />
+
+      {/* Lantai bertekstur */}
+      {rooms.map((r) => {
+        if (r.type === "void") {
+          return floor > 0 && r.kind !== "front" && r.kind !== "back" ? <rect key={r.id} {...box(r.x, r.y, r.w, r.d)} fill={`url(#${id("dak")})`} /> : null;
+        }
+        const pat = FLOOR_PATTERN[r.type];
+        const vis = r.type === "balkon" ? { y: r.y + r.d - Math.min(1.2, r.d), d: Math.min(1.2, r.d) } : { y: r.y, d: r.d };
+        return <rect key={r.id} {...box(r.x, vis.y, r.w, vis.d)} fill={pat ? `url(#${id(pat)})` : ROOM_META[r.type].fill} />;
+      })}
 
       {/* Batas lahan */}
       <rect {...box(0, 0, W, D)} fill="none" stroke={THIN} strokeWidth={2} strokeDasharray="28 8 4 8" />
 
-      {/* Isi ruang dan halaman */}
-      {rooms.map((r) => {
-        if (r.type === "void") {
-          return floor > 0 && r.kind !== "front" && r.kind !== "back" ? (
-            <g key={r.id}>
-              <rect {...box(r.x, r.y, r.w, r.d)} fill={`url(#${dak})`} stroke="none" />
-            </g>
-          ) : null;
-        }
-        if (r.type === "balkon") {
-          const d = Math.min(1.2, r.d);
-          return (
-            <g key={r.id}>
-              <rect {...box(r.x, r.y + r.d - d, r.w, d)} fill={ROOM_META.balkon.fill} />
-              <line x1={X(r.x)} y1={Y(r.y + r.d - d) - 4} x2={X(r.x + r.w)} y2={Y(r.y + r.d - d) - 4} stroke={INK} strokeWidth={3} />
-              <line x1={X(r.x)} y1={Y(r.y + r.d - d)} x2={X(r.x + r.w)} y2={Y(r.y + r.d - d)} stroke={INK} strokeWidth={3} />
-              <line x1={X(r.x)} y1={Y(r.y + r.d - d)} x2={X(r.x)} y2={Y(r.y + r.d)} stroke={INK} strokeWidth={3} />
-              <line x1={X(r.x + r.w)} y1={Y(r.y + r.d - d)} x2={X(r.x + r.w)} y2={Y(r.y + r.d)} stroke={INK} strokeWidth={3} />
-            </g>
-          );
-        }
-        return <rect key={r.id} {...box(r.x, r.y, r.w, r.d)} fill={r.type === "taman" ? `url(#${rumput})` : ROOM_META[r.type].fill} />;
-      })}
-
-      <defs>
-        <pattern id={rumput} width="24" height="24" patternUnits="userSpaceOnUse">
-          <rect width="24" height="24" fill={ROOM_META.taman.fill} />
-          <path d="M4 18l3-6 3 6M14 10l3-6 3 6" fill="none" stroke="#9fb48e" strokeWidth="1.2" />
-        </pattern>
-        <pattern id={dak} width="30" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="30" stroke="#d8d4cd" strokeWidth="2" />
-        </pattern>
-      </defs>
-
-      {/* Perabot */}
-      {layers.furniture && rooms.map((r) => <g key={`f-${r.id}`}>{furniture(r, doorsOf(r), box, X, Y, floor, dak)}</g>)}
+      {/* Perabot, mobil, pohon */}
+      <g filter={`url(#${id("bayang-kecil")})`}>{items.map((it, i) => <g key={i}>{drawItem(it, box, X, Y, id)}</g>)}</g>
+      {/* Tali jemuran */}
+      {layers.furniture &&
+        rooms
+          .filter((r) => r.type === "jemur" && r.w >= 1.4)
+          .map((r) =>
+            [0.35, 0.65].map((k) => (
+              <line key={`${r.id}${k}`} x1={X(r.x + 0.25)} y1={Y(r.y + r.d * k)} x2={X(r.x + r.w - 0.25)} y2={Y(r.y + r.d * k)} stroke={LINE} strokeWidth={1.4} strokeDasharray="10 6" />
+            )),
+          )}
 
       {/* Tangga */}
       {rooms
@@ -123,41 +171,61 @@ export default function PlanSvg({
           <g key={`s-${r.id}`}>{stairs(r, X, Y, floor === 0 ? t("NAIK") : t("TURUN"))}</g>
         ))}
 
-      {/* Dinding padat */}
-      {solidWallPieces(g).map((w, i) => (
-        <line
-          key={`w${i}`}
-          x1={X(w.x1)}
-          y1={Y(w.y1)}
-          x2={X(w.x2)}
-          y2={Y(w.y2)}
-          stroke={INK}
-          strokeWidth={(w.ext ? WALL_T.ext : WALL_T.int) * S}
-          strokeLinecap="square"
-        />
-      ))}
+      {/* Balkon: railing */}
+      {rooms
+        .filter((r) => r.type === "balkon")
+        .map((r) => {
+          const d = Math.min(1.2, r.d);
+          const y0 = r.y + r.d - d;
+          return (
+            <path
+              key={`bk-${r.id}`}
+              d={`M${X(r.x)} ${Y(r.y + r.d)}V${Y(y0)}H${X(r.x + r.w)}V${Y(r.y + r.d)}`}
+              fill="none"
+              stroke={WALL}
+              strokeWidth={4}
+            />
+          );
+        })}
+
+      {/* Dinding padat dengan bayangan lembut */}
+      <g filter={`url(#${id("bayang")})`}>
+        {solidWallPieces(g).map((w, i) => (
+          <line
+            key={`w${i}`}
+            x1={X(w.x1)}
+            y1={Y(w.y1)}
+            x2={X(w.x2)}
+            y2={Y(w.y2)}
+            stroke={WALL}
+            strokeWidth={(w.ext ? WALL_T.ext : WALL_T.int) * S}
+            strokeLinecap="square"
+          />
+        ))}
+      </g>
 
       {/* Pintu dan jendela */}
       {g.openings.map((o, i) => (
         <g key={`o${i}`}>{openingShape(o, X, Y)}</g>
       ))}
 
-      {/* Label ruang */}
+      {/* Label ruang (huruf dengan pinggiran putih supaya terbaca di atas tekstur) */}
       {layers.labels &&
         rooms.map((r) => {
           if (r.type === "void" || r.type === "tangga") return null;
           const meta = ROOM_META[r.type];
           const vis = r.type === "balkon" ? { y: r.y + r.d - Math.min(1.2, r.d), d: Math.min(1.2, r.d) } : { y: r.y, d: r.d };
-          const fs = Math.max(11, Math.min(17, (r.w * S) / (t(meta.label).length * 0.62)));
+          const fs = Math.max(11, Math.min(16, (r.w * S) / (t(meta.label).length * 0.64)));
           const cx = X(r.x + r.w / 2);
           const cy = Y(vis.y + vis.d / 2);
+          const halo = { stroke: "#ffffff", strokeWidth: 4, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
           return (
             <g key={`l-${r.id}`} textAnchor="middle" pointerEvents="none">
-              <text x={cx} y={cy - 2} fontSize={fs} fontWeight={700} fill={INK} letterSpacing={0.6}>
+              <text x={cx} y={cy - 2} fontSize={fs} fontWeight={800} fill={INK} letterSpacing={0.6} {...halo}>
                 {t(meta.label).toUpperCase()}
               </text>
               {!isOpen(r.type) || r.type === "carport" || r.type === "teras" ? (
-                <text x={cx} y={cy + fs + 2} fontSize={Math.max(10, fs - 3)} fill={THIN}>
+                <text x={cx} y={cy + fs + 2} fontSize={Math.max(10, fs - 3)} fill="#4d4943" {...halo}>
                   {fmt(r.w)} × {fmt(vis.d)}
                 </text>
               ) : null}
@@ -169,7 +237,7 @@ export default function PlanSvg({
       {selectedId &&
         rooms
           .filter((r) => r.id === selectedId)
-          .map((r) => <rect key="sel" data-ui="1" {...box(r.x, r.y, r.w, r.d)} fill="rgba(197,59,59,0.12)" stroke={RED} strokeWidth={4} strokeDasharray="14 8" pointerEvents="none" />)}
+          .map((r) => <rect key="sel" data-ui="1" {...box(r.x, r.y, r.w, r.d)} fill="rgba(197,59,59,0.14)" stroke={RED} strokeWidth={4} strokeDasharray="14 8" pointerEvents="none" />)}
 
       {/* Ukuran */}
       {layers.dims && dimensions(plan, g, X, Y, floor)}
@@ -188,13 +256,7 @@ export default function PlanSvg({
           {rooms
             .filter((r) => r.type !== "void")
             .map((r) => (
-              <rect
-                key={`hit-${r.id}`}
-                {...box(r.x, r.y, r.w, r.d)}
-                fill="transparent"
-                onPointerDown={(e) => onRoomDown?.(r.id, e)}
-                style={{ cursor: "pointer" }}
-              />
+              <rect key={`hit-${r.id}`} {...box(r.x, r.y, r.w, r.d)} fill="transparent" onPointerDown={(e) => onRoomDown?.(r.id, e)} style={{ cursor: "pointer" }} />
             ))}
           {handles(plan, floor).map((h, i) => {
             const line =
@@ -237,6 +299,189 @@ export function handles(plan: Plan, floor: number): Handle[] {
   return out;
 }
 
+type Box = (x: number, y: number, w: number, d: number) => { x: number; y: number; width: number; height: number };
+
+/** Simbol perabot tampak atas, berwarna seperti gambar presentasi */
+function drawItem(it: Item, box: Box, X: (x: number) => number, Y: (y: number) => number, id: (n: string) => string): ReactNode {
+  const { x, y, w, d } = it;
+  const tone = it.tone ?? "#8aa39b";
+  const edge = { stroke: "#7a7268", strokeWidth: 1.3 } as const;
+  switch (it.kind) {
+    case "bed": {
+      const headBack = it.face === "back";
+      const blanketY = headBack ? y : y + d * 0.38;
+      const py = headBack ? y + d - 0.36 : y + 0.06;
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#9b7a58" rx={4} {...edge} />
+          <rect {...box(x + 0.04, y + 0.04, w - 0.08, d - 0.08)} fill="#fbfaf7" rx={6} />
+          <rect {...box(x + 0.02, blanketY, w - 0.04, d * 0.62)} fill={tone} rx={6} opacity={0.92} />
+          <line x1={X(x + 0.02)} y1={Y(headBack ? blanketY + d * 0.62 : blanketY)} x2={X(x + w - 0.02)} y2={Y(headBack ? blanketY + d * 0.62 : blanketY)} stroke="#ffffff" strokeWidth={3} opacity={0.7} />
+          <rect {...box(x + 0.08, py, w / 2 - 0.12, 0.3)} fill="#ffffff" rx={8} {...edge} />
+          <rect {...box(x + w / 2 + 0.04, py, w / 2 - 0.12, 0.3)} fill="#ffffff" rx={8} {...edge} />
+        </>
+      );
+    }
+    case "nightstand":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#a98460" rx={3} {...edge} />
+          <circle cx={X(x + w / 2)} cy={Y(y + d / 2)} r={8} fill="#f4e7c8" stroke="#c9b48a" />
+        </>
+      );
+    case "wardrobe":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#efe8dd" {...edge} />
+          <line x1={X(x)} y1={Y(y)} x2={X(x + w)} y2={Y(y + d)} stroke="#cbbfae" strokeWidth={1} />
+        </>
+      );
+    case "toilet": {
+      const back = it.face === "back";
+      return (
+        <>
+          <rect {...box(x, back ? y + d - 0.2 : y, w, 0.2)} fill="#ffffff" rx={3} {...edge} />
+          <ellipse cx={X(x + w / 2)} cy={Y(back ? y + d - 0.45 : y + 0.45)} rx={(w / 2) * S * 0.8} ry={0.26 * S} fill="#ffffff" {...edge} />
+        </>
+      );
+    }
+    case "shower":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#cfe0e8" {...edge} />
+          <line x1={X(x)} y1={Y(y)} x2={X(x + w)} y2={Y(y + d)} stroke="#9fb6c2" strokeWidth={1} />
+          <line x1={X(x + w)} y1={Y(y)} x2={X(x)} y2={Y(y + d)} stroke="#9fb6c2" strokeWidth={1} />
+          <circle cx={X(x + w / 2)} cy={Y(y + d / 2)} r={5} fill="#ffffff" stroke="#9fb6c2" />
+        </>
+      );
+    case "sink":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#ffffff" rx={4} {...edge} />
+          <ellipse cx={X(x + w / 2)} cy={Y(y + d / 2)} rx={(w / 2) * S * 0.62} ry={(d / 2) * S * 0.55} fill="#e9eff2" stroke="#9fb6c2" />
+        </>
+      );
+    case "counter":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#f6f3ee" {...edge} />
+          <rect {...box(x + 0.04, y + 0.04, w - 0.08, d - 0.08)} fill="none" stroke="#d8d1c6" />
+          {w > 1.4 && (
+            <>
+              <circle cx={X(x + w - 0.42)} cy={Y(y + d / 2)} r={10} fill="#3b3d40" />
+              <circle cx={X(x + w - 0.82)} cy={Y(y + d / 2)} r={10} fill="#3b3d40" />
+              <rect {...box(x + 0.2, y + 0.12, 0.5, 0.36)} fill="#dfe7ea" rx={6} stroke="#9fb6c2" />
+            </>
+          )}
+        </>
+      );
+    case "fridge":
+      return <rect {...box(x, y, w, d)} fill="#cdd1d6" rx={3} {...edge} />;
+    case "sofa":
+    case "armchair": {
+      const f = it.face ?? "back";
+      const back = f === "left" ? box(x, y, 0.22, d) : f === "right" ? box(x + w - 0.22, y, 0.22, d) : f === "back" ? box(x, y + d - 0.22, w, 0.22) : box(x, y, w, 0.22);
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill={tone} rx={10} {...edge} />
+          <rect {...back} fill="#000" opacity={0.14} rx={8} />
+          {it.kind === "sofa" &&
+            (f === "left" || f === "right"
+              ? [1, 2].map((k) => <line key={k} x1={X(x + 0.22)} y1={Y(y + (d * k) / 3)} x2={X(x + w)} y2={Y(y + (d * k) / 3)} stroke="#ffffff" strokeWidth={1.4} opacity={0.6} />)
+              : [1, 2].map((k) => <line key={k} x1={X(x + (w * k) / 3)} y1={Y(y)} x2={X(x + (w * k) / 3)} y2={Y(y + d)} stroke="#ffffff" strokeWidth={1.4} opacity={0.6} />))}
+        </>
+      );
+    }
+    case "coffee":
+      return <rect {...box(x, y, w, d)} fill="#9b7653" rx={6} {...edge} />;
+    case "rug":
+      return <rect {...box(x, y, w, d)} fill={tone} opacity={0.28} rx={4} stroke={tone} strokeWidth={2} />;
+    case "tv":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#a98460" rx={3} {...edge} />
+          <rect {...box(x + w / 2 - 0.03, y + 0.1, 0.06, d - 0.2)} fill="#1d1f22" />
+        </>
+      );
+    case "dining":
+      return <rect {...box(x, y, w, d)} fill="#a98460" rx={6} {...edge} />;
+    case "chair":
+      return <rect {...box(x, y, w, d)} fill="#c9ab86" rx={5} {...edge} />;
+    case "sajadah":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#8a3a36" rx={3} />
+          <rect {...box(x + 0.06, y + 0.06, w - 0.12, d - 0.12)} fill="none" stroke="#d9b46a" strokeWidth={1.4} />
+        </>
+      );
+    case "desk":
+      return <rect {...box(x, y, w, d)} fill="#efe8dd" {...edge} />;
+    case "shelf":
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill="#b08a62" {...edge} />
+          <line x1={X(x)} y1={Y(y + d / 2)} x2={X(x + w)} y2={Y(y + d / 2)} stroke="#7a5d40" />
+        </>
+      );
+    case "car": {
+      const r = 0.35 * S;
+      return (
+        <>
+          <rect {...box(x, y, w, d)} fill={tone} rx={r} stroke="#55595e" strokeWidth={1.6} />
+          <path
+            d={`M${X(x + 0.2)} ${Y(y + d * 0.66)}L${X(x + w - 0.2)} ${Y(y + d * 0.66)}L${X(x + w - 0.32)} ${Y(y + d * 0.56)}L${X(x + 0.32)} ${Y(y + d * 0.56)}Z`}
+            fill="#2c3943"
+          />
+          <rect {...box(x + 0.3, y + d * 0.33, w - 0.6, d * 0.23)} fill="#ffffff" opacity={0.45} rx={8} />
+          <path d={`M${X(x + 0.26)} ${Y(y + d * 0.24)}L${X(x + w - 0.26)} ${Y(y + d * 0.24)}L${X(x + w - 0.36)} ${Y(y + d * 0.32)}L${X(x + 0.36)} ${Y(y + d * 0.32)}Z`} fill="#2c3943" />
+          <rect {...box(x - 0.08, y + d * 0.64, 0.1, 0.16)} fill={tone} stroke="#55595e" />
+          <rect {...box(x + w - 0.02, y + d * 0.64, 0.1, 0.16)} fill={tone} stroke="#55595e" />
+        </>
+      );
+    }
+    case "tree": {
+      const cx = X(x + w / 2);
+      const cy = Y(y + d / 2);
+      const rr = (w / 2) * S;
+      return (
+        <>
+          <ellipse cx={cx + rr * 0.25} cy={cy + rr * 0.3} rx={rr} ry={rr * 0.85} fill="#000" opacity={0.12} />
+          {[0, 1, 2, 3, 4, 5].map((k) => {
+            const a = (k / 6) * Math.PI * 2;
+            return <circle key={k} cx={cx + Math.cos(a) * rr * 0.45} cy={cy + Math.sin(a) * rr * 0.45} r={rr * 0.58} fill={`url(#${id("daun")})`} />;
+          })}
+          <circle cx={cx} cy={cy} r={rr * 0.55} fill={`url(#${id("daun")})`} />
+          <circle cx={cx} cy={cy} r={3} fill="#5c4330" />
+        </>
+      );
+    }
+    case "shrub": {
+      const cx = X(x + w / 2);
+      const cy = Y(y + d / 2);
+      const rr = (w / 2) * S * 0.7;
+      return (
+        <>
+          {[0, 1, 2, 3].map((k) => {
+            const a = (k / 4) * Math.PI * 2 + 0.4;
+            return <circle key={k} cx={cx + Math.cos(a) * rr * 0.4} cy={cy + Math.sin(a) * rr * 0.4} r={rr * 0.6} fill="#79a556" />;
+          })}
+        </>
+      );
+    }
+    case "pot":
+      return (
+        <>
+          <circle cx={X(x + w / 2)} cy={Y(y + d / 2)} r={(w / 2) * S} fill="#b5754f" />
+          <circle cx={X(x + w / 2)} cy={Y(y + d / 2)} r={(w / 2) * S * 0.75} fill={`url(#${id("daun")})`} />
+        </>
+      );
+    case "pole":
+      return <circle cx={X(x + w / 2)} cy={Y(y + d / 2)} r={5} fill="#8a8f94" />;
+    default:
+      return null;
+  }
+}
+
 function arcPath(hx: number, hy: number, lx: number, ly: number, ox: number, oy: number, r: number) {
   const cross = (lx - hx) * (oy - hy) - (ly - hy) * (ox - hx);
   return `M${lx} ${ly}A${r} ${r} 0 0 ${cross > 0 ? 1 : 0} ${ox} ${oy}`;
@@ -244,25 +489,26 @@ function arcPath(hx: number, hy: number, lx: number, ly: number, ox: number, oy:
 
 function openingShape(o: Opening, X: (x: number) => number, Y: (y: number) => number): ReactNode {
   const pt = (along: number, off: number) => (o.dir === "h" ? [X(along), Y(o.at + off)] : [X(o.at + off), Y(along)]);
-  if (o.kind === "open") {
-    const [x1, y1] = pt(o.s, 0);
-    const [x2, y2] = pt(o.e, 0);
-    return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={FURN} strokeWidth={1.5} strokeDasharray="6 6" />;
-  }
+  if (o.kind === "open") return null;
   if (o.kind === "window") {
     const t = WALL_T.ext / 2;
+    const [ax, ay] = pt(o.s, -t);
+    const [bx, by] = pt(o.e, t);
     return (
-      <g stroke={INK} strokeWidth={1.6}>
-        {[-t, 0, t].map((off) => {
-          const [x1, y1] = pt(o.s, off);
-          const [x2, y2] = pt(o.e, off);
-          return <line key={off} x1={x1} y1={y1} x2={x2} y2={y2} />;
-        })}
-        {[o.s, o.e].map((a) => {
-          const [x1, y1] = pt(a, -t);
-          const [x2, y2] = pt(a, t);
-          return <line key={a} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={2.5} />;
-        })}
+      <g>
+        <rect x={Math.min(ax, bx)} y={Math.min(ay, by)} width={Math.abs(bx - ax)} height={Math.abs(by - ay)} fill="#dcebf2" />
+        <g stroke={WALL} strokeWidth={1.6}>
+          {[-t, t].map((off) => {
+            const [x1, y1] = pt(o.s, off);
+            const [x2, y2] = pt(o.e, off);
+            return <line key={off} x1={x1} y1={y1} x2={x2} y2={y2} />;
+          })}
+          {(() => {
+            const [x1, y1] = pt(o.s, 0);
+            const [x2, y2] = pt(o.e, 0);
+            return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#7aa3b8" strokeWidth={2} />;
+          })()}
+        </g>
       </g>
     );
   }
@@ -273,8 +519,9 @@ function openingShape(o: Opening, X: (x: number) => number, Y: (y: number) => nu
     const [ox, oy] = pt(hinge + Math.sign(other - hinge) * len, 0);
     return (
       <g key={k}>
-        <line x1={hx} y1={hy} x2={lx} y2={ly} stroke={INK} strokeWidth={3} />
-        <path d={arcPath(hx, hy, lx, ly, ox, oy, len * S)} fill="none" stroke={THIN} strokeWidth={1.4} />
+        <path d={`M${hx} ${hy}L${lx} ${ly}${arcPath(hx, hy, lx, ly, ox, oy, len * S).replace("M", "L")}Z`} fill="#c9a77f" opacity={0.18} />
+        <line x1={hx} y1={hy} x2={lx} y2={ly} stroke="#7a5236" strokeWidth={3.5} />
+        <path d={arcPath(hx, hy, lx, ly, ox, oy, len * S)} fill="none" stroke={LINE} strokeWidth={1.3} strokeDasharray="5 4" />
       </g>
     );
   };
@@ -289,185 +536,21 @@ function stairs(r: RoomRect, X: (x: number) => number, Y: (y: number) => number,
   const y0 = r.y + 0.9;
   const y1 = r.y + r.d - 0.1;
   for (let y = y0; y <= y1 + 1e-6; y += step) {
-    lines.push(<line key={y} x1={X(r.x + 0.08)} y1={Y(y)} x2={X(r.x + r.w - 0.08)} y2={Y(y)} stroke={THIN} strokeWidth={1.4} />);
+    lines.push(<line key={y} x1={X(r.x + 0.08)} y1={Y(y)} x2={X(r.x + r.w - 0.08)} y2={Y(y)} stroke="#a88a66" strokeWidth={1.6} />);
   }
   const arrow = `M${X(r.x + r.w / 4)} ${Y(r.y + 0.6)}L${X(r.x + r.w / 4)} ${Y(r.y + r.d - 0.45)}L${X(r.x + (3 * r.w) / 4)} ${Y(r.y + r.d - 0.45)}L${X(r.x + (3 * r.w) / 4)} ${Y(r.y + 0.9)}`;
   return (
     <>
-      <rect x={X(r.x)} y={Y(r.y + r.d)} width={r.w * S} height={r.d * S} fill={ROOM_META.tangga.fill} />
+      <rect x={X(r.x)} y={Y(r.y + r.d)} width={r.w * S} height={r.d * S} fill="#d9bf9c" />
       {lines}
-      <line x1={X(mid)} y1={Y(y0)} x2={X(mid)} y2={Y(y1)} stroke={THIN} strokeWidth={2} />
+      <line x1={X(mid)} y1={Y(y0)} x2={X(mid)} y2={Y(y1)} stroke="#8a6c4c" strokeWidth={2.4} />
       <path d={arrow} fill="none" stroke={INK} strokeWidth={2} />
       <path d={`M${X(r.x + (3 * r.w) / 4) - 9} ${Y(r.y + 0.9) - 16}L${X(r.x + (3 * r.w) / 4)} ${Y(r.y + 0.9)}L${X(r.x + (3 * r.w) / 4) + 9} ${Y(r.y + 0.9) - 16}`} fill="none" stroke={INK} strokeWidth={2} />
-      <text x={X(mid)} y={Y(r.y + 0.35)} textAnchor="middle" fontSize={14} fontWeight={700} fill={INK} letterSpacing={1}>
+      <text x={X(mid)} y={Y(r.y + 0.35)} textAnchor="middle" fontSize={14} fontWeight={800} fill={INK} letterSpacing={1}>
         {label}
       </text>
     </>
   );
-}
-
-type Box = (x: number, y: number, w: number, d: number) => { x: number; y: number; width: number; height: number };
-
-function furniture(r: RoomRect, doors: Opening[], box: Box, X: (x: number) => number, Y: (y: number) => number, floor: number, dak: string): ReactNode {
-  const p = { fill: "#ffffff", stroke: FURN, strokeWidth: 1.6 } as const;
-  const line = { stroke: FURN, strokeWidth: 1.4 } as const;
-  // Sisi jauh dari pintu: perabot ditempel ke dinding yang tidak berpintu
-  const onWall = (y: number) => doors.filter((o) => o.dir === "h" && Math.abs(o.at - y) < 1e-6);
-  const doorBack = onWall(r.y + r.d).length > 0 && onWall(r.y).length === 0;
-  const farY = (depth: number) => (doorBack ? r.y + 0.05 : r.y + r.d - depth - 0.05);
-  switch (r.type) {
-    case "kamar_utama":
-    case "kamar": {
-      const bw = Math.min(r.type === "kamar_utama" ? 1.6 : 1.2, r.w - 0.6);
-      const bd = Math.min(2, r.d - 0.7);
-      if (bw < 0.8 || bd < 1.4) return null;
-      // Geser kasur menjauhi pintu di dinding yang sama
-      const sameWall = onWall(doorBack ? r.y : r.y + r.d).map((o) => (o.s + o.e) / 2);
-      const center = r.x + r.w / 2;
-      const away = sameWall.length ? (sameWall[0] > center ? -1 : 1) : 0;
-      const bx = Math.min(r.x + r.w - bw - 0.1, Math.max(r.x + 0.1, center - bw / 2 + away * Math.max(0, (r.w - bw) / 2 - 0.1)));
-      const by = farY(bd);
-      const headTop = !doorBack;
-      const py = headTop ? by + bd - 0.38 : by + 0.08;
-      return (
-        <>
-          <rect {...box(bx, by, bw, bd)} {...p} rx={4} />
-          <rect {...box(bx + 0.08, py, bw / 2 - 0.12, 0.3)} {...p} rx={6} />
-          <rect {...box(bx + bw / 2 + 0.04, py, bw / 2 - 0.12, 0.3)} {...p} rx={6} />
-          <line x1={X(bx)} y1={Y(headTop ? by + bd - 0.6 : by + 0.6)} x2={X(bx + bw)} y2={Y(headTop ? by + bd - 0.6 : by + 0.6)} {...line} />
-          {r.w - bw >= 1.3 && <rect {...box(r.x + 0.05, headTop ? r.y + r.d - 0.6 : r.y + 0.05, 0.55, 0.55)} {...p} />}
-        </>
-      );
-    }
-    case "km": {
-      if (r.w < 1 || r.d < 1.4) return null;
-      const ty = farY(0.7);
-      const tx = r.x + 0.15;
-      return (
-        <>
-          <rect {...box(tx, doorBack ? ty : ty + 0.5, 0.42, 0.2)} {...p} rx={3} />
-          <ellipse cx={X(tx + 0.21)} cy={Y(doorBack ? ty + 0.45 : ty + 0.25)} rx={16} ry={22} {...p} />
-          {r.w >= 1.6 && r.d >= 2 && (
-            <>
-              <rect {...box(r.x + r.w - 0.95, doorBack ? r.y + 0.05 : r.y + r.d - 0.95, 0.9, 0.9)} fill="none" stroke={FURN} strokeWidth={1.4} />
-              <circle cx={X(r.x + r.w - 0.5)} cy={Y(doorBack ? r.y + 0.5 : r.y + r.d - 0.5)} r={5} {...p} />
-            </>
-          )}
-        </>
-      );
-    }
-    case "dapur": {
-      const cy = farY(0.6);
-      return (
-        <>
-          <rect {...box(r.x + 0.05, cy, r.w - 0.1, 0.6)} {...p} />
-          <rect {...box(r.x + 0.25, cy + 0.12, 0.5, 0.36)} {...p} rx={6} />
-          {r.w >= 1.8 && (
-            <>
-              <circle cx={X(r.x + r.w - 0.45)} cy={Y(cy + 0.3)} r={11} {...p} />
-              <circle cx={X(r.x + r.w - 0.85)} cy={Y(cy + 0.3)} r={11} {...p} />
-            </>
-          )}
-        </>
-      );
-    }
-    case "keluarga":
-    case "santai":
-    case "tamu_keluarga": {
-      if (r.w < 2.6 || r.d < 2.6) return null;
-      const sw = Math.min(2.2, r.w * 0.45);
-      const sx = r.x + 0.3;
-      const sy = r.y + r.d / 2 - 0.4;
-      const dining = r.type === "keluarga" && r.w >= 4.4;
-      return (
-        <>
-          <rect {...box(sx, sy - 0.45, 0.8, sw)} {...p} rx={8} />
-          <rect {...box(sx + 1.15, sy - 0.15, 0.55, 1)} {...p} rx={4} />
-          {dining && (
-            <>
-              <rect {...box(r.x + r.w - 1.7, r.y + r.d / 2 - 0.45, 1.2, 0.9)} {...p} rx={4} />
-              {[-0.35, 0.35].map((dx) =>
-                [0.62, -0.62].map((dy) => <rect key={`${dx}${dy}`} {...box(r.x + r.w - 1.1 + dx - 0.2, r.y + r.d / 2 + dy - 0.17, 0.4, 0.34)} {...p} rx={4} />),
-              )}
-            </>
-          )}
-        </>
-      );
-    }
-    case "tamu": {
-      if (r.w < 2.4 || r.d < 2.4) return null;
-      const cx = r.x + r.w / 2;
-      const cy = r.y + r.d / 2;
-      return (
-        <>
-          <rect {...box(cx - 0.8, cy + 0.45, 1.6, 0.7)} {...p} rx={8} />
-          <rect {...box(cx - 0.4, cy - 0.15, 0.8, 0.45)} {...p} rx={4} />
-          <rect {...box(cx - 0.7, cy - 0.95, 0.65, 0.65)} {...p} rx={8} />
-          <rect {...box(cx + 0.05, cy - 0.95, 0.65, 0.65)} {...p} rx={8} />
-        </>
-      );
-    }
-    case "mushola":
-      return [0, 1]
-        .filter((i) => r.w >= 0.75 * (i + 1) + 0.2)
-        .map((i) => (
-          <g key={i}>
-            <rect {...box(r.x + 0.2 + i * 0.75, r.y + r.d / 2 - 0.55, 0.6, 1.1)} {...p} rx={3} />
-            <path d={`M${X(r.x + 0.3 + i * 0.75)} ${Y(r.y + r.d / 2 + 0.4)}Q${X(r.x + 0.5 + i * 0.75)} ${Y(r.y + r.d / 2 + 0.55)} ${X(r.x + 0.7 + i * 0.75)} ${Y(r.y + r.d / 2 + 0.4)}`} fill="none" {...line} />
-          </g>
-        ));
-    case "kerja": {
-      const dy = farY(0.6);
-      return (
-        <>
-          <rect {...box(r.x + 0.2, dy, Math.min(1.4, r.w - 0.4), 0.6)} {...p} />
-          <rect {...box(r.x + 0.55, doorBack ? dy + 0.75 : dy - 0.55, 0.45, 0.45)} {...p} rx={8} />
-        </>
-      );
-    }
-    case "gudang":
-      return (
-        <>
-          <rect {...box(r.x + 0.05, farY(0.4), r.w - 0.1, 0.4)} fill={`url(#${dak})`} stroke={FURN} strokeWidth={1.4} />
-        </>
-      );
-    case "carport": {
-      if (r.w < 2 || r.d < 4.3) return null;
-      const cars = r.w >= 5 ? 2 : 1;
-      return Array.from({ length: cars }, (_, i) => {
-        const cx = r.x + ((i + 0.5) * r.w) / cars - 0.9;
-        const cy = r.y + (r.d - 4.3) / 2;
-        return (
-          <g key={i}>
-            <rect {...box(cx, cy, 1.8, 4.3)} fill="none" stroke={FURN} strokeWidth={1.6} rx={30} />
-            <rect {...box(cx + 0.18, cy + 1.3, 1.44, 0.6)} fill="none" stroke={FURN} strokeWidth={1.2} rx={10} />
-            <rect {...box(cx + 0.18, cy + 2.9, 1.44, 0.5)} fill="none" stroke={FURN} strokeWidth={1.2} rx={10} />
-          </g>
-        );
-      });
-    }
-    case "taman": {
-      if (floor > 0 || r.w < 1.2 || r.d < 1) return null;
-      const n = Math.max(1, Math.min(3, Math.floor(r.w / 2.5)));
-      return Array.from({ length: n }, (_, i) => {
-        const cx = X(r.x + ((i + 0.5) * r.w) / n);
-        const cy = Y(r.y + r.d / 2);
-        const rr = Math.min(55, (Math.min(r.w / n, r.d) * S) / 2.6);
-        return (
-          <g key={i}>
-            <circle cx={cx} cy={cy} r={rr} fill="none" stroke="#7d9a6b" strokeWidth={1.6} strokeDasharray="7 5" />
-            <circle cx={cx} cy={cy} r={4} fill="#7d9a6b" />
-          </g>
-        );
-      });
-    }
-    case "jemur":
-      return [0.3, 0.6].map((k) => (
-        <line key={k} x1={X(r.x + 0.2)} y1={Y(r.y + r.d * k)} x2={X(r.x + r.w - 0.2)} y2={Y(r.y + r.d * k)} stroke={FURN} strokeWidth={1.4} strokeDasharray="10 6" />
-      ));
-    default:
-      return null;
-  }
 }
 
 function dimLine(x1: number, y1: number, x2: number, y2: number, label: string, key: string, vertical = false) {
@@ -496,7 +579,6 @@ function dimensions(plan: Plan, g: FloorGeom, X: (x: number) => number, Y: (y: n
   const W = plan.brief.landW;
   const D = plan.brief.landD;
   const out: ReactNode[] = [];
-  // Rantai lebar di atas: sel baris paling belakang di lantai ini (atau lantai 1 kalau kosong)
   const backBand = plan.bands.length - 2;
   const cellsTop = plan.floors[floor][backBand].some((c) => c.type !== "void") ? plan.floors[floor][backBand] : plan.floors[0][backBand];
   let x = 0;
@@ -506,13 +588,11 @@ function dimensions(plan: Plan, g: FloorGeom, X: (x: number) => number, Y: (y: n
     x += c.w;
   });
   out.push(dimLine(X(0), Y(D) - 120, X(W), Y(D) - 120, fmt(W), "tw"));
-  // Rantai kedalaman di kiri
   const xChain = X(0) - 60;
   plan.bands.forEach((b, i) => {
     out.push(dimLine(xChain, Y(g.bandY[i]), xChain, Y(g.bandY[i] + b.d), fmt(b.d), `l${i}`, true));
   });
   out.push(dimLine(X(0) - 120, Y(0), X(0) - 120, Y(D), fmt(D), "ld", true));
-  // Garis bantu tipis dari tepi ke rantai
   out.push(
     <g key="ext" stroke="#b9b5ae" strokeWidth={1}>
       <line x1={X(0)} y1={Y(D)} x2={X(0)} y2={Y(D) - 130} />

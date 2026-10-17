@@ -34,6 +34,7 @@ export function normalizeBrief(input: Partial<Record<keyof Brief, unknown>> | nu
     storage: bool(b.storage, false),
     laundry: bool(b.laundry, DEFAULT_BRIEF.laundry),
     roof,
+    ...(num(b.targetArea, 0) >= 18 ? { targetArea: Math.round(clamp(num(b.targetArea, 0), 18, 800)) } : {}),
   };
 }
 
@@ -216,7 +217,7 @@ function arrangeForAccess(row: Cell[], hubStart: number, hubEnd: number, sideIsB
 }
 
 /** Kedalaman pita: mulai dari ukuran yang disarankan lalu disesuaikan ke panjang lahan. */
-function bandDepths(b: Brief, rowCount: 2 | 3, notes: Note[]) {
+function bandDepths(b: Brief, rowCount: 2 | 3, notes: Note[], targetDepth?: number) {
   const D = b.landD;
   const fMin = b.carport ? 5 : 1.5;
   let f = b.carport ? 5.5 : 3;
@@ -225,6 +226,20 @@ function bandDepths(b: Brief, rowCount: 2 | 3, notes: Note[]) {
   const prefRows = rowCount === 3 ? [3.8, 4, 3.6] : [4.2, 3.8];
   let rows = [...prefRows];
   const sum = () => f + back + rows.reduce((s, x) => s + x, 0);
+  // Luas bangunan dibatasi (misalnya dari budget): kedalaman baris mengikuti target, sisa lahan jadi taman
+  if (targetDepth !== undefined) {
+    const prefSum = prefRows.reduce((s, x) => s + x, 0);
+    const avail = Math.max(rowMin * rows.length, D - fMin - 1);
+    const depth = clamp(targetDepth, rowMin * rows.length, avail);
+    rows = prefRows.map((p) => (p / prefSum) * depth);
+    f = Math.max(fMin, Math.min(f, D - depth - 1));
+    back = D - depth - f;
+    if (back > 4) {
+      f += back - 4;
+      back = 4;
+    }
+    return snap([f, ...rows, back], D);
+  }
   if (sum() > D) {
     back = Math.max(1, back - (sum() - D));
     if (sum() > D) f = Math.max(fMin, f - (sum() - D));
@@ -257,7 +272,10 @@ export function buildPlan(input: Brief): Plan {
   const W = b.landW;
   const notes: Note[] = [];
   const twoFloors = b.floors === 2;
-  const buildDepth = b.landD - (b.carport ? 5 : 1.5) - 1;
+  const rowMinDepth = twoFloors ? 3.2 : 3;
+  // Target luas: kedalaman bangunan = luas per lantai / lebar lahan (minimal dua baris ruang)
+  const targetDepth = b.targetArea ? Math.max(rowMinDepth * 2, b.targetArea / b.floors / W) : undefined;
+  const buildDepth = Math.min(b.landD - (b.carport ? 5 : 1.5) - 1, targetDepth ?? Infinity);
   // Tiga baris ruang kalau lahan cukup panjang (rumah 2 lantai butuh baris tengah lebih dalam untuk tangga)
   const rowCount: 2 | 3 = buildDepth >= (twoFloors ? 9.6 : 9) ? 3 : 2;
   const rowKeys: RowKey[] = rowCount === 3 ? ["P", "R", "H"] : ["R", "H"];
@@ -294,7 +312,7 @@ export function buildPlan(input: Brief): Plan {
     1,
   );
 
-  const depths = bandDepths(b, rowCount, notes);
+  const depths = bandDepths(b, rowCount, notes, targetDepth);
   const bandKinds: BandKind[] = ["front", ...rowKeys, "back"];
   const bands: BandDef[] = bandKinds.map((kind, i) => ({ id: kind, kind, d: depths[i] }));
 

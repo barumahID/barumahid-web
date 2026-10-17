@@ -32,8 +32,6 @@ export interface FieldDef {
   half?: boolean;
   /** Masuk bagian "Info tambahan (opsional)" yang bisa dibuka */
   extra?: boolean;
-  /** Tidak tampil sebagai kolom; diisi komponen lain (misalnya lampiran denah miniCAD) */
-  hidden?: boolean;
   maxLength?: number;
 }
 
@@ -172,8 +170,6 @@ export const FORMS: Record<LeadRole, FormDef> = {
         options: SUMBER_INFO,
       },
       catatan("Catatan Lead", "Ceritakan proyeknya (opsional)"),
-      // Diisi otomatis dari miniCAD (ringkasan denah konsep + tautan untuk membukanya lagi)
-      { name: "Denah Konsep", label: "Denah konsep (miniCAD)", type: "textarea", hidden: true, maxLength: 4000 },
     ],
   },
 

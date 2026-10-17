@@ -20,6 +20,8 @@ export interface Brief {
   storage: boolean;
   laundry: boolean;
   roof: Roof;
+  /** Target luas bangunan total (m²), misalnya dari budget. Kosong = bangunan memenuhi lahan. */
+  targetArea?: number;
 }
 
 export type RoomType =
