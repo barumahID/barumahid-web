@@ -17,8 +17,8 @@ export default function MasukPage() {
         title="Kamu datang sebagai siapa?"
         subtitle={
           <p>
-            Pelanggan langsung ke form layanan. Mitra dan tim barumahID masuk lewat Portal, akun mitra aktif setelah
-            diverifikasi tim kami.
+            Klien konstruksi langsung ke form layanan. Penyewa, mitra, dan tim barumahID masuk lewat Portal, akun mitra aktif
+            setelah diverifikasi tim kami.
           </p>
         }
         size="sm"

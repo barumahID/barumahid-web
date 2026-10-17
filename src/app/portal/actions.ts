@@ -59,19 +59,26 @@ export async function signUp(_: FormState, fd: FormData): Promise<FormState> {
   const phone = text(fd, "phone", 30);
   const company = text(fd, "company", 120);
   const category = text(fd, "category", 40);
+  const city = text(fd, "city", 80);
+  // Jenis akun: penyewa (calon penghuni program RTO) atau mitra. Peran tim/admin tidak bisa dipilih sendiri.
+  const account = text(fd, "account", 10) === "penyewa" ? "penyewa" : "mitra";
   if (!fullName || !email || !phone) return { error: "Lengkapi nama, email, dan nomor WhatsApp." };
   if (!/^\S+@\S+\.\S+$/.test(email)) return { error: "Format email tidak valid." };
   if (!/^[0-9+\-\s]{8,20}$/.test(phone)) return { error: "Nomor WhatsApp tidak valid." };
   if (password.length < 8) return { error: "Kata sandi minimal 8 karakter." };
-  if (!isCategory(category)) return { error: "Pilih jenis kemitraan." };
-  if (fd.get("agree") !== "on") return { error: "Setujui kebijakan privasi untuk melanjutkan." };
+  if (account === "mitra" && !isCategory(category)) return { error: "Pilih jenis kemitraan." };
+  if (account === "penyewa" && city.length < 2) return { error: "Isi kota tempat kamu tinggal atau mencari hunian." };
+  if (fd.get("agree") !== "on") return { error: "Setujui syarat dan ketentuan serta kebijakan privasi untuk melanjutkan." };
 
   const supabase = await portalClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, phone, company, category },
+      data:
+        account === "penyewa"
+          ? { full_name: fullName, phone, city, account, terms: "v1" }
+          : { full_name: fullName, phone, company, category, account, terms: "v1" },
       emailRedirectTo: `${await origin()}/portal/auth/callback`,
     },
   });
@@ -189,7 +196,7 @@ export async function setRole(fd: FormData) {
   if (profile?.role !== "admin") fail("Khusus admin");
   const userId = text(fd, "user_id", 60);
   const role = text(fd, "role", 10) as Role;
-  if (!userId || !["admin", "tim", "mitra"].includes(role)) fail("Peran tidak valid");
+  if (!userId || !["admin", "tim", "mitra", "penyewa"].includes(role)) fail("Peran tidak valid");
   const { error } = await supabase.rpc("portal_set_role", { target: userId, new_role: role });
   if (error) fail("Peran gagal disimpan");
   revalidatePath("/portal/dashboard");

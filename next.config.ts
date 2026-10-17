@@ -1,10 +1,21 @@
 import type { NextConfig } from "next";
 
+// Foto unit RTO disimpan di Supabase Storage (bucket publik rto-units). Host dibaca dari env supaya ID project
+// tidak tertulis di repo publik.
+const supabaseHost = (() => {
+  try {
+    return process.env.SUPABASE_URL ? new URL(process.env.SUPABASE_URL).hostname : null;
+  } catch {
+    return null;
+  }
+})();
+
 const nextConfig: NextConfig = {
   // Jangan umumkan framework di header respons
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
+    remotePatterns: supabaseHost ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/rto-units/**" }] : [],
   },
   // Rute lama tetap hidup supaya link yang sudah tersebar di Instagram dan WhatsApp tidak mati.
   // permanent: true = status 308 (setara 301 untuk mesin pencari).

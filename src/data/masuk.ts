@@ -1,5 +1,5 @@
 // Pilihan "Masuk sebagai" di navbar dan halaman /masuk.
-// Pelanggan diarahkan ke form layanan. Mitra dan tim barumahID masuk lewat Portal (/portal, Supabase Auth):
+// Klien konstruksi diarahkan ke form layanan. Penyewa RTO, mitra, dan tim barumahID masuk lewat Portal (/portal, Supabase Auth):
 // akun mitra aktif setelah diverifikasi tim, tim melihat dashboard monitoring.
 
 export interface MasukOption {
@@ -11,10 +11,10 @@ export interface MasukOption {
 
 export const MASUK_OPTIONS: MasukOption[] = [
   {
-    label: "Calon pemilik rumah",
+    label: "Penyewa dan calon pemilik rumah",
     hint: "RTO",
-    href: "/layanan/rto#daftar",
-    description: "Daftar minat program Rent-to-Own dan pantau saldo DP nantinya.",
+    href: "/portal/daftar?akun=penyewa",
+    description: "Buat akun penyewa, naik level menuju RTO, dan pantau saldo DP-mu.",
   },
   {
     label: "Klien konstruksi",
@@ -26,7 +26,7 @@ export const MASUK_OPTIONS: MasukOption[] = [
     label: "Mitra barumahID",
     hint: "Portal",
     href: "/portal",
-    description: "Tenaga kerja, kontraktor, supplier, penyedia kos, dan developer mitra.",
+    description: "Tenaga kerja, kontraktor, supplier, penyedia kos, dan developer mitra. Penyedia kos bisa mendaftarkan unit dari dashboard.",
   },
   {
     label: "Tim barumahID",

@@ -4,8 +4,10 @@
 // - Tidak ada listing dummy. Array ini sengaja kosong sampai data asli siap:
 //   izin tertulis pemilik dan dokumen legal sudah dicek. Lihat docs/KONFIRMASI.md.
 // - Alamat persis tidak ditampilkan. Cukup kelurahan dan kecamatan.
-// - Status ketersediaan nanti dipindah ke Google Sheet supaya admin bisa ubah tanpa deploy ulang (Fase 2).
-// Foto listing taruh di /public/images/listing/<slug>/, format .webp, lebar maksimal 1600 px.
+// - Unit kos dan rumah sewa dari mitra penyedia kos TIDAK ditulis di sini: datang dari database lewat Portal
+//   (unit berstatus tayang atau penuh setelah inspeksi, lihat src/lib/rto-listing.ts). Array ini untuk unit
+//   yang dikelola manual, misalnya Siap Beli dan Siap Bangun.
+// Foto listing manual taruh di /public/images/listing/<slug>/, format .webp, lebar maksimal 1600 px.
 
 import type { RtoCategory } from "./rto";
 
@@ -31,11 +33,19 @@ interface ListingBase {
   /** Jarak ke tempat penting, contoh: "5 menit ke Universitas Andalas" */
   nearby?: string[];
   description?: string;
+  /** Titik perkiraan untuk peta (sudah digeser, bukan lokasi persis) */
+  approx?: { lat: number; lng: number };
 }
 
 export interface SiapBerdayaListing extends ListingBase {
   category: "siap-berdaya";
   sewaPerBulan: number;
+  /** Unit dari Portal: kos per kamar atau rumah sewa per unit */
+  kind?: "kos" | "rumah";
+  /** Jumlah kamar di kos atau jumlah unit rumah */
+  rooms?: number;
+  /** Pemilik bersedia unit diikutkan program RTO. Tidak diisi = dianggap bersedia (listing manual). */
+  rtoReady?: boolean;
   deposit?: number;
   minSewaBulan?: number;
   luasBangunan?: number;
@@ -94,6 +104,22 @@ export interface SiapBangunListing extends ListingBase {
 export type Listing = SiapBerdayaListing | SiapBeliListing | SiapBangunListing;
 
 export const LISTINGS: Listing[] = [];
+
+/** Lokasi yang boleh tampil: kelurahan, kecamatan, kota (bagian yang kosong dilewati) */
+export function listingPlace(l: Pick<ListingBase, "kelurahan" | "kecamatan" | "city">): string {
+  return [l.kelurahan, l.kecamatan, l.city].filter(Boolean).join(", ");
+}
+
+/** Sebutan jenis unit: "Kos", "Rumah sewa", atau nama jalur untuk listing manual */
+export function listingKind(l: Listing): string {
+  if (l.category === "siap-berdaya") return l.kind === "kos" ? "Kos" : "Rumah sewa";
+  return l.category === "siap-beli" ? "Rumah dijual" : "Lahan";
+}
+
+/** Bisa diikutkan program RTO (unit Siap Berdaya yang pemiliknya bersedia) */
+export function listingRto(l: Listing): boolean {
+  return l.category === "siap-berdaya" && l.rtoReady !== false;
+}
 
 export function listingPrice(l: Listing): { label: string; value: number; suffix?: string } {
   if (l.category === "siap-berdaya") return { label: "Sewa", value: l.sewaPerBulan, suffix: "/bulan" };

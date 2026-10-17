@@ -12,6 +12,7 @@ import {
 } from "@/app/portal/actions";
 import { waHref } from "./PortalShell";
 import OrgChart from "./OrgChart";
+import TeamRto, { type RtoTeamData } from "./TeamRto";
 import AutoSelect from "./AutoSelect";
 import { Bars, CountUp, Donut } from "./Viz";
 import {
@@ -19,6 +20,7 @@ import {
   CATEGORY_LINE,
   FORM_GROUP_LABEL,
   FORM_META,
+  ROLE_LABEL,
   STATUS_LABEL,
   STATUS_TONE,
   SUBMISSION_STATUS,
@@ -52,6 +54,7 @@ export const TABS = [
   { id: "formulir", label: "Formulir masuk" },
   { id: "mitra", label: "Mitra" },
   { id: "developer", label: "Developer RTO" },
+  { id: "rto", label: "Rent-to-Own" },
   { id: "akun", label: "Akun portal" },
 ] as const;
 export type TabId = (typeof TABS)[number]["id"];
@@ -241,6 +244,7 @@ export default function TeamDashboard({
   submissions,
   invites,
   me,
+  rto,
 }: {
   bagian: Bagian;
   tab: TabId;
@@ -253,6 +257,8 @@ export default function TeamDashboard({
   submissions: FormSubmission[];
   invites: StaffInvite[];
   me: Profile;
+  /** Data Rent-to-Own, hanya dimuat saat tab "rto" dibuka */
+  rto?: RtoTeamData | null;
 }) {
   const isAdmin = me.role === "admin";
   const developers = mitra.filter((m) => m.category === "developer");
@@ -347,6 +353,7 @@ export default function TeamDashboard({
           {tab === "formulir" && <Formulir submissions={submissions} mitra={mitra} filter={filter} accountOf={accountOf} />}
           {tab === "mitra" && <MitraTable mitra={mitra.filter((m) => m.category !== "developer")} accounts={accounts} filter={filter} />}
           {tab === "developer" && <Developers developers={developers} />}
+          {tab === "rto" && (rto ? <TeamRto data={rto} accounts={accounts} /> : <p className="text-[13.5px] text-brand-gray">Data Rent-to-Own belum bisa dimuat.</p>)}
           {tab === "akun" && (
             <Akun
               accounts={accounts}
@@ -402,7 +409,7 @@ function Ringkasan({
       sub: FORM_META[s.form_code]?.title ?? s.form_title ?? "",
       tone: GROUP_COLOR[FORM_META[s.form_code]?.group ?? "umum"],
     })),
-    ...accounts.map((a) => ({ at: a.created_at, who: nameOf(a), text: `${nameOf(a)} membuat akun portal`, sub: a.role === "mitra" ? "Akun mitra" : "Akun tim", tone: "#1A5C9A" })),
+    ...accounts.map((a) => ({ at: a.created_at, who: nameOf(a), text: `${nameOf(a)} membuat akun portal`, sub: a.role === "mitra" ? "Akun mitra" : a.role === "penyewa" ? "Akun penyewa" : "Akun tim", tone: "#1A5C9A" })),
     ...accounts
       .filter((a) => loginOf.get(a.user_id))
       .map((a) => ({ at: loginOf.get(a.user_id)!, who: nameOf(a), text: `${nameOf(a)} masuk ke portal`, sub: "Login terakhir", tone: "#2D7A4F" })),
@@ -918,11 +925,17 @@ function Developers({ developers }: { developers: Mitra[] }) {
 // ---------------- Akun portal ----------------
 
 const ROLE_OPTIONS = [
+  { value: "penyewa", label: "Penyewa" },
   { value: "mitra", label: "Mitra" },
   { value: "tim", label: "Tim" },
   { value: "admin", label: "Admin" },
 ];
-const ROLE_TONE = { admin: "bg-brand-red/10 text-brand-red", tim: "bg-[#1A5C9A]/10 text-[#1A5C9A]", mitra: "bg-brand-dark/[0.06] text-brand-dark" } as const;
+const ROLE_TONE = {
+  admin: "bg-brand-red/10 text-brand-red",
+  tim: "bg-[#1A5C9A]/10 text-[#1A5C9A]",
+  mitra: "bg-brand-dark/[0.06] text-brand-dark",
+  penyewa: "bg-[#2D7A4F]/10 text-[#2D7A4F]",
+} as const;
 
 function Akun({
   accounts,
@@ -1004,7 +1017,11 @@ function Akun({
                     )}
                   </td>
                   <td className={td}>
-                    {a.role !== "mitra" ? (
+                    {a.role === "penyewa" ? (
+                      <Link href="/portal/dashboard?bagian=dashboard&tab=rto" className="font-semibold text-[#2D7A4F] hover:underline">
+                        Penyewa RTO
+                      </Link>
+                    ) : a.role !== "mitra" ? (
                       <span className="text-brand-mute">Akun tim</span>
                     ) : linked ? (
                       <form action={unlinkAccount} className="flex flex-wrap items-center gap-2">
@@ -1036,7 +1053,7 @@ function Akun({
                     {isAdmin && a.user_id !== meId ? (
                       <AutoSelect action={setRole} fields={{ user_id: a.user_id }} name="role" value={a.role} label={`Peran ${a.email}`} options={ROLE_OPTIONS} />
                     ) : (
-                      <Badge tone={ROLE_TONE[a.role]}>{a.role === "admin" ? "Admin" : a.role === "tim" ? "Tim" : "Mitra"}</Badge>
+                      <Badge tone={ROLE_TONE[a.role]}>{ROLE_LABEL[a.role]}</Badge>
                     )}
                   </td>
                 </tr>

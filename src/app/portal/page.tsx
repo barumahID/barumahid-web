@@ -16,10 +16,10 @@ export default async function PortalLoginPage() {
   return (
     <AuthShell
       title="Masuk ke Portal"
-      subtitle="Untuk mitra barumahID yang sudah terdaftar dan tim internal barumahID."
+      subtitle="Untuk penyewa program Rent-to-Own, mitra barumahID, dan tim internal barumahID."
       footer={
         <>
-          Belum punya akun mitra?{" "}
+          Belum punya akun?{" "}
           <Link href="/portal/daftar" className="font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
             Buat akun
           </Link>
