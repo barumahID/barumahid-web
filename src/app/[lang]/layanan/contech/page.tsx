@@ -6,7 +6,7 @@ import ButtonLink from "@/components/ui/ButtonLink";
 import ProjectGlobe, { type GlobeOffice } from "@/components/constech/ProjectGlobe";
 import PricingTerrace from "@/components/constech/PricingTerrace";
 import KaryaStrip from "@/components/constech/KaryaStrip";
-import DrawingCanvas from "@/components/constech/DrawingCanvas";
+import SketchStudio from "@/components/constech/SketchStudio";
 import LeadForm from "@/components/forms/LeadForm";
 import ClosingCta from "@/components/home/ClosingCta";
 import AccordionFAQ from "@/components/ui/AccordionFAQ";
@@ -228,15 +228,12 @@ export default async function ContechPage({ params }: Props) {
               {t("Ceritakan proyekmu.")}
             </h2>
             <p className="mt-5 text-[16px] leading-relaxed text-white/70">
-              {t("Gambarkan idemu di kanvas, sesederhana apa pun. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.")}
+              {t("Ceritakan rumah yang kamu mau, kami susun jadi denah, tampak, dan visual 3D gratis. Atau gambar sendiri di sketsa bebas. Lalu isi data di sebelahnya, kami balas lewat WhatsApp untuk tanya detail dan kirim penawaran.")}
             </p>
           </div>
           <div className="mt-10 grid gap-6 lg:grid-cols-12">
             <div className="flex flex-col lg:col-span-7">
-              <DrawingCanvas />
-              <p className="mt-3 text-[13px] text-white/55">
-                {t("Sketsa tersimpan di browsermu. Unduh lewat tombol panah bawah, lalu kirimkan ke admin WhatsApp kami setelah mengisi data.")}
-              </p>
+              <SketchStudio />
               {/* FAQ singkat supaya kolom kiri tidak kosong. FAQ dan daftar "Setelah kamu kirim" sama-sama menempel
                   di dasar baris, jadi ujung bawahnya selalu sejajar (info tambahan form dibuka atau tidak). */}
               <div className="mt-10 lg:mt-auto lg:pt-10">

@@ -6,6 +6,7 @@ import { EKOSISTEM } from "./ekosistem";
 import { SEMESTA_EN } from "./semesta";
 import { KARIER } from "./karier";
 import { KEMITRAAN } from "./kemitraan";
+import { DENAH_EN } from "./denah";
 
 // Kamus Indonesia -> Inggris. Kuncinya teks Indonesia persis seperti di kode/data (lihat src/i18n/t.ts).
 export const EN: Record<string, string> = {
@@ -16,6 +17,7 @@ export const EN: Record<string, string> = {
   ...KEMITRAAN,
   ...BERANDA,
   ...CONTECH,
+  ...DENAH_EN,
   ...COMMON,
 };
 

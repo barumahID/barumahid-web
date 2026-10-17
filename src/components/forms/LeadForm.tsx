@@ -11,6 +11,7 @@ import {
   type LeadRole,
 } from "@/lib/leads";
 import { waLink } from "@/data/site";
+import { setDenahAttachment, useDenahAttachment } from "@/lib/denah/attach";
 import { useT } from "@/i18n/LangProvider";
 import Turnstile from "./Turnstile";
 
@@ -126,19 +127,24 @@ export default function LeadForm({
   const [message, setMessage] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | undefined>();
 
-  const mainFields = useMemo(() => def.fields.filter((f) => !f.extra), [def]);
-  const extraFields = useMemo(() => def.fields.filter((f) => f.extra), [def]);
+  const mainFields = useMemo(() => def.fields.filter((f) => !f.extra && !f.hidden), [def]);
+  const extraFields = useMemo(() => def.fields.filter((f) => f.extra && !f.hidden), [def]);
+  // Lampiran denah dari miniCAD (hanya form yang punya kolom "Denah Konsep")
+  const denahField = def.fields.some((f) => f.name === "Denah Konsep");
+  const denah = useDenahAttachment();
+  const attached = denahField && denah ? denah : null;
+  const allValues = attached ? { ...values, "Denah Konsep": attached.value } : values;
 
   const set = (name: string, v: string) => {
     setValues((prev) => ({ ...prev, [name]: v }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const fallbackHref = waLink(leadToWhatsAppText(role, values));
+  const fallbackHref = waLink(leadToWhatsAppText(role, allValues));
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const check = validateLead(role, values);
+    const check = validateLead(role, allValues);
     setErrors(check.errors);
     setConsentError(!consent);
     if (!check.ok || !consent) {
@@ -282,6 +288,28 @@ export default function LeadForm({
         </label>
         {consentError && <p className="mt-1.5 text-[12px] font-medium text-brand-red">{t("Centang persetujuan dulu ya.")}</p>}
       </div>
+
+      {attached && (
+        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-brand-dark/10 bg-brand-cream p-3.5">
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-dark text-white" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 3h18v18H3zM3 12h9M12 3v18M12 15h9" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13px] font-bold text-brand-dark">{t("Denah konsep ikut terkirim")}</span>
+            <span className="mt-0.5 block text-[12px] leading-snug text-brand-gray">{attached.summary}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setDenahAttachment(null)}
+            className="shrink-0 rounded-full px-2 py-1 text-[12px] font-semibold text-brand-gray hover:bg-white hover:text-brand-red"
+            aria-label={t("Lepas lampiran denah")}
+          >
+            {t("Lepas")}
+          </button>
+        </div>
+      )}
 
       <Turnstile onToken={setTurnstileToken} />
 
