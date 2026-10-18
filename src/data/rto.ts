@@ -18,7 +18,8 @@ export const RTO_RATE = 0.25;
 //   mencatat sewa peserta RTO dengan harga sewa program.
 // - Harga rumah tujuan DIKUNCI di MoU sejak awal sampai konversi. Ini keunggulan utama RTO: developer mitra sudah
 //   memperhitungkan masa tunggunya, penyewa aman karena harga tidak naik.
-// - Pengembalian saldo DP: persentase PRD + kasus 100% dan 105% dari Kontrak RTO (REFUND_POLICY).
+// - Pengembalian saldo DP: TIDAK ditahan. Saldo sepenuhnya hak penyewa, bisa ditarik 100% kapan saja (keputusan user
+//   Okt 2026, menggantikan potongan 70/80/90% dari PRD). 105% kalau barumahID wanprestasi tetap berlaku (REFUND_POLICY).
 export const RTO_UNLOCK_MONTHS = 6;
 export const RTO_UNLOCK_SCORE = 36;
 export const RTO_PROGRAM_FEE = 0.09;
@@ -376,10 +377,8 @@ export const PRICE_LOCK_STAGES = [
 ];
 
 export const REFUND_POLICY = [
-  { when: "Mundur sebelum 6 bulan program", back: "70%" },
-  { when: "Mundur di bulan ke-6 sampai 12", back: "80%" },
-  { when: "Mundur setelah 12 bulan", back: "90%" },
-  { when: "KPR ditolak bank, bukan karena kelalaianmu", back: "100%" },
+  { when: "Mundur kapan saja, di bulan berapa pun", back: "100%" },
+  { when: "KPR ditolak bank", back: "100%" },
   { when: "Force majeure atau bencana", back: "100%" },
   { when: "barumahID tidak memenuhi kewajibannya", back: "105%" },
 ];
@@ -471,9 +470,9 @@ export const RTO_FAQ = [
     answer: `Selisihnya adalah setoran DP. Contoh: sewa biasa ${rpFull(regularRent(PRICE_EXAMPLE_DEAL))}, sewa program ${rpFull(programRent(regularRent(PRICE_EXAMPLE_DEAL)))}. ${rpFull(dpPerMonth(regularRent(PRICE_EXAMPLE_DEAL)))} (25% dari sewa program) masuk saldo DP atas namamu. Pemilik tetap terima harga yang disepakati, biaya layanan barumahID tidak bertambah.`,
   },
   {
-    question: "Bagaimana kalau saya mundur sebelum DP cukup?",
+    question: "Bagaimana kalau saya mundur sebelum konversi?",
     answer:
-      "Saldo DP dikembalikan sesuai lama program: 70% sebelum 6 bulan, 80% di bulan ke-6 sampai 12, 90% setelah 12 bulan. Kalau KPR ditolak bukan karena kelalaianmu, kembali 100%.",
+      "Saldo DP itu uangmu, jadi tidak ditahan. Kamu bisa menariknya kembali 100%, tanpa potongan, di bulan berapa pun. Dicairkan paling lambat 14 hari kerja setelah pengajuan, dan rumah tujuan di MoU dilepas.",
   },
   {
     question: "Saldo DP saya untuk rumah yang mana?",

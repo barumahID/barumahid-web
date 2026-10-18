@@ -80,7 +80,7 @@ const sections: { title: string; body: React.ReactNode }[] = [
             perbankan dan tidak berbunga.
           </li>
           <li>
-            Kalau program berhenti, saldo DP dikembalikan dengan ketentuan berikut:
+            Saldo DP sepenuhnya milikmu dan tidak ditahan. Kalau program berhenti, saldo dikembalikan dengan ketentuan berikut:
             <ul className="mt-2 list-[circle] space-y-1 pl-5">
               {REFUND_POLICY.map((r) => (
                 <li key={r.when}>

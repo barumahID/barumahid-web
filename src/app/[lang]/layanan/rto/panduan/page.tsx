@@ -149,7 +149,7 @@ export default function RtoGuidePage() {
               </tbody>
             </table>
             <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">
-              Persentase dari saldo DP. Ajukan lewat formulir pengembalian, dicairkan paling lambat 14 hari kerja.
+              Saldo DP itu uangmu, tidak ditahan. Ajukan lewat formulir pengembalian, dicairkan paling lambat 14 hari kerja.
             </p>
           </div>
           <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 md:p-7">

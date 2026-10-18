@@ -239,7 +239,7 @@ export default async function RtoPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Persentase dari saldo DP. Dicairkan paling lambat 14 hari kerja.</p>
+              <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Saldo DP itu uangmu, tidak ditahan. Persentase dari saldo, dicairkan paling lambat 14 hari kerja.</p>
             </div>
             <div className="rounded-3xl bg-white/[0.06] p-6 md:p-7">
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga terkunci dari MoU sampai konversi</p>
