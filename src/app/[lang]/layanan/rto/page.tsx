@@ -19,7 +19,13 @@ import {
   RTO_UNLOCK_MONTHS,
   RTO_UNLOCK_SCORE,
   RTO_CONVERT_YEARS,
+  PRICE_EXAMPLE_DEAL,
+  RTO_PROGRAM_FEE,
+  dpPerMonth,
+  programRent,
+  regularRent,
 } from "@/data/rto";
+import { rp } from "@/components/rto/listing/format";
 import { GFORMS } from "@/data/google-forms";
 import { getAllListings } from "@/lib/rto-listing";
 import { waLink } from "@/data/site";
@@ -113,8 +119,8 @@ export default async function RtoPage() {
         subtitle={
           <>
             <p>
-              Pilih jalurmu, lihat unitnya, hitung DP-nya. Setelah RTO terbuka, 25% dari setiap sewa dicatat jadi saldo DP atas namamu, lalu dikonversi jadi DP
-              rumah setelah {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun.
+              Pilih jalurmu, lihat unitnya, hitung DP-nya. Setelah RTO terbuka, kamu bayar sewa program dan 25%-nya dicatat jadi saldo DP atas namamu, lalu dikonversi jadi DP
+              rumah setelah {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun. Harga rumahnya dikunci sejak awal.
             </p>
             <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-white">
               <span className="h-2 w-2 animate-pulse-dot rounded-full bg-brand-red" aria-hidden="true" />
@@ -171,6 +177,55 @@ export default async function RtoPage() {
             ))}
           </div>
 
+          {/* Dua harga, semuanya terbuka (keputusan user Okt 2026) */}
+          <div className="mt-4 rounded-3xl bg-white/[0.06] p-6 md:p-7">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div className="max-w-xl">
+                <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Dua harga, semuanya terbuka</p>
+                <p className="mt-2 text-[14.5px] leading-relaxed text-white/70">
+                  Pemilik kos selalu menerima harga yang disepakati, penuh. Setoran DP baru ditambahkan setelah RTO terbuka, dan itu uangmu sendiri.
+                </p>
+              </div>
+              <p className="text-[12.5px] text-white/45">Contoh: harga yang disepakati dengan pemilik {rp(PRICE_EXAMPLE_DEAL)}</p>
+            </div>
+            <table className="mt-5 w-full text-left text-[13px] md:text-[14px]">
+              <thead>
+                <tr className="text-[12px] text-white/55">
+                  <th className="py-2 font-semibold">
+                    <span className="sr-only">Bagian</span>
+                  </th>
+                  <th className="py-2 pl-3 text-right font-semibold">
+                    Sewa biasa
+                    <span className="block text-[11px] font-normal text-white/40">bulan 1-{RTO_UNLOCK_MONTHS} atau tidak ikut RTO</span>
+                  </th>
+                  <th className="py-2 pl-3 text-right font-semibold">
+                    Sewa program
+                    <span className="block text-[11px] font-normal text-white/40">setelah RTO terbuka</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const biasa = regularRent(PRICE_EXAMPLE_DEAL);
+                  const fee = biasa - PRICE_EXAMPLE_DEAL;
+                  const rows: [string, string, string, boolean?][] = [
+                    ["Pemilik kos", rp(PRICE_EXAMPLE_DEAL), rp(PRICE_EXAMPLE_DEAL)],
+                    [`Layanan barumahID ${Math.round(RTO_PROGRAM_FEE * 100)}%`, rp(fee), rp(fee)],
+                    ["Saldo DP atas namamu (25%)", "-", rp(dpPerMonth(biasa))],
+                    ["Total yang kamu bayar", rp(biasa), rp(programRent(biasa)), true],
+                  ];
+                  return rows.map(([k, a, b, total]) => (
+                    <tr key={k} className="border-t border-white/10">
+                      <td className={`py-2.5 pr-3 ${total ? "font-extrabold text-white" : "text-white/80"}`}>{k}</td>
+                      <td className={`py-2.5 pl-3 text-right tabular-nums ${total ? "font-extrabold text-white" : "text-white/80"}`}>{a}</td>
+                      <td className={`py-2.5 pl-3 text-right tabular-nums ${total ? "font-extrabold text-white" : k.startsWith("Saldo") ? "font-bold text-brand-red" : "text-white/80"}`}>{b}</td>
+                    </tr>
+                  ));
+                })()}
+              </tbody>
+            </table>
+          </div>
+
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <div className="rounded-3xl bg-white/[0.06] p-6 md:p-7">
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Kalau kamu mundur dari program</p>
@@ -187,7 +242,7 @@ export default async function RtoPage() {
               <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Persentase dari saldo DP. Dicairkan paling lambat 14 hari kerja.</p>
             </div>
             <div className="rounded-3xl bg-white/[0.06] p-6 md:p-7">
-              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Dari MoU sampai konversi</p>
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga terkunci dari MoU sampai konversi</p>
               <ol className="mt-4 space-y-0">
                 {PRICE_LOCK_STAGES.map((s, i) => (
                   <li key={s.at} className="flex gap-4 border-t border-white/10 py-2.5">

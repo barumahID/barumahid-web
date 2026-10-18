@@ -217,7 +217,8 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
           )}
           {!inProgram && (
             <p className="mt-4 rounded-xl bg-brand-cream px-4 py-3 text-[13px] leading-relaxed text-brand-dark">
-              Saldo DP mulai bertambah setelah RTO terbuka dan Kontrak RTO ditandatangani. Sejak itu, 25% dari setiap sewa yang lunas tercatat di sini.
+              Saldo DP mulai bertambah setelah RTO terbuka dan Kontrak RTO ditandatangani. Sejak itu kamu bayar sewa program (sewa biasa + setoran DP), dan
+              25% dari setiap sewa program yang lunas tercatat di sini.
             </p>
           )}
           <h3 className="mt-6 text-[13px] font-bold uppercase tracking-[0.12em] text-brand-gray">Riwayat saldo</h3>

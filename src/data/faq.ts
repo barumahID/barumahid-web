@@ -10,7 +10,7 @@ export const HOME_FAQ: FaqItem[] = [
   {
     question: "Apa itu Rent-to-Own di barumahID?",
     answer:
-      "Program sewa sambil menabung DP. Kamu menyewa unit mitra barumahID, lalu 25% dari setiap pembayaran sewa dicatat sebagai saldo DP atas namamu. Saat saldo cukup, kamu bisa lanjut ke jalur kepemilikan. Program ini masih tahap persiapan, jadi daftar minat dulu supaya dapat kabar pertama.",
+      "Program sewa sambil menabung DP. Kamu ngekos di unit mitra barumahID. Setelah RTO terbuka, kamu memilih rumah dari developer mitra yang harganya dikunci, lalu 25% dari sewa program dicatat sebagai saldo DP atas namamu. Setelah 2 sampai 4 tahun, saldo itu dikonversi jadi DP rumah tersebut. Program ini masih tahap persiapan, jadi daftar minat dulu supaya dapat kabar pertama.",
   },
   {
     question: "Uang DP saya nanti disimpan di mana?",
@@ -20,7 +20,7 @@ export const HOME_FAQ: FaqItem[] = [
   {
     question: "Berapa lama sampai DP terkumpul?",
     answer:
-      "Tergantung besar sewa, harga rumah, dan target DP-mu. Coba simulasi DP di halaman Rent-to-Own untuk melihat perkiraannya. Ingat, harga rumah juga bisa naik selama kamu menabung.",
+      "2 sampai 4 tahun setelah RTO terbuka, sesuai jadwal di MoU. Besar saldonya tergantung sewamu. Harga rumah tujuan dikunci sejak awal, jadi tidak naik selama kamu menabung. Coba simulasi di halaman Rent-to-Own untuk melihat perkiraannya.",
   },
   {
     question: "Berapa biaya jasa gambar dan analisa struktur?",

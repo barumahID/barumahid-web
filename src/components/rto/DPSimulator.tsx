@@ -7,17 +7,17 @@ import {
   KPR_ILUSTRASI,
   RTO_CONVERT_OPTIONS,
   RTO_CONVERT_YEARS,
-  RTO_PROGRAM_FEE,
   RTO_UNLOCK_MONTHS,
   dpPerMonth,
   kprInstallment,
   maxHomePrice,
+  ownerDeal,
   programRent,
   saldoAfter,
   topUpPerMonth,
 } from "@/data/rto";
 import { rp, rpShort } from "./listing/format";
-import { Chips, Slider } from "./SimParts";
+import { Chips, RentSplit, Slider } from "./SimParts";
 
 // Simulasi lengkap Rent-to-Own (/layanan/rto#simulasi). Model konversi, arahan user Okt 2026:
 // 6 bulan sewa biasa -> RTO terbuka, rumah tujuan dipilih dan MoU dengan developer mitra di awal -> 25% sewa program
@@ -25,7 +25,6 @@ import { Chips, Slider } from "./SimParts";
 // Hasil utama: saldo saat konversi dan harga rumah yang DP-nya tertutup. Kalau sudah punya rumah incaran, ditampilkan
 // kekurangannya dan cara menutupnya. Angka channel percepatan dari simulasi PRD v3.2; channel itu belum berjalan.
 
-const fee = Math.round(RTO_PROGRAM_FEE * 100);
 const years1 = (m: number) => (m / 12).toLocaleString("id-ID", { maximumFractionDigits: 1 });
 
 export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: string }) {
@@ -59,7 +58,7 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
   return (
     <div className="grid gap-6 lg:grid-cols-12">
       <div className="space-y-3 lg:col-span-5">
-        <Slider id="sim-sewa" label="Sewa kos per bulan" value={sewa} min={500_000} max={6_000_000} step={100_000} onChange={setSewa} display={rp(sewa)} minLabel="Rp500 rb" maxLabel="Rp6 jt" />
+        <Slider id="sim-sewa" label="Sewa biasa per bulan" value={sewa} min={500_000} max={6_000_000} step={100_000} onChange={setSewa} display={rp(sewa)} minLabel="Rp500 rb" maxLabel="Rp6 jt" />
         <Chips label="Konversi jadi DP setelah" value={years} options={RTO_CONVERT_OPTIONS} onChange={setYears} suffix=" tahun" />
         <Chips label="DP rumah dari developer" value={dpPct} options={DP_PCT_OPTIONS} onChange={setDpPct} />
         <div className="rounded-2xl border border-brand-dark/10 bg-white p-4">
@@ -155,6 +154,11 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
             </p>
           )}
 
+          <div className="mt-5 border-t border-white/10 pt-5">
+            <p className="mb-3 text-[12px] text-white/55">Pembagian sewa program tiap bulan, terbuka:</p>
+            <RentSplit owner={ownerDeal(sewa)} fee={sewa - ownerDeal(sewa)} dp={dpPerMonth(sewa)} dark />
+          </div>
+
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/10 pt-5">
             <div>
               <p className="text-[12px] text-white/55">Perkiraan cicilan KPR</p>
@@ -164,15 +168,15 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
               </p>
             </div>
             <div>
-              <p className="text-[12px] text-white/55">Sewa program sekarang</p>
+              <p className="text-[12px] text-white/55">Sewa program selama RTO</p>
               <p className="mt-1 text-[20px] font-extrabold">{rpShort(programRent(sewa))}/bln</p>
-              <p className="text-[11.5px] text-white/45">termasuk biaya program {fee}%</p>
+              <p className="text-[11.5px] text-white/45">sewa biasa {rpShort(sewa)} + setoran DP</p>
             </div>
           </div>
 
           <p className="mt-5 text-[12px] leading-relaxed text-white/50">
-            Total sekitar {years1(years * 12 + RTO_UNLOCK_MONTHS)} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa, lalu {years} tahun RTO sampai konversi. Rumah,
-            harga, dan jadwal konversi dicatat di MoU dengan developer mitra. Belum termasuk biaya akad (notaris, BPHTB, asuransi), dan keputusan KPR ada di bank.
+            Total sekitar {years1(years * 12 + RTO_UNLOCK_MONTHS)} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa, lalu {years} tahun RTO sampai konversi. Harga
+            rumah dikunci di MoU dengan developer mitra sejak awal, jadi tidak naik selama kamu menabung. Belum termasuk biaya akad (notaris, BPHTB, asuransi), dan keputusan KPR ada di bank.
           </p>
           <a
             href={formAnchor}

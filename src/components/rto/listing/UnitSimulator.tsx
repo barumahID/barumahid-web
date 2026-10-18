@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Chips, Row, Slider } from "@/components/rto/SimParts";
+import { Chips, RentSplit, Row, Slider } from "@/components/rto/SimParts";
 import {
   DP_BOOST_TOTAL,
   DP_PCT_OPTIONS,
   KPR_ILUSTRASI,
   RTO_CONVERT_OPTIONS,
   RTO_CONVERT_YEARS,
-  RTO_PROGRAM_FEE,
   RTO_RATE,
   RTO_UNLOCK_MONTHS,
   dpPerMonth,
   kprInstallment,
   maxHomePrice,
+  ownerDeal,
   programRent,
   rentForDp,
   saldoAfter,
@@ -32,7 +32,6 @@ import { rp, rpShort } from "./format";
 // - Siap Beli: listing jual beli di luar program RTO; simulasi DP dan cicilan KPR untuk pembeli.
 // Semua angka ilustrasi; ketentuan final ada di Kontrak RTO, MoU, dan keputusan bank.
 
-const feePct = Math.round(RTO_PROGRAM_FEE * 100);
 const ratePct = Math.round(RTO_RATE * 100);
 const kprNote = `${KPR_ILUSTRASI.tenorYears} th, bunga ilustrasi ${KPR_ILUSTRASI.ratePct}%`;
 
@@ -58,7 +57,7 @@ function TimeNote({ years }: { years: number }) {
   return (
     <p className="pt-1 text-[12.5px] leading-snug text-brand-gray">
       Total sekitar {total.toLocaleString("id-ID", { maximumFractionDigits: 1 })} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa, lalu {years} tahun RTO.
-      Rumah, harga, dan jadwal konversi dicatat di MoU sejak awal.
+      Harga rumah dikunci di MoU sejak awal, jadi tidak naik selama kamu menabung.
     </p>
   );
 }
@@ -80,8 +79,12 @@ function Berdaya({ rent }: { rent: number }) {
       <Chips label="DP rumah dari developer" value={pct} options={DP_PCT_OPTIONS} onChange={setPct} />
       <Eco on={eco} set={setEco} />
       <div className="rounded-2xl bg-white p-4">
-        <Row label={`Sewa program RTO (termasuk biaya ${feePct}%)`} value={`${rp(programRent(rent))}/bln`} />
-        <Row label={`Jadi saldo DP (${ratePct}%)${eco ? " + channel" : ""}`} value={`${rp(dpPerMonth(rent) + extra)}/bln`} tone="credit" />
+        <Row label={`Sewa biasa (${RTO_UNLOCK_MONTHS} bulan pertama)`} value={`${rp(rent)}/bln`} />
+        <Row label="Sewa program RTO (sewa biasa + setoran DP)" value={`${rp(programRent(rent))}/bln`} />
+        <div className="pb-3 pt-1">
+          <RentSplit owner={ownerDeal(rent)} fee={rent - ownerDeal(rent)} dp={dpPerMonth(rent)} />
+        </div>
+        <Row label={`Jadi saldo DP (${ratePct}% sewa program)${eco ? " + channel" : ""}`} value={`${rp(dpPerMonth(rent) + extra)}/bln`} tone="credit" />
         <Row label={`Saldo setelah ${years} tahun`} value={rp(saldo)} tone="credit" />
         <Row label={`Rumah yang bisa dituju (DP ${pct}%)`} value={`s.d. ${rpShort(max)}`} strong tone="red" />
         <Row label={`Perkiraan cicilan KPR (${kprNote})`} value={`±${rpShort(kprInstallment(max - saldo))}/bln`} />
@@ -105,7 +108,7 @@ function Tujuan({ price, dpMin }: { price: number; dpMin: number }) {
       <p className="rounded-xl bg-brand-cream-warm px-4 py-2.5 text-[13px] leading-snug text-brand-dark">
         Rumah ini jadi tujuan saldo DP. Kamu ngekos di unit mitra, {ratePct}% sewanya terkumpul, lalu dikonversi jadi DP rumah ini sesuai jadwal di MoU.
       </p>
-      <Slider id="u-rent" label="Sewa kos per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
+      <Slider id="u-rent" label="Sewa biasa kos per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
       <YearsChips value={years} onChange={setYears} />
       <Eco on={eco} set={setEco} />
       <div className="rounded-2xl bg-white p-4">
@@ -115,7 +118,7 @@ function Tujuan({ price, dpMin }: { price: number; dpMin: number }) {
           <>
             <Row label="Kurang saat konversi" value={rp(gap)} strong tone="red" />
             <p className="pt-1 text-[12.5px] leading-snug text-brand-gray">
-              Tutup dengan tabungan sekitar {rp(topUpPerMonth(gap, years))}/bulan, atau pilih kos dengan sewa sekitar {rpShort(rentForDp(dp, years))}/bulan.
+              Tutup dengan tabungan sekitar {rp(topUpPerMonth(gap, years))}/bulan, atau pilih kos dengan sewa biasa sekitar {rpShort(rentForDp(dp, years))}/bulan.
             </p>
           </>
         ) : (
@@ -148,7 +151,7 @@ function Bangun({ start }: { start: number }) {
         dimulai di lahanmu.
       </p>
       <Slider id="u-rab" label="Nilai bangunan (RAB)" value={rab} min={100_000_000} max={2_000_000_000} step={25_000_000} onChange={setRab} display={rpShort(rab)} minLabel="Rp100 jt" maxLabel="Rp2 M" />
-      <Slider id="u-rent-b" label="Sewa kos atau kontrakan per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
+      <Slider id="u-rent-b" label="Sewa biasa kos atau kontrakan per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
       <YearsChips value={years} onChange={setYears} />
       <Slider id="u-own" label="Tabungan sendiri saat konversi" value={own} min={0} max={300_000_000} step={5_000_000} onChange={setOwn} display={own ? rpShort(own) : "Belum ada"} minLabel="Rp0" maxLabel="Rp300 jt" />
       <Eco on={eco} set={setEco} />

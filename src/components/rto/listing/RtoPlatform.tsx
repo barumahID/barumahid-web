@@ -52,7 +52,7 @@ const linkCls = "font-bold text-brand-dark underline underline-offset-4 hover:te
 function ConversionTimeline({ lead, end, endBody }: { lead: string; end: string; endBody: string }) {
   const segs = [
     { k: `Bulan 1-${RTO_UNLOCK_MONTHS}`, t: "Sewa biasa", b: "Bayar tepat waktu dan penuhi syarat RTO.", bar: "bg-brand-dark/15" },
-    { k: `${CONV_MIN}-${CONV_MAX} tahun`, t: "RTO berjalan", b: "MoU di awal. 25% sewa jadi saldo DP tiap bulan.", bar: "bg-brand-red" },
+    { k: `${CONV_MIN}-${CONV_MAX} tahun`, t: "RTO berjalan", b: "Harga rumah dikunci di MoU. Bayar sewa program, 25%-nya jadi saldo DP.", bar: "bg-brand-red" },
     { k: "Konversi", t: end, b: endBody, bar: "bg-brand-dark" },
   ];
   return (
@@ -166,8 +166,8 @@ function CardGroup({
 function MarketplaceFlow() {
   const sides = [
     { who: "Penyedia kos mitra", what: "Tempat tinggalmu selama menabung DP" },
-    { who: "Kamu, penyewa", what: "Sewa tepat waktu, buka RTO, 25% sewa jadi saldo DP" },
-    { who: "Developer mitra", what: `Rumah tujuan lewat MoU di awal, saldo jadi DP setelah ${CONV_MIN}-${CONV_MAX} tahun` },
+    { who: "Kamu, penyewa", what: "Sewa tepat waktu, buka RTO, 25% sewa program jadi saldo DP" },
+    { who: "Developer mitra", what: `Rumah tujuan dengan harga dikunci di MoU, saldo jadi DP setelah ${CONV_MIN}-${CONV_MAX} tahun` },
   ];
   return (
     <ol className="grid gap-2 sm:grid-cols-3" aria-label="Alur Siap Berdaya">
@@ -348,7 +348,7 @@ export default function RtoPlatform({ listings, berdayaExtra }: { listings: List
               {items.some((l) => l.category === "rumah-tujuan") ? (
                 <CardGroup
                   title="Rumah tujuan DP dari developer mitra"
-                  sub="Pilih satu lewat MoU di awal. Saldo DP dari sewa dikonversi jadi uang muka rumah itu."
+                  sub="Pilih satu lewat MoU di awal, harganya dikunci. Saldo DP dari sewa dikonversi jadi uang muka rumah itu."
                   items={items.filter((l) => l.category === "rumah-tujuan")}
                   selected={unit?.slug}
                   onSelect={select}

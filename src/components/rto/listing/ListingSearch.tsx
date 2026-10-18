@@ -170,7 +170,7 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
             {results.length ? `${results.length} unit${pill.kota ? ` di ${pill.kota}` : ""}` : listings.length ? "Belum ada unit yang cocok" : "Belum ada unit tayang"}
           </h1>
           <p className="mt-0.5 text-[12.5px] text-brand-gray">
-            Harga sewa per bulan dari pemilik. Untuk peserta RTO, sewa program termasuk biaya program dan sebagian jadi saldo DP.
+            Harga yang tampil adalah sewa biasa, sudah termasuk biaya layanan barumahID. Peserta RTO bayar sewa program (sewa biasa + setoran DP), 25%-nya jadi saldo DP.
           </p>
 
           {results.length ? (

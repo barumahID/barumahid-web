@@ -59,17 +59,22 @@ const sections: { title: string; body: React.ReactNode }[] = [
             {RTO_UNLOCK_SCORE}. Persetujuan tetap melalui peninjauan tim.
           </li>
           <li>
-            Setelah Kontrak RTO ditandatangani, {Math.round(RTO_RATE * 100)}% dari setiap sewa yang lunas dicatat sebagai saldo DP atas namamu.
+            Sewa biasa adalah harga yang disepakati dengan pemilik ditambah biaya layanan barumahID {Math.round(RTO_PROGRAM_FEE * 100)}%. Pemilik menerima
+            harga yang disepakati itu penuh.
+          </li>
+          <li>
+            Setelah Kontrak RTO ditandatangani, kamu membayar sewa program: sewa biasa ditambah setoran DP. {Math.round(RTO_RATE * 100)}% dari setiap sewa
+            program yang lunas dicatat sebagai saldo DP atas namamu.
           </li>
           <li>
             Saldo DP dipakai untuk uang muka rumah dari developer mitra RTO (jalur Siap Berdaya), atau untuk modal awal pembangunan sampai 25% dari
             RAB (jalur Siap Bangun). Saldo DP tidak dipakai untuk unit kos atau rumah sewa yang sedang kamu tempati.
           </li>
           <li>
-            Rumah tujuan, harga, dan jadwal konversi dicatat di MoU dengan developer mitra di awal program. Saldo dikonversi jadi DP setelah masa RTO{" "}
+            Rumah tujuan dan jadwal konversi dicatat di MoU dengan developer mitra di awal program, dan harga rumahnya dikunci sampai konversi. Saldo
+            dikonversi jadi DP setelah masa RTO{" "}
             {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun, sesuai jadwal di MoU.
           </li>
-          <li>Sewa program sudah termasuk biaya program {Math.round(RTO_PROGRAM_FEE * 100)}% di atas harga sewa mitra.</li>
           <li>
             Saldo DP adalah dana titipan untuk uang muka kepemilikan, disimpan di rekening terpisah atas nama perusahaan. Saldo ini bukan simpanan
             perbankan dan tidak berbunga.

@@ -293,8 +293,8 @@ function highlights(l: Listing): { icon: string; title: string; body: string }[]
     out.push({ icon: ICON.key, title: "Rumah tujuan saldo DP", body: "Peserta RTO bisa memakai saldo DP dari sewa di kos mitra untuk uang muka rumah ini." });
     out.push({
       icon: ICON.shield,
-      title: "Harga dicatat di MoU",
-      body: `Rumah dan harganya disepakati lewat MoU di awal. Saldo dikonversi jadi DP setelah ${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun.`,
+      title: "Harga dikunci sampai konversi",
+      body: `Harga rumah ini dikunci di MoU sejak awal. Tidak naik selama ${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun kamu menabung DP.`,
     });
   } else if (l.category === "siap-bangun") {
     out.push(
@@ -382,7 +382,8 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
       {rto && (
         <p className="mt-4 border-t border-brand-dark/10 pt-4 text-[12.5px] leading-relaxed text-brand-gray">
           Saldo DP mulai dicatat setelah RTO terbuka: KTP terverifikasi, {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu, dan skor minimal {RTO_UNLOCK_SCORE}.
-          Sewa program sudah termasuk biaya program {fee}%. Saldo DP dipakai untuk rumah dari developer mitra, bukan unit ini.
+          Sewa program = sewa biasa + setoran DP, dan sewa biasa sudah termasuk biaya layanan barumahID {fee}%. Saldo DP dipakai untuk rumah dari developer
+          mitra, bukan unit ini.
         </p>
       )}
     </div>
@@ -562,7 +563,7 @@ export default async function ListingDetailPage({ params }: Props) {
                     {
                       k: "RTO terbuka",
                       t: "Kontrak RTO dan MoU",
-                      b: `Pilih rumah dari developer mitra. Sewa program ${rp(programRent(l.sewaPerBulan))}/bulan, termasuk biaya program ${fee}%.`,
+                      b: `Pilih rumah dari developer mitra, harganya dikunci. Mulai bayar sewa program ${rp(programRent(l.sewaPerBulan))}/bulan (sewa biasa + setoran DP).`,
                     },
                     {
                       k: `${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun`,
@@ -642,7 +643,7 @@ export default async function ListingDetailPage({ params }: Props) {
                 : l.category === "rumah-tujuan"
                   ? {
                       t: "Sebelum memilih rumah",
-                      items: ["Survei lokasi dan unit bersama tim.", "Unit, harga, dan jadwal konversi dicatat di MoU sejak awal.", "Keputusan KPR tetap ada di bank."],
+                      items: ["Survei lokasi dan unit bersama tim.", "Harga rumah dikunci di MoU sejak awal sampai konversi.", "Keputusan KPR tetap ada di bank."],
                     }
                   : l.category === "siap-beli"
                   ? {

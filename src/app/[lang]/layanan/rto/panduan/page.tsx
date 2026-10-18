@@ -153,7 +153,7 @@ export default function RtoGuidePage() {
             </p>
           </div>
           <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 md:p-7">
-            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Dari MoU sampai konversi</p>
+            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga terkunci dari MoU sampai konversi</p>
             <ol className="mt-4">
               {PRICE_LOCK_STAGES.map((s, i) => (
                 <li key={s.at} className="flex gap-4 border-t border-white/10 py-2.5">
@@ -162,7 +162,7 @@ export default function RtoGuidePage() {
                 </li>
               ))}
             </ol>
-            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Unit, harga, dan jadwal konversi tertulis di MoU sejak awal, sebelum saldo mulai terkumpul.</p>
+            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Harga rumah dikunci di MoU sejak awal sampai konversi. Developer mitra sudah memperhitungkan masa tunggunya.</p>
           </div>
         </div>
       </section>
