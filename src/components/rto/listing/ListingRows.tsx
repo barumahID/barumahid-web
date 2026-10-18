@@ -5,7 +5,8 @@ import { useMemo, useRef, useState } from "react";
 import Link from "@/i18n/Link";
 import { localizePath } from "@/i18n/config";
 import { useLang } from "@/i18n/LangProvider";
-import { listingRto, type Listing } from "@/data/listings";
+import { CLOSED_STATUS, listingRto, type Listing } from "@/data/listings";
+import { RTO_PATHS } from "@/data/rto";
 import ListingCard from "./ListingCard";
 import SearchPill, { type PillValue } from "./SearchPill";
 
@@ -63,6 +64,12 @@ export function ListingRow({ title, sub, href, items }: { title: string; sub?: s
   );
 }
 
+const PATH_ROW: Record<Listing["category"], { title: string; jenis: string }> = {
+  "siap-berdaya": { title: "kos dan rumah sewa", jenis: "sewa" },
+  "siap-beli": { title: "rumah dijual", jenis: "beli" },
+  "siap-bangun": { title: "bangun di lahan sendiri", jenis: "lahan" },
+};
+
 export default function ListingRows({ listings }: { listings: Listing[] }) {
   const router = useRouter();
   const lang = useLang();
@@ -81,16 +88,14 @@ export default function ListingRows({ listings }: { listings: Listing[] }) {
         items: rto,
       });
     }
-    const rentals = listings.filter((l) => l.category === "siap-berdaya");
-    const byCity = new Map<string, Listing[]>();
-    for (const l of rentals) byCity.set(l.city, [...(byCity.get(l.city) ?? []), l]);
-    for (const [city, items] of [...byCity].sort((a, b) => b[1].length - a[1].length)) {
-      out.push({ key: `kota-${city}`, title: `Kos dan rumah sewa di ${city}`, href: `/layanan/rto/cari?kota=${encodeURIComponent(city)}`, items });
+    // Satu deretan per jalur RTO; unit yang masih bisa dipesan di depan
+    const open = (l: Listing) => Number(CLOSED_STATUS.includes(l.status));
+    for (const p of RTO_PATHS) {
+      const items = listings.filter((l) => l.category === p.id).sort((a, b) => open(a) - open(b));
+      if (!items.length) continue;
+      const row = PATH_ROW[p.id];
+      out.push({ key: p.id, title: `${p.name}: ${row.title}`, sub: p.explainer + ".", href: `/layanan/rto/cari?jenis=${row.jenis}`, items });
     }
-    const beli = listings.filter((l) => l.category === "siap-beli");
-    if (beli.length) out.push({ key: "beli", title: "Rumah dijual (Siap Beli)", href: "/layanan/rto/cari?jenis=beli", items: beli });
-    const lahan = listings.filter((l) => l.category === "siap-bangun");
-    if (lahan.length) out.push({ key: "lahan", title: "Lahan untuk dibangun (Siap Bangun)", href: "/layanan/rto/cari?jenis=lahan", items: lahan });
     return out;
   }, [listings]);
 

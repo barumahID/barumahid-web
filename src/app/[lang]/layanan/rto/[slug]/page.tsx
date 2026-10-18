@@ -8,8 +8,8 @@ import FacilityIcon from "@/components/rto/listing/FacilityIcon";
 import PhotoMosaic from "@/components/rto/listing/PhotoMosaic";
 import { ListingRow } from "@/components/rto/listing/ListingRows";
 import { SaveTextButton, ShareButton } from "@/components/rto/listing/Buttons";
-import { rp } from "@/components/rto/listing/format";
-import { STATUS_LABEL, listingKind, listingPlace, listingPrice, listingRto, type Listing } from "@/data/listings";
+import { priceMain, rp } from "@/components/rto/listing/format";
+import { listingKind, listingPlace, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
 import { RTO_PATHS, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE, dpPerMonth, programRent } from "@/data/rto";
 import { SITE, waLink } from "@/data/site";
 import { getAllListings, getListing } from "@/lib/rto-listing";
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const place = listingPlace(l);
   return {
     title: `${l.title}, ${place}`,
-    description: `${listingKind(l)} di ${place}. ${listingRto(l) ? "Bisa ikut program Rent-to-Own barumahID. " : ""}Unit dicek langsung tim barumahID.`,
+    description: `${listingKind(l)} di ${place}. ${listingRto(l) ? "Bisa ikut program Rent-to-Own barumahID. " : ""}Harga, fasilitas, dan lokasi area di listing barumahID.`,
     alternates: { canonical: `/layanan/rto/${l.slug}` },
     openGraph: l.photos[0] ? { images: [{ url: l.photos[0].src }] } : undefined,
   };
@@ -40,14 +40,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 type Row = [string, string | number | undefined | null];
 
+const range = (a: number, b?: number) => (b ? `${rp(a)} sampai ${rp(b)}` : rp(a));
+
+/** Rincian per kategori, ditambah rincian khusus listing (l.rincian) */
 function groups(l: Listing): { title: string; rows: Row[] }[] {
+  return [...baseGroups(l), ...(l.rincian ?? [])];
+}
+
+function baseGroups(l: Listing): { title: string; rows: Row[] }[] {
   const list = (xs?: string[]) => (xs && xs.length ? xs.join(", ") : undefined);
   if (l.category === "siap-berdaya") {
     return [
       {
         title: "Sewa",
         rows: [
-          ["Sewa per bulan", rp(l.sewaPerBulan)],
+          ...((l.sewaPerTahun
+            ? [
+                ["Kontrak per tahun", rp(l.sewaPerTahun)],
+                ["Setara per bulan", rp(l.sewaPerBulan)],
+              ]
+            : [["Sewa per bulan", range(l.sewaPerBulan, l.sewaPerBulanMaks)]]) as Row[]),
+          ["Listrik dan air", l.utilitasTermasuk],
           ["Deposit", l.deposit ? rp(l.deposit) : undefined],
           ["Minimal lama sewa", l.minSewaBulan ? `${l.minSewaBulan} bulan` : undefined],
         ],
@@ -68,7 +81,6 @@ function groups(l: Listing): { title: string; rows: Row[] }[] {
         rows: [
           ["Listrik", l.listrikVA ? `${l.listrikVA} VA${l.listrikTipe ? `, ${l.listrikTipe}` : ""}` : undefined],
           ["Air", l.air],
-          ["Termasuk biaya sewa", l.utilitasTermasuk],
           ["Internet", l.internet],
         ],
       },
@@ -80,7 +92,7 @@ function groups(l: Listing): { title: string; rows: Row[] }[] {
       {
         title: "Harga",
         rows: [
-          ["Harga jual", rp(l.hargaJual)],
+          [l.status === "terjual" ? "Terjual di kisaran" : "Harga jual", range(l.hargaJual, l.hargaJualMaks)],
           ["Bisa nego", l.nego === undefined ? undefined : l.nego ? "Ya" : "Tidak"],
         ],
       },
@@ -109,7 +121,6 @@ function groups(l: Listing): { title: string; rows: Row[] }[] {
           ["Tahun dibangun atau direnovasi", l.tahunBangun],
           ["Listrik", l.listrikVA ? `${l.listrikVA} VA` : undefined],
           ["Air", l.air],
-          ["Fasilitas", list(l.fasilitas)],
           ["Lebar jalan depan", l.lebarJalan],
           ["Hadap", l.hadap],
           ["Riwayat banjir", l.riwayatBanjir],
@@ -121,14 +132,15 @@ function groups(l: Listing): { title: string; rows: Row[] }[] {
     {
       title: "Harga",
       rows: [
-        ["Harga lahan per m²", rp(l.hargaLahanPerM2)],
-        ["Total harga lahan", rp(l.hargaLahanPerM2 * l.luasLahan)],
+        ["Harga lahan per m²", l.hargaLahanPerM2 ? rp(l.hargaLahanPerM2) : undefined],
+        ["Total harga lahan", l.hargaLahanPerM2 && l.luasLahan ? rp(l.hargaLahanPerM2 * l.luasLahan) : undefined],
+        ["Kisaran nilai", l.harga ? range(l.harga, l.hargaMaks) : undefined],
       ],
     },
     {
       title: "Lahan",
       rows: [
-        ["Luas lahan", `${l.luasLahan} m²`],
+        ["Luas lahan", l.luasLahan ? `${l.luasLahan} m²` : undefined],
         ["Dimensi dan bentuk", l.dimensi],
         ["Kontur", l.kontur],
         ["Jenis tanah", l.jenisTanah],
@@ -150,7 +162,7 @@ function groups(l: Listing): { title: string; rows: Row[] }[] {
         ["Akses utilitas", list(l.aksesUtilitas)],
         ["Lebar jalan", l.lebarJalan],
         ["Riwayat banjir", l.riwayatBanjir],
-        ["Rekomendasi tipe rumah", l.rekomendasi],
+        ["Rekomendasi bangunan", l.rekomendasi],
       ],
     },
   ];
@@ -175,7 +187,7 @@ function facts(l: Listing): string[] {
       l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "",
     ].filter(Boolean);
   }
-  return [`${l.luasLahan} m²`, l.dimensi ?? "", l.kontur ?? ""].filter(Boolean);
+  return [l.luasLahan ? `Lahan ${l.luasLahan} m²` : "", l.dimensi ?? "", l.kontur ?? ""].filter(Boolean);
 }
 
 const fee = Math.round(RTO_PROGRAM_FEE * 100);
@@ -189,18 +201,79 @@ function Svg({ d }: { d: string }) {
   );
 }
 
+/** Catatan status di kartu harga */
+function statusNote(l: Listing): string | null {
+  if (l.status === "terisi")
+    return l.availableFrom ? `Sedang dikontrak. Tersedia lagi mulai ${l.availableFrom}. Kamu bisa pesan duluan.` : "Unit ini sedang penuh. Kami kabari kalau ada kamar kosong.";
+  if (l.status === "terjual") return "Rumah ini sudah terjual. Cari rumah serupa? Ceritakan kebutuhanmu ke tim kami.";
+  if (l.status === "selesai") return "Sudah dibangun di lahan milik pemiliknya lewat jalur Siap Bangun.";
+  if (l.status === "segera") return `${listingStatusLabel(l)}. Belum bisa dipesan, kami kabari saat dibuka.`;
+  return null;
+}
+
+/** Tombol utama per status: teks dan pesan WhatsApp */
+function primaryCta(l: Listing, waText: string): { label: string; text: string } {
+  const unit = `"${l.title}" (${SITE.url}/layanan/rto/${l.slug})`;
+  if (l.status === "terisi") return { label: "Kabari saya", text: `Halo barumahID, saya tertarik dengan unit ${unit}. Tolong kabari kalau sudah bisa disewa.` };
+  if (l.status === "terjual") return { label: "Cari rumah serupa", text: `Halo barumahID, saya cari rumah seperti ${unit}. Bisa dibantu?` };
+  if (l.status === "selesai") return { label: "Konsultasi Siap Bangun", text: `Halo barumahID, saya punya lahan dan ingin membangun seperti ${unit}. Bisa konsultasi?` };
+  if (l.status === "segera") return { label: "Kabari saya", text: `Halo barumahID, saya tertarik dengan ${unit}. Tolong kabari saat sudah dibuka.` };
+  return { label: "Jadwalkan survei", text: waText };
+}
+
+const ICON = {
+  shield: "M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6zM9 12l2 2 4-4",
+  home: "M3 11 12 4l9 7M5 9.5V20h14V9.5M10 20v-5h4v5",
+  pin: "M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21ZM12 12.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+  plan: "M4 4h16v16H4zM4 10h6M10 4v16M14 14h6",
+  key: "M15 7a4 4 0 1 1-3.9 4.9L4 19v2h3v-2h2v-2h2l1.1-1.1A4 4 0 0 1 15 7Z",
+};
+
+const PARTNER: Record<Listing["category"], { title: string; body: string }> = {
+  "siap-berdaya": { title: "Mitra penyedia barumahID", body: "Unit dari jaringan mitra penyedia kos dan rumah sewa barumahID." },
+  "siap-beli": { title: "Jaringan rumah barumahID", body: "Rumah dari jaringan pemilik dan developer mitra barumahID." },
+  "siap-bangun": { title: "Proyek Siap Bangun", body: "Dirancang dan didampingi tim Jasa Konstruksi barumahID bersama pemilik lahan." },
+};
+
+/** Sorotan di bawah judul, menyesuaikan kategori dan status */
+function highlights(l: Listing): { icon: string; title: string; body: string }[] {
+  const out: { icon: string; title: string; body: string }[] = [];
+  if (l.category === "siap-bangun") {
+    out.push(
+      l.status === "selesai"
+        ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Siap Bangun: rumah dibangun di lahan milik pemiliknya." }
+        : { icon: ICON.plan, title: "Desain dari tim barumahID", body: "Denah dan visualisasi 3D dibuat untuk rencana ini. Foto terakhir menunjukkan kondisi bangunan saat ini." },
+    );
+    out.push({ icon: ICON.key, title: "Bangun bertahap", body: "Jalur Siap Bangun cocok untuk pemilik lahan yang ingin membangun sambil mengumpulkan modal." });
+  } else if (l.status === "terjual") {
+    out.push({ icon: ICON.key, title: "Sudah terjual", body: "Rumah ini sudah laku. Masih bisa jadi gambaran harga dan tipe rumah di area ini." });
+  } else {
+    out.push({ icon: ICON.shield, title: "Foto asli, bukan ilustrasi", body: "Foto diambil langsung di kamar dan rumahnya." });
+    if (l.category === "siap-berdaya")
+      out.push({
+        icon: ICON.home,
+        title: "Sewa tepat waktu dihitung untuk naik level",
+        body: `${RTO_UNLOCK_MONTHS} bulan bayar tepat waktu di unit mitra jadi salah satu syarat membuka RTO.`,
+      });
+  }
+  out.push({ icon: ICON.pin, title: "Alamat lengkap tidak ditampilkan", body: "Di website hanya kelurahan, kecamatan, dan area perkiraan di peta. Alamat dibagikan saat survei." });
+  return out;
+}
+
 function PriceCard({ l, waText }: { l: Listing; waText: string }) {
   const price = listingPrice(l);
   const rto = listingRto(l) && l.category === "siap-berdaya";
+  const note = statusNote(l);
+  const cta = primaryCta(l, waText);
   return (
     <div className="rounded-2xl border border-brand-dark/10 bg-white p-6 shadow-[0_14px_36px_-18px_rgba(20,20,20,0.4)]">
+      <p className="text-[12.5px] font-semibold text-brand-gray">{l.status === "terjual" ? "Terjual di kisaran" : price.label}</p>
       <p className="text-brand-dark">
-        <span className="text-[24px] font-extrabold">{rp(price.value)}</span>
-        <span className="text-[15px] text-brand-gray"> {price.suffix ? price.suffix.replace("/", "/ ") : price.label.toLowerCase()}</span>
+        <span className="text-[24px] font-extrabold">{priceMain(price)}</span>
+        {price.suffix && price.value !== null && <span className="text-[15px] text-brand-gray"> {price.suffix.replace("/", "/ ")}</span>}
       </p>
-      {l.status === "terisi" && (
-        <p className="mt-3 rounded-lg bg-brand-cream px-3 py-2 text-[13px] text-brand-dark">Unit ini sedang penuh. Kami kabari kalau ada kamar kosong.</p>
-      )}
+      {l.category === "siap-berdaya" && l.sewaPerTahun && <p className="text-[13px] text-brand-gray">Setara {rp(l.sewaPerBulan)} per bulan</p>}
+      {note && <p className="mt-3 rounded-lg bg-brand-cream px-3 py-2 text-[13px] leading-snug text-brand-dark">{note}</p>}
       {rto && (
         <dl className="mt-4 overflow-hidden rounded-xl border border-brand-dark/15 text-[13.5px]">
           <div className="flex items-center justify-between gap-3 px-4 py-3">
@@ -213,20 +286,26 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
           </div>
         </dl>
       )}
-      {l.category === "siap-beli" && (
+      {l.category === "siap-beli" && l.status !== "terjual" && (
         <p className="mt-4 rounded-xl bg-brand-cream px-4 py-3 text-[13px] text-brand-dark/80">
           Unit dijual. Kami bantu hitung DP, cicilan KPR, BPHTB, dan biaya notaris saat konsultasi.
         </p>
       )}
       <div className="mt-5 grid gap-2.5">
-        <ButtonLink href={waLink(waText)} variant="red" arrow={false} className="w-full">
-          {l.status === "terisi" ? "Kabari saya" : "Jadwalkan survei"}
+        <ButtonLink href={waLink(cta.text)} variant="red" arrow={false} className="w-full">
+          {cta.label}
         </ButtonLink>
-        <ButtonLink href="/portal/daftar?akun=penyewa" variant="outline-dark" arrow={false} className="w-full">
-          Buat akun penyewa
-        </ButtonLink>
+        {l.category === "siap-berdaya" ? (
+          <ButtonLink href="/portal/daftar?akun=penyewa" variant="outline-dark" arrow={false} className="w-full">
+            Buat akun penyewa
+          </ButtonLink>
+        ) : (
+          <ButtonLink href="/layanan/rto#jalur" variant="outline-dark" arrow={false} className="w-full">
+            Pelajari jalur {RTO_PATHS.find((p) => p.id === l.category)?.name}
+          </ButtonLink>
+        )}
       </div>
-      <p className="mt-3 text-center text-[12.5px] text-brand-gray">Belum ada pembayaran saat menjadwalkan survei.</p>
+      {l.status === "tersedia" && <p className="mt-3 text-center text-[12.5px] text-brand-gray">Belum ada pembayaran saat menjadwalkan survei.</p>}
       {rto && (
         <p className="mt-4 border-t border-brand-dark/10 pt-4 text-[12.5px] leading-relaxed text-brand-gray">
           Saldo DP mulai dicatat setelah RTO terbuka: KTP terverifikasi, {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu, dan skor minimal {RTO_UNLOCK_SCORE}.
@@ -246,7 +325,7 @@ export default async function ListingDetailPage({ params }: Props) {
   const path = RTO_PATHS.find((p) => p.id === l.category);
   const place = listingPlace(l);
   const rto = listingRto(l) && l.category === "siap-berdaya";
-  const facilities = l.category === "siap-berdaya" ? (l.fasilitas ?? []) : [];
+  const facilities = l.category !== "siap-bangun" ? (l.fasilitas ?? []) : [];
   const others = all.filter((x) => x.city === l.city && x.slug !== l.slug).slice(0, 10);
   const waText = `Halo barumahID, saya tertarik dengan unit "${l.title}" (${SITE.url}/layanan/rto/${l.slug}). Bisa jadwalkan survei?`;
   const dp = l.category === "siap-berdaya" ? dpPerMonth(l.sewaPerBulan) : 0;
@@ -289,7 +368,7 @@ export default async function ListingDetailPage({ params }: Props) {
             {line.length > 0 && <p className="mt-1 text-[15px] text-brand-gray">{line.join(" · ")}</p>}
             <div className="mt-3 flex flex-wrap gap-2">
               {path && <span className="rounded-full bg-brand-dark px-3 py-1 text-[12px] font-bold text-white">{path.name}</span>}
-              <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-brand-dark">{STATUS_LABEL[l.status]}</span>
+              <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-brand-dark">{listingStatusLabel(l)}</span>
             </div>
 
             {rto && (
@@ -322,37 +401,21 @@ export default async function ListingDetailPage({ params }: Props) {
                 <Image src="/brand/logo-mark-white.png" alt="" width={427} height={250} className="h-auto w-7" />
               </span>
               <div>
-                <p className="text-[15px] font-bold text-brand-dark">Mitra penyedia barumahID</p>
-                <p className="text-[13.5px] text-brand-gray">Unit tayang setelah inspeksi tim dan MoU Mitra Penyedia.</p>
+                <p className="text-[15px] font-bold text-brand-dark">{PARTNER[l.category].title}</p>
+                <p className="text-[13.5px] text-brand-gray">{PARTNER[l.category].body}</p>
               </div>
             </div>
 
             <ul className="mt-6 space-y-6 border-y border-brand-dark/10 py-7">
-              <li className="flex gap-4">
-                <Svg d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6zM9 12l2 2 4-4" />
-                <div>
-                  <p className="text-[15px] font-bold text-brand-dark">Dicek langsung oleh tim</p>
-                  <p className="text-[14px] text-brand-gray">Kondisi unit diperiksa sebelum tayang. Foto yang kamu lihat adalah foto unitnya.</p>
-                </div>
-              </li>
-              {l.category === "siap-berdaya" && (
-                <li className="flex gap-4">
-                  <Svg d="M3 11 12 4l9 7M5 9.5V20h14V9.5M10 20v-5h4v5" />
+              {highlights(l).map((h) => (
+                <li key={h.title} className="flex gap-4">
+                  <Svg d={h.icon} />
                   <div>
-                    <p className="text-[15px] font-bold text-brand-dark">Sewa tepat waktu dihitung untuk naik level</p>
-                    <p className="text-[14px] text-brand-gray">
-                      {RTO_UNLOCK_MONTHS} bulan bayar tepat waktu di unit mitra jadi salah satu syarat membuka RTO.
-                    </p>
+                    <p className="text-[15px] font-bold text-brand-dark">{h.title}</p>
+                    <p className="text-[14px] text-brand-gray">{h.body}</p>
                   </div>
                 </li>
-              )}
-              <li className="flex gap-4">
-                <Svg d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21ZM12 12.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                <div>
-                  <p className="text-[15px] font-bold text-brand-dark">Alamat lengkap dibagikan saat survei</p>
-                  <p className="text-[14px] text-brand-gray">Di website hanya kelurahan, kecamatan, dan area perkiraan di peta.</p>
-                </div>
-              </li>
+              ))}
             </ul>
 
             {l.description && (
@@ -475,17 +538,29 @@ export default async function ListingDetailPage({ params }: Props) {
           ) : (
             <p className="mt-4 rounded-2xl bg-white px-5 py-4 text-[14px] text-brand-gray">Titik peta menyusul setelah survei lokasi.</p>
           )}
-          <p className="mt-3 text-[13px] text-brand-gray">Lingkaran di peta adalah area perkiraan. Alamat lengkap dibagikan saat jadwal survei.</p>
+          <p className="mt-3 text-[13px] text-brand-gray">
+            {l.approx ? "Lingkaran di peta adalah area perkiraan. " : ""}Alamat lengkap dibagikan saat jadwal survei.
+          </p>
         </section>
 
         <section className="border-t border-brand-dark/10 py-10">
           <h2 className="text-[20px] font-extrabold text-brand-dark">Hal yang perlu diketahui</h2>
           <div className="mt-6 grid gap-8 md:grid-cols-3">
             {[
-              {
-                t: "Sebelum sewa",
-                items: ["Survei unit dulu bersama tim atau pemilik.", "Jangan transfer apa pun sebelum survei dan tanda tangan Perjanjian Sewa.", "Ketentuan sewa tertulis di Perjanjian Sewa."],
-              },
+              l.category === "siap-berdaya"
+                ? {
+                    t: "Sebelum sewa",
+                    items: ["Survei unit dulu bersama tim atau pemilik.", "Jangan transfer apa pun sebelum survei dan tanda tangan Perjanjian Sewa.", "Ketentuan sewa tertulis di Perjanjian Sewa."],
+                  }
+                : l.category === "siap-beli"
+                  ? {
+                      t: "Sebelum membeli",
+                      items: ["Cek langsung rumah dan dokumennya bersama tim.", "Jangan transfer apa pun sebelum dokumen diperiksa.", "Kami bantu hitung DP, KPR, BPHTB, dan biaya notaris."],
+                    }
+                  : {
+                      t: "Sebelum membangun",
+                      items: ["Pastikan lahan dan dokumennya atas nama pemilik.", "Rancangan, RAB, dan jadwal dibahas dulu bersama tim.", "Pembangunan bertahap sesuai modal yang terkumpul."],
+                    },
               {
                 t: "Program RTO",
                 items: [

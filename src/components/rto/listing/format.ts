@@ -24,10 +24,18 @@ export const BUDGETS = [
 
 export const KINDS = [
   { value: "", label: "Semua jenis" },
+  { value: "sewa", label: "Kos dan rumah sewa" },
   { value: "kos", label: "Kos" },
   { value: "rumah", label: "Rumah sewa" },
   { value: "beli", label: "Rumah dijual" },
-  { value: "lahan", label: "Lahan" },
+  { value: "lahan", label: "Siap Bangun" },
 ] as const;
 
 export type KindFilter = (typeof KINDS)[number]["value"];
+
+/** Harga utama: "Rp1.100.000", rentang "Rp2 jt - 3 jt", atau "Harga menyusul" */
+export function priceMain(p: { value: number | null; max?: number }): string {
+  if (p.value === null) return "Harga menyusul";
+  if (p.max) return `${rpShort(p.value)} - ${rpShort(p.max).replace(/^Rp/, "")}`;
+  return rp(p.value);
+}

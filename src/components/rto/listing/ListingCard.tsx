@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import Link from "@/i18n/Link";
 import { dpPerMonth } from "@/data/rto";
-import { listingKind, listingPrice, listingRto, type Listing } from "@/data/listings";
+import { listingKind, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
 import { SaveHeart } from "./Buttons";
-import { rp } from "./format";
+import { priceMain, rp } from "./format";
 
 // Kartu listing gaya katalog hunian: foto bisa digeser (panah saat disorot di desktop, usap di HP), hati untuk
 // menyimpan, lencana Program RTO untuk unit yang pemiliknya bersedia ikut program.
@@ -21,6 +21,26 @@ export function PhotoPlaceholder({ label = "Foto menyusul" }: { label?: string }
     </div>
   );
 }
+
+/** Baris kecil di kartu: ukuran atau jumlah kamar, lalu dua fasilitas pertama */
+function cardFacts(l: Listing): string[] {
+  if (l.category === "siap-berdaya") {
+    const size = l.rooms ? `${l.rooms} ${l.kind === "kos" ? "kamar" : "unit"}` : l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "";
+    return [size, ...(l.fasilitas ?? []).slice(0, 2)].filter(Boolean);
+  }
+  if (l.category === "siap-beli") {
+    return [l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "", l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "", ...(l.fasilitas ?? []).slice(-1)].filter(Boolean);
+  }
+  return [l.luasLahan ? `Lahan ${l.luasLahan} m²` : "", l.dimensi ?? ""].filter(Boolean);
+}
+
+/** Warna lencana per status */
+const BADGE: Record<string, string> = {
+  terisi: "bg-brand-dark/85 text-white",
+  terjual: "bg-brand-dark/85 text-white",
+  selesai: "bg-credit text-white",
+  segera: "bg-build text-white",
+};
 
 export default function ListingCard({
   l,
@@ -40,11 +60,7 @@ export default function ListingCard({
   const price = listingPrice(l);
   const rto = listingRto(l);
   const place = l.kelurahan || l.kecamatan || l.city;
-  // Baris kecil: jumlah kamar/unit lalu dua fasilitas pertama
-  const facts =
-    l.category === "siap-berdaya"
-      ? [l.rooms ? `${l.rooms} ${l.kind === "kos" ? "kamar" : "unit"}` : "", ...(l.fasilitas ?? []).slice(0, 2)].filter(Boolean)
-      : [];
+  const facts = cardFacts(l);
 
   const go = (dir: 1 | -1) => {
     const el = track.current;
@@ -77,8 +93,8 @@ export default function ListingCard({
         </Link>
 
         {/* Lencana */}
-        {l.status === "terisi" ? (
-          <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-brand-dark/85 px-3 py-1 text-[12px] font-bold text-white">Penuh</span>
+        {BADGE[l.status] ? (
+          <span className={`pointer-events-none absolute left-3 top-3 rounded-full px-3 py-1 text-[12px] font-bold ${BADGE[l.status]}`}>{listingStatusLabel(l)}</span>
         ) : rto ? (
           <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[12px] font-bold text-brand-dark shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
@@ -132,12 +148,15 @@ export default function ListingCard({
         <p className="truncate text-[14px] text-brand-gray">{l.title}</p>
         {facts.length > 0 && <p className="truncate text-[13.5px] text-brand-gray">{facts.join(" · ")}</p>}
         <p className="mt-1.5 text-[15px] text-brand-dark">
-          <span className="font-extrabold">{rp(price.value)}</span>
-          {price.suffix && <span className="text-brand-gray"> {price.suffix.replace("/", "/ ")}</span>}
+          {l.status === "terjual" && <span className="text-brand-gray">Terjual </span>}
+          <span className="font-extrabold">{priceMain(price)}</span>
+          {price.suffix && price.value !== null && <span className="text-brand-gray"> {price.suffix.replace("/", "/ ")}</span>}
         </p>
-        {rto && l.category === "siap-berdaya" && l.status !== "terisi" && (
+        {l.status === "terisi" && l.availableFrom ? (
+          <p className="truncate text-[13px] font-semibold text-build">Tersedia lagi mulai {l.availableFrom}</p>
+        ) : rto && l.category === "siap-berdaya" && l.status === "tersedia" ? (
           <p className="truncate text-[13px] font-semibold text-credit">Saldo DP {rp(dpPerMonth(l.sewaPerBulan))}/bln saat RTO</p>
-        )}
+        ) : null}
       </Link>
     </article>
   );

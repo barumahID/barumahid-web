@@ -6,11 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Link from "@/i18n/Link";
 import { UNIT_FACILITIES } from "@/lib/rto";
-import { listingKind, listingPlace, listingPrice, listingRto, type Listing } from "@/data/listings";
+import { CLOSED_STATUS, listingKind, listingPlace, listingPrice, listingRto, listingStatusLabel, priceSortValue, type Listing } from "@/data/listings";
 import ListingCard, { PhotoPlaceholder } from "./ListingCard";
 import SearchPill, { type PillValue } from "./SearchPill";
 import { useSaved } from "./useSaved";
-import { KINDS, rp, rpShort, type KindFilter } from "./format";
+import { KINDS, priceMain, rpShort, type KindFilter } from "./format";
 import type { MapItem } from "./ListingMap";
 
 // Halaman cari unit: kolom cari + filter (Program RTO, fasilitas, tersimpan, urutan), kartu di kiri dan peta pin
@@ -29,10 +29,19 @@ const SORTS: { value: Sort; label: string }[] = [
   { value: "mahal", label: "Harga tertinggi" },
 ];
 
+/** Teks pin peta: harga ringkas, atau status kalau unit tidak bisa dipesan */
+function pinLabel(l: Listing): string {
+  if (CLOSED_STATUS.includes(l.status)) return listingStatusLabel(l);
+  const p = listingPrice(l);
+  if (p.value === null) return listingStatusLabel(l);
+  return p.max ? `${rpShort(p.value)}+` : rpShort(p.value);
+}
+
 function kindMatch(l: Listing, jenis: KindFilter) {
   if (!jenis) return true;
   if (jenis === "beli") return l.category === "siap-beli";
   if (jenis === "lahan") return l.category === "siap-bangun";
+  if (jenis === "sewa") return l.category === "siap-berdaya";
   return l.category === "siap-berdaya" && (l.kind ?? "rumah") === jenis;
 }
 
@@ -83,17 +92,18 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
       if (onlySaved && !saved.includes(l.slug)) return false;
       return true;
     });
-    if (sort === "murah") list.sort((a, b) => listingPrice(a).value - listingPrice(b).value);
-    if (sort === "mahal") list.sort((a, b) => listingPrice(b).value - listingPrice(a).value);
-    // Unit penuh selalu di belakang
-    return list.sort((a, b) => Number(a.status === "terisi") - Number(b.status === "terisi"));
+    if (sort === "murah") list.sort((a, b) => priceSortValue(a) - priceSortValue(b));
+    if (sort === "mahal") list.sort((a, b) => (listingPrice(b).value ?? -1) - (listingPrice(a).value ?? -1));
+    // Unit penuh, terjual, dan yang sudah dibangun selalu di belakang
+    const closed = (l: Listing) => Number(CLOSED_STATUS.includes(l.status));
+    return list.sort((a, b) => closed(a) - closed(b));
   }, [listings, pill, rto, fas, onlySaved, saved, sort]);
 
   const points = useMemo<MapItem[]>(
     () =>
       results
         .filter((l) => l.approx)
-        .map((l) => ({ slug: l.slug, lat: l.approx!.lat, lng: l.approx!.lng, label: rpShort(listingPrice(l).value), title: l.title, rto: listingRto(l) })),
+        .map((l) => ({ slug: l.slug, lat: l.approx!.lat, lng: l.approx!.lng, label: pinLabel(l), title: l.title, rto: listingRto(l) && l.status === "tersedia" })),
     [results],
   );
   const noPoint = results.length - points.length;
@@ -227,8 +237,10 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
                     </p>
                     <p className="truncate text-[12.5px] text-brand-gray">{listingPlace(picked)}</p>
                     <p className="mt-1 text-[13.5px] font-extrabold text-brand-dark">
-                      {rp(listingPrice(picked).value)}
-                      {listingPrice(picked).suffix && <span className="font-medium text-brand-gray"> {listingPrice(picked).suffix}</span>}
+                      {priceMain(listingPrice(picked))}
+                      {listingPrice(picked).suffix && listingPrice(picked).value !== null && (
+                        <span className="font-medium text-brand-gray"> {listingPrice(picked).suffix}</span>
+                      )}
                     </p>
                   </div>
                 </Link>

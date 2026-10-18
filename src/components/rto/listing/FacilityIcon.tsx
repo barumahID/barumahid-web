@@ -12,7 +12,12 @@ const PATHS: Record<string, string> = {
   Penjaga: "M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6zM9 12l2 2 4-4",
   "Tempat tidur": "M3 18V8M3 14h18v4M21 18v-6a2 2 0 0 0-2-2h-8v4M7 11.5a1.5 1.5 0 1 0 0-.01",
   Lemari: "M5 3h14v17H5zM12 3v17M10 11v2M14 11v2M7 20v1M17 20v1",
+  "Ruang tamu": "M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2zM5 18v2M19 18v2",
+  "Area mesin cuci": "M5 3h14v18H5zM5 7h14M12 10a4 4 0 1 0 0 8 4 4 0 0 0 0-8M8 5h.01",
+  "Garasi mobil": "M3 21V9l9-5 9 5v12M6 21v-6h12v6M6 18h12M9 15l1-3h4l1 3",
 };
+// Nama lain yang memakai ikon sama
+PATHS["Dapur"] = PATHS["Dapur bersama"];
 
 export default function FacilityIcon({ name, className = "h-6 w-6" }: { name: string; className?: string }) {
   return (
