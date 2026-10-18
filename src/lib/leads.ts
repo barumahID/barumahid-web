@@ -183,6 +183,13 @@ export const FORMS: Record<LeadRole, FormDef> = {
       "Program RTO masih tahap persiapan. Kami kabari lewat WhatsApp begitu unit pertama siap, termasuk syarat dan simulasinya.",
     fixed: { Sumber: "Website" },
     fields: [
+      {
+        name: "Unit Diminati",
+        label: "Unit yang diminati",
+        type: "text",
+        maxLength: 200,
+        help: "Terisi otomatis dari listing. Kosongkan kalau belum ada unit pilihan.",
+      },
       nama(),
       wa,
       kota("Kota tinggal sekarang"),

@@ -22,7 +22,7 @@ const rpShort = (n: number) => {
   return rp(n);
 };
 
-function Slider({
+export function Slider({
   id,
   label,
   value,

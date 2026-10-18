@@ -107,16 +107,19 @@ export default function LeadForm({
   role,
   tone = "light",
   compact = false,
+  initial,
 }: {
   role: LeadRole;
   tone?: "light" | "card";
   compact?: boolean;
+  /** Isian awal, misalnya unit dan kota dari listing yang dipilih */
+  initial?: Record<string, string>;
 }) {
   const t = useT();
   const def = FORMS[role];
   const idPrefix = useId().replace(/:/g, "");
   const pathname = usePathname();
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string>>(() => ({ ...(initial ?? {}) }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState(false);

@@ -57,6 +57,22 @@ export const RTO_PATHS: RtoPath[] = [
   },
 ];
 
+/** Langkah singkat per jalur, tampil di platform listing halaman RTO (Siap Berdaya memakai RTO_STEPS) */
+export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: string; body: string }[]> = {
+  "siap-bangun": [
+    { title: "Ceritakan lahanmu", body: "Lahan atas namamu atau keluarga. Tim kami survei lokasi dan kebutuhanmu." },
+    { title: "Desain dan RAB", body: "Denah, analisa struktur, dan RAB disusun bersama Jururancang, partner desain barumahID." },
+    { title: "Kumpulkan modal 25%", body: "Sewa sambil menabung sampai modal mencapai 25% dari RAB." },
+    { title: "Bangun bertahap", body: "Tim Jasa Konstruksi barumahID membangun dengan pembayaran bertahap." },
+  ],
+  "siap-beli": [
+    { title: "Pilih unit", body: "Rumah siap huni dari pemilik dan developer mitra yang sudah kami cek." },
+    { title: "Hitung DP dan KPR", body: "Kami bantu hitung DP, cicilan, BPHTB, dan biaya notaris." },
+    { title: "Siapkan DP", body: "Kumpulkan DP sendiri, atau mulai dulu lewat jalur Siap Berdaya." },
+    { title: "Akad", body: "Akad jual beli dan KPR. Keputusan KPR tetap ada di bank." },
+  ],
+};
+
 export const RTO_STEPS = [
   { title: "Sewa unit mitra", body: "Pilih kos atau rumah sewa dari mitra barumahID yang sudah kami cek kondisinya." },
   {
