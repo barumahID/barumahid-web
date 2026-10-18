@@ -13,10 +13,21 @@ import {
   setUnitDescription,
   setUnitInspection,
   setUnitLocation,
+  setDevUnitReview,
   submitAssessment,
+  submitDevUnit,
   submitUnit,
+  updateDevUnit,
 } from "@/app/portal/rto-actions";
-import { ASSESSMENT_QUESTIONS, UNIT_FACILITIES, type RtoTenancy, type RtoTenant, type RtoUnit } from "@/lib/rto";
+import {
+  ASSESSMENT_QUESTIONS,
+  DEV_FACILITIES,
+  UNIT_FACILITIES,
+  type RtoDevUnit,
+  type RtoTenancy,
+  type RtoTenant,
+  type RtoUnit,
+} from "@/lib/rto";
 
 // Form platform RTO di Portal (penyewa, mitra penyedia kos, dan tim). Validasi akhir ada di server action dan database.
 
@@ -227,19 +238,24 @@ export function UnitSubmitForm() {
 }
 
 /** Deskripsi listing (pemilik sebelum tayang, tim kapan saja) */
-export function DescriptionForm({ unit }: { unit: Pick<RtoUnit, "id" | "description"> }) {
+export function DescriptionForm({ unit, kind = "unit" }: { unit: Pick<RtoUnit, "id" | "description">; kind?: "unit" | "dev" }) {
   const [state, action] = useActionState(setUnitDescription, {});
   return (
     <form action={action} className="space-y-2">
       <Notice state={state} />
       <input type="hidden" name="id" value={unit.id} />
+      <input type="hidden" name="kind" value={kind} />
       <textarea
         name="description"
         rows={4}
         maxLength={1500}
         defaultValue={unit.description ?? ""}
         aria-label="Deskripsi unit"
-        placeholder="Ceritakan unitnya: ukuran kamar, lantai, aturan, jarak ke kampus atau kantor terdekat."
+        placeholder={
+          kind === "dev"
+            ? "Ceritakan rumahnya: spesifikasi bangunan, akses jalan, fasilitas perumahan, jarak ke pusat kota."
+            : "Ceritakan unitnya: ukuran kamar, lantai, aturan, jarak ke kampus atau kantor terdekat."
+        }
         className={input}
       />
       <Submit>Simpan deskripsi</Submit>
@@ -248,13 +264,14 @@ export function DescriptionForm({ unit }: { unit: Pick<RtoUnit, "id" | "descript
 }
 
 /** Titik peta perkiraan (tim): tempel link Google Maps atau koordinat; server menggeser titik sebelum disimpan */
-export function LocationForm({ unit }: { unit: Pick<RtoUnit, "id" | "approx_lat" | "approx_lng"> }) {
+export function LocationForm({ unit, kind = "unit" }: { unit: Pick<RtoUnit, "id" | "approx_lat" | "approx_lng">; kind?: "unit" | "dev" }) {
   const [state, action] = useActionState(setUnitLocation, {});
   const has = unit.approx_lat !== null && unit.approx_lng !== null;
   return (
     <form action={action} className="space-y-2">
       <Notice state={state} />
       <input type="hidden" name="id" value={unit.id} />
+      <input type="hidden" name="kind" value={kind} />
       <label className={label}>
         Link Google Maps atau koordinat
         <input name="location" placeholder="https://maps.app.goo.gl/... atau -0.9471, 100.4172" className={input} />
@@ -268,14 +285,174 @@ export function LocationForm({ unit }: { unit: Pick<RtoUnit, "id" | "approx_lat"
   );
 }
 
+// ---------------- Developer mitra: rumah tujuan ----------------
+
+/**
+ * Form rumah tujuan. Tanpa `unit` = daftar baru (developer untuk dirinya sendiri, tim bisa memilih akun developer).
+ * Dengan `unit` = ubah data (khusus tim). Harga yang tercatat di MoU penyewa tidak ikut berubah.
+ */
+export function DevUnitForm({ unit, owners }: { unit?: RtoDevUnit; owners?: { id: string; name: string }[] }) {
+  const [state, action] = useActionState(unit ? updateDevUnit : submitDevUnit, {});
+  const id = unit ? `d-${unit.id.slice(0, 6)}` : "d-new";
+  const v = (n: number | null | undefined) => (n == null ? "" : String(n));
+  return (
+    <form action={action} className="space-y-3">
+      <Notice state={state} />
+      {unit && <input type="hidden" name="id" value={unit.id} />}
+      {owners && !unit && (
+        <div>
+          <label htmlFor={`${id}-owner`} className={label}>Akun developer</label>
+          <select id={`${id}-owner`} name="owner_user_id" defaultValue="" className={input}>
+            <option value="">Tanpa akun (dikelola tim)</option>
+            {owners.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label htmlFor={`${id}-title`} className={label}>Nama rumah</label>
+          <input id={`${id}-title`} name="title" required maxLength={120} defaultValue={unit?.title} placeholder="Rumah tipe 36/72, blok A" className={input} />
+        </div>
+        <div>
+          <label htmlFor={`${id}-project`} className={label}>Nama proyek atau perumahan</label>
+          <input id={`${id}-project`} name="project" maxLength={120} defaultValue={unit?.project ?? ""} className={input} />
+        </div>
+        <div>
+          <label htmlFor={`${id}-city`} className={label}>Kota</label>
+          <input id={`${id}-city`} name="city" required maxLength={80} defaultValue={unit?.city} className={input} />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor={`${id}-kec`} className={label}>Kecamatan</label>
+            <input id={`${id}-kec`} name="kecamatan" maxLength={80} defaultValue={unit?.kecamatan ?? ""} className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-kel`} className={label}>Kelurahan</label>
+            <input id={`${id}-kel`} name="kelurahan" maxLength={80} defaultValue={unit?.kelurahan ?? ""} className={input} />
+          </div>
+        </div>
+        <div>
+          <label htmlFor={`${id}-price`} className={label}>Harga rumah (Rp)</label>
+          <input id={`${id}-price`} name="price" inputMode="numeric" required defaultValue={v(unit?.price)} className={input} />
+          <p className="mt-1 text-[11.5px] leading-snug text-brand-gray">Harga ini dikunci di MoU sampai konversi (2 sampai 4 tahun). Perhitungkan masa tunggunya.</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor={`${id}-dp`} className={label}>DP minimal (%)</label>
+            <input id={`${id}-dp`} name="dp_min_pct" inputMode="decimal" defaultValue={v(unit?.dp_min_pct ?? 10)} className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-stock`} className={label}>Unit untuk program</label>
+            <input id={`${id}-stock`} name="units_available" inputMode="numeric" defaultValue={v(unit?.units_available)} className={input} />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 sm:col-span-2">
+          <div>
+            <label htmlFor={`${id}-tipe`} className={label}>Tipe</label>
+            <input id={`${id}-tipe`} name="tipe" maxLength={40} defaultValue={unit?.tipe ?? ""} placeholder="36/72" className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-lt`} className={label}>Luas tanah (m²)</label>
+            <input id={`${id}-lt`} name="land_area" inputMode="decimal" defaultValue={v(unit?.land_area)} className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-lb`} className={label}>Luas bangunan (m²)</label>
+            <input id={`${id}-lb`} name="building_area" inputMode="decimal" defaultValue={v(unit?.building_area)} className={input} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor={`${id}-kt`} className={label}>Kamar tidur</label>
+            <input id={`${id}-kt`} name="bedrooms" inputMode="numeric" defaultValue={v(unit?.bedrooms)} className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-km`} className={label}>Kamar mandi</label>
+            <input id={`${id}-km`} name="bathrooms" inputMode="numeric" defaultValue={v(unit?.bathrooms)} className={input} />
+          </div>
+        </div>
+        <div>
+          <label htmlFor={`${id}-legal`} className={label}>Legalitas</label>
+          <input id={`${id}-legal`} name="legal" maxLength={200} defaultValue={unit?.legal ?? ""} placeholder="SHM, PBG" className={input} />
+        </div>
+      </div>
+      {!unit && (
+        <>
+          <div>
+            <label htmlFor={`${id}-addr`} className={label}>
+              Alamat lengkap <span className="font-normal text-brand-mute">(hanya untuk tim, tidak tampil di website)</span>
+            </label>
+            <textarea id={`${id}-addr`} name="address_private" rows={2} maxLength={400} className={input} />
+          </div>
+          <div>
+            <label htmlFor={`${id}-desc`} className={label}>
+              Deskripsi untuk website <span className="font-normal text-brand-mute">(opsional, bisa diubah sebelum tayang)</span>
+            </label>
+            <textarea id={`${id}-desc`} name="description" rows={3} maxLength={1500} className={input} />
+          </div>
+        </>
+      )}
+      <fieldset>
+        <legend className={label}>Fasilitas</legend>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {DEV_FACILITIES.map((f) => (
+            <label key={f} className="cursor-pointer rounded-full border border-brand-dark/15 px-3 py-1 text-[12.5px] text-brand-dark has-[:checked]:border-brand-dark has-[:checked]:bg-brand-dark has-[:checked]:text-white">
+              <input type="checkbox" name="facilities" value={f} defaultChecked={unit?.facilities.includes(f)} className="sr-only" />
+              {f}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {!unit && <p className="text-[12px] text-brand-gray">Foto dan render diunggah setelah rumah tersimpan, lewat daftar rumah di atas.</p>}
+      <Submit tone={unit ? "dark" : "red"}>{unit ? "Simpan data rumah" : "Kirim rumah untuk ditinjau"}</Submit>
+    </form>
+  );
+}
+
+/** Catatan tim untuk developer (tampil di dashboard developer) */
+export function DevReviewForm({ unit }: { unit: Pick<RtoDevUnit, "id" | "review_note"> }) {
+  const [state, action] = useActionState(setDevUnitReview, {});
+  return (
+    <form action={action} className="space-y-2">
+      <Notice state={state} />
+      <input type="hidden" name="id" value={unit.id} />
+      <textarea
+        name="review_note"
+        rows={2}
+        maxLength={1000}
+        defaultValue={unit.review_note ?? ""}
+        aria-label="Catatan untuk developer"
+        placeholder="Misalnya: lengkapi foto fasad, kirim salinan PBG, atau jadwal MoU."
+        className={input}
+      />
+      <Submit>Simpan catatan</Submit>
+    </form>
+  );
+}
+
 // ---------------- Tim barumahID ----------------
 
-export function TenantPlanForm({ tenant }: { tenant: RtoTenant }) {
+export function TenantPlanForm({ tenant, devUnits = [] }: { tenant: RtoTenant; devUnits?: Pick<RtoDevUnit, "id" | "title" | "city" | "price">[] }) {
   const [state, action] = useActionState(setTenantPlan, {});
   return (
     <form action={action} className="space-y-2.5">
       <Notice state={state} />
       <input type="hidden" name="user_id" value={tenant.user_id} />
+      <div>
+        <label className={label}>Rumah tujuan (MoU dengan developer mitra)</label>
+        <select name="target_dev_unit_id" defaultValue={tenant.target_dev_unit_id ?? ""} className={input}>
+          <option value="">Belum dipilih</option>
+          {devUnits.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.title} · {u.city} · Rp{new Intl.NumberFormat("id-ID").format(u.price)}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-[11.5px] text-brand-gray">Kosongkan harga dan target DP di bawah supaya terisi dari rumah ini (DP minimal developer).</p>
+      </div>
       <div className="grid gap-2.5 sm:grid-cols-2">
         <div>
           <label className={label}>Jalur</label>

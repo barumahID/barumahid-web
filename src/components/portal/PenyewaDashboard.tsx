@@ -16,6 +16,7 @@ import {
   monthLabel,
   rupiah,
   type AgreementDoc,
+  type MyTarget,
   type RtoAgreement,
   type RtoAssessment,
   type RtoLedgerEntry,
@@ -54,10 +55,12 @@ export interface PenyewaData {
   ledger: RtoLedgerEntry[];
   agreements: RtoAgreement[];
   streak: number;
+  /** Rumah tujuan dari developer mitra (setelah MoU) */
+  target: MyTarget | null;
 }
 
 export default function PenyewaDashboard({ profile, data }: { profile: Profile; data: PenyewaData }) {
-  const { tenant, assessment, tenancy, payments, ledger, agreements, streak } = data;
+  const { tenant, assessment, tenancy, payments, ledger, agreements, streak, target: myTarget } = data;
   const balance = ledger.reduce((s, e) => s + Number(e.amount), 0);
   const rtoStatus = tenant?.rto_status ?? "belum";
   const journey = computeJourney({
@@ -245,6 +248,7 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
           )}
         </section>
 
+        <div className="space-y-5">
         {/* Sewa saya */}
         <section className={card}>
           <h2 className="text-[16px] font-extrabold">Sewa saya</h2>
@@ -280,6 +284,43 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
             </p>
           )}
         </section>
+
+        {/* Rumah tujuan dari developer mitra */}
+        <section className={card}>
+          <h2 className="text-[16px] font-extrabold">Rumah tujuan</h2>
+          {myTarget ? (
+            <dl className="mt-3 space-y-2 text-[13.5px]">
+              <div>
+                <dt className="text-brand-gray">Rumah</dt>
+                <dd className="font-semibold text-brand-dark">
+                  {myTarget.title}
+                  {myTarget.project ? ` · ${myTarget.project}` : ""} · {myTarget.city}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-brand-gray">Harga terkunci di MoU</dt>
+                <dd className="font-semibold text-brand-dark">{rupiah(tenant?.target_price ?? myTarget.price)}</dd>
+              </div>
+              <div>
+                <dt className="text-brand-gray">DP minimal developer</dt>
+                <dd className="font-semibold text-brand-dark">{myTarget.dp_min_pct}%</dd>
+              </div>
+              {(myTarget.status === "tayang" || myTarget.status === "habis") && (
+                <Link href={`/layanan/rto/${myTarget.slug}`} className="inline-block pt-1 text-[13px] font-bold text-brand-red hover:underline">
+                  Lihat rumahnya
+                </Link>
+              )}
+            </dl>
+          ) : (
+            <p className="mt-3 text-[13.5px] leading-relaxed text-brand-gray">
+              Setelah RTO terbuka, kamu memilih rumah dari developer mitra bersama tim. Harganya dikunci di MoU sampai konversi.{" "}
+              <Link href="/layanan/rto#siap-berdaya" className="font-semibold text-brand-dark underline underline-offset-2">
+                Lihat rumah developer mitra
+              </Link>
+            </p>
+          )}
+        </section>
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">

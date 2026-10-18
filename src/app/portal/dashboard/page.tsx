@@ -5,8 +5,20 @@ import MitraDashboard from "@/components/portal/MitraDashboard";
 import TeamDashboard, { TABS, type Bagian, type TabId } from "@/components/portal/TeamDashboard";
 import PenyewaDashboard from "@/components/portal/PenyewaDashboard";
 import MitraUnits from "@/components/portal/MitraUnits";
+import DevUnits from "@/components/portal/DevUnits";
 import type { RtoTeamData } from "@/components/portal/TeamRto";
-import type { RtoAgreement, RtoAssessment, RtoLedgerEntry, RtoPayment, RtoTenancy, RtoTenant, RtoUnit } from "@/lib/rto";
+import type {
+  DevPipelineRow,
+  MyTarget,
+  RtoAgreement,
+  RtoAssessment,
+  RtoDevUnit,
+  RtoLedgerEntry,
+  RtoPayment,
+  RtoTenancy,
+  RtoTenant,
+  RtoUnit,
+} from "@/lib/rto";
 import { getPortalSession } from "@/lib/portal-session";
 import { isTeam, type AccountMeta, type FormSubmission, type Mitra, type OrgLevel, type Profile, type StaffInvite, type TeamMember } from "@/lib/portal";
 import { portalConfigured } from "@/lib/supabase/server";
@@ -57,13 +69,14 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
     ]);
     let rto: RtoTeamData | null = null;
     if (bagian === "dashboard" && tab === "rto") {
-      const [tenants, assessments, tenancies, payments, ledger, units] = await Promise.all([
+      const [tenants, assessments, tenancies, payments, ledger, units, devUnits] = await Promise.all([
         supabase.from("rto_tenants").select("*"),
         supabase.from("rto_assessments").select("*").order("created_at", { ascending: false }).limit(1000),
         supabase.from("rto_tenancies").select("*").order("start_date", { ascending: false }),
         supabase.from("rto_payments").select("*").order("period", { ascending: false }).limit(2000),
         supabase.from("rto_dp_ledger").select("*").order("created_at", { ascending: false }).limit(2000),
         supabase.from("rto_units").select("*").order("created_at", { ascending: false }),
+        supabase.from("rto_dev_units").select("*").order("created_at", { ascending: false }),
       ]);
       if (!tenants.error) {
         rto = {
@@ -73,6 +86,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
           payments: (payments.data ?? []) as RtoPayment[],
           ledger: (ledger.data ?? []) as RtoLedgerEntry[],
           units: (units.data ?? []) as RtoUnit[],
+          devUnits: (devUnits.data ?? []) as RtoDevUnit[],
         };
       }
     }
@@ -98,7 +112,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
 
   // Penyewa: level, saldo DP, sewa, pembayaran, asesmen, dokumen (RLS: hanya data milik akun ini)
   if (profile.role === "penyewa") {
-    const [tenant, assessment, tenancies, payments, ledger, agreements, streak] = await Promise.all([
+    const [tenant, assessment, tenancies, payments, ledger, agreements, streak, target] = await Promise.all([
       supabase.from("rto_tenants").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("rto_assessments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("rto_tenancies").select("*").eq("tenant_user_id", user.id).eq("status", "aktif").order("start_date", { ascending: false }).limit(1),
@@ -106,6 +120,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
       supabase.from("rto_dp_ledger").select("*").eq("tenant_user_id", user.id).order("created_at", { ascending: false }).limit(200),
       supabase.from("rto_agreements").select("*").eq("user_id", user.id),
       supabase.rpc("rto_ontime_streak", { p_user: user.id }),
+      supabase.rpc("rto_my_target"),
     ]);
     const active = ((tenancies.data ?? []) as RtoTenancy[])[0] ?? null;
     let unit: Pick<RtoUnit, "title" | "city"> | null = null;
@@ -125,6 +140,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
             ledger: (ledger.data ?? []) as RtoLedgerEntry[],
             agreements: (agreements.data ?? []) as RtoAgreement[],
             streak: typeof streak.data === "number" ? streak.data : 0,
+            target: ((target.data ?? []) as MyTarget[])[0] ?? null,
           }}
         />
       </PortalShell>
@@ -133,8 +149,17 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
 
   const { data: mitra } = await supabase.from("portal_mitra").select("*").eq("user_id", user.id).maybeSingle();
   const m = (mitra as Mitra | null) ?? null;
-  const isKos = (m?.category ?? profile.requested_category) === "penyedia_kos";
+  const category = m?.category ?? profile.requested_category;
+  const isKos = category === "penyedia_kos";
   let unitsPanel: React.ReactNode = null;
+  // Developer mitra: rumah tujuan RTO dan pipeline peserta (tanpa identitas)
+  if (category === "developer") {
+    const [devUnits, pipeline] = await Promise.all([
+      supabase.from("rto_dev_units").select("*").eq("owner_user_id", user.id).order("created_at", { ascending: false }),
+      supabase.rpc("rto_dev_pipeline"),
+    ]);
+    unitsPanel = <DevUnits units={(devUnits.data ?? []) as RtoDevUnit[]} pipeline={(pipeline.data ?? []) as DevPipelineRow[]} />;
+  }
   if (isKos) {
     const [units, tenancies, payments] = await Promise.all([
       supabase.from("rto_units").select("*").eq("owner_user_id", user.id).order("created_at", { ascending: false }),

@@ -15,7 +15,14 @@ const num = (fd: FormData, key: string) => {
   const v = Number(String(fd.get(key) ?? "").replace(/[^\d]/g, ""));
   return Number.isFinite(v) ? v : NaN;
 };
+/** Angka desimal (luas 72,5 m², persen 7,5) */
+const dec = (fd: FormData, key: string) => {
+  const v = Number(String(fd.get(key) ?? "").replace(",", ".").replace(/[^\d.]/g, ""));
+  return Number.isFinite(v) ? v : NaN;
+};
 const isDate = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v);
+/** Unit kos (rto_units) atau rumah tujuan developer (rto_dev_units); foto keduanya di bucket rto-units */
+const isDev = (fd: FormData) => fd.get("kind") === "dev";
 const isMonth = (v: string) => /^\d{4}-\d{2}$/.test(v);
 
 const KNOWN = [
@@ -158,6 +165,110 @@ export async function submitUnit(_: FormState, fd: FormData): Promise<FormState>
   return done("Unit terkirim. Tambahkan foto lewat daftar Unit Anda. Tim barumahID menghubungi Anda untuk jadwal inspeksi.");
 }
 
+// ---------------- Developer mitra: rumah tujuan RTO ----------------
+
+/** Isian rumah tujuan dari form (dipakai developer saat mendaftar dan tim saat mengubah) */
+function devUnitFields(fd: FormData) {
+  const pos = (k: string, max: number) => {
+    const v = dec(fd, k);
+    return v > 0 && v <= max ? v : null;
+  };
+  const dp = dec(fd, "dp_min_pct");
+  return {
+    title: text(fd, "title", 120),
+    project: text(fd, "project", 120) || null,
+    city: text(fd, "city", 80),
+    kecamatan: text(fd, "kecamatan", 80) || null,
+    kelurahan: text(fd, "kelurahan", 80) || null,
+    address_private: text(fd, "address_private", 400) || null,
+    price: num(fd, "price"),
+    dp_min_pct: dp >= 1 && dp <= 50 ? dp : 10,
+    tipe: text(fd, "tipe", 40) || null,
+    land_area: pos("land_area", 99_999),
+    building_area: pos("building_area", 99_999),
+    bedrooms: pos("bedrooms", 20),
+    bathrooms: pos("bathrooms", 20),
+    units_available: pos("units_available", 10_000),
+    legal: text(fd, "legal", 200) || null,
+    facilities: fd
+      .getAll("facilities")
+      .map((f) => String(f).slice(0, 40))
+      .slice(0, 20),
+  };
+}
+
+function devUnitError(f: ReturnType<typeof devUnitFields>): string | null {
+  if (f.title.length < 3) return "Isi nama rumah, minimal 3 huruf.";
+  if (f.city.length < 2) return "Isi kota.";
+  if (!(f.price >= 10_000_000 && f.price < 100_000_000_000)) return "Isi harga rumah.";
+  return null;
+}
+
+export async function submitDevUnit(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase, user, profile } = await getPortalSession();
+  if (!user) return { error: "Sesi berakhir. Silakan masuk lagi." };
+  const team = isTeam(profile);
+  if (!team && profile?.role !== "mitra") return { error: "Khusus akun developer mitra." };
+  const f = devUnitFields(fd);
+  const invalid = devUnitError(f);
+  if (invalid) return { error: invalid };
+  const owner = text(fd, "owner_user_id", 40);
+  const { error } = await supabase.from("rto_dev_units").insert({
+    ...f,
+    owner_user_id: team ? (UUID.test(owner) ? owner : null) : user.id,
+    description: text(fd, "description", 1500) || null,
+  });
+  if (error) return { error: team ? "Rumah tujuan belum tersimpan." : "Rumah belum tersimpan. Pastikan akun Anda terdaftar sebagai developer mitra." };
+  return done(
+    team
+      ? "Rumah tujuan tersimpan dengan status Diajukan."
+      : "Rumah terkirim. Tambahkan foto lewat daftar rumah Anda. Tim barumahID menghubungi Anda untuk peninjauan dan MoU.",
+  );
+}
+
+export async function updateDevUnit(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase } = await requireTeam();
+  const id = text(fd, "id", 40);
+  if (!UUID.test(id)) return { error: "Rumah tidak dikenal." };
+  const f = devUnitFields(fd);
+  const invalid = devUnitError(f);
+  if (invalid) return { error: invalid };
+  const { data, error } = await supabase
+    .from("rto_dev_units")
+    .update({ ...f, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select("id");
+  if (error || !data?.length) return { error: "Data rumah belum tersimpan." };
+  refreshListing();
+  return done("Data rumah tersimpan.");
+}
+
+const DEV_STATUSES = ["diajukan", "ditinjau", "perbaikan", "tayang", "habis", "ditolak", "nonaktif"];
+
+export async function setDevUnitStatus(fd: FormData) {
+  const { supabase } = await requireTeam();
+  const id = text(fd, "id", 60);
+  const status = text(fd, "status", 20);
+  if (!UUID.test(id) || !DEV_STATUSES.includes(status)) fail("Status tidak valid");
+  const { data, error } = await supabase.from("rto_dev_units").update({ status, updated_at: new Date().toISOString() }).eq("id", id).select("id");
+  if (error || !data?.length) fail("Status rumah gagal disimpan");
+  revalidatePath("/portal/dashboard");
+  refreshListing();
+}
+
+export async function setDevUnitReview(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase } = await requireTeam();
+  const id = text(fd, "id", 40);
+  if (!UUID.test(id)) return { error: "Rumah tidak dikenal." };
+  const { data, error } = await supabase
+    .from("rto_dev_units")
+    .update({ review_note: text(fd, "review_note", 1000) || null, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select("id");
+  if (error || !data?.length) return { error: "Catatan belum tersimpan." };
+  return done("Catatan untuk developer tersimpan.");
+}
+
 // ---------------- Foto, deskripsi, dan titik peta unit (pemilik sebelum tayang, tim kapan saja) ----------------
 
 const PHOTO_TYPES: Record<string, { ext: string; magic: (b: Uint8Array) => boolean }> = {
@@ -184,7 +295,7 @@ export async function uploadUnitPhoto(fd: FormData): Promise<{ error?: string }>
   const bucket = supabase.storage.from("rto-units");
   const up = await bucket.upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });
   if (up.error) return { error: "Foto belum terunggah. Setelah unit tayang, foto hanya bisa diubah tim barumahID." };
-  const { error } = await supabase.rpc("rto_unit_add_photo", { p_unit: unit, p_path: path });
+  const { error } = await supabase.rpc(isDev(fd) ? "rto_dev_unit_add_photo" : "rto_unit_add_photo", { p_unit: unit, p_path: path });
   if (error) {
     await bucket.remove([path]);
     return { error: dbMessage(error.message, "Foto belum tersimpan. Coba lagi.") };
@@ -209,9 +320,10 @@ export async function setUnitPhotos(fd: FormData): Promise<{ error?: string }> {
     return { error: "Data foto tidak valid." };
   }
   const list = next as string[];
-  const { data: row } = await supabase.from("rto_units").select("photos").eq("id", unit).maybeSingle();
+  const dev = isDev(fd);
+  const { data: row } = await supabase.from(dev ? "rto_dev_units" : "rto_units").select("photos").eq("id", unit).maybeSingle();
   const before = (row as { photos: string[] } | null)?.photos ?? [];
-  const { error } = await supabase.rpc("rto_unit_set_photos", { p_unit: unit, p_photos: list });
+  const { error } = await supabase.rpc(dev ? "rto_dev_unit_set_photos" : "rto_unit_set_photos", { p_unit: unit, p_photos: list });
   if (error) return { error: dbMessage(error.message, "Foto belum tersimpan. Coba lagi.") };
   const removed = before.filter((p) => !list.includes(p));
   if (removed.length) await supabase.storage.from("rto-units").remove(removed);
@@ -225,7 +337,10 @@ export async function setUnitDescription(_: FormState, fd: FormData): Promise<Fo
   if (!user) return { error: "Sesi berakhir. Silakan masuk lagi." };
   const unit = text(fd, "id", 40);
   if (!UUID.test(unit)) return { error: "Unit tidak dikenal." };
-  const { error } = await supabase.rpc("rto_unit_set_description", { p_unit: unit, p_text: text(fd, "description", 1500) });
+  const { error } = await supabase.rpc(isDev(fd) ? "rto_dev_unit_set_description" : "rto_unit_set_description", {
+    p_unit: unit,
+    p_text: text(fd, "description", 1500),
+  });
   if (error) return { error: dbMessage(error.message, "Deskripsi belum tersimpan.") };
   refreshListing();
   return done("Deskripsi tersimpan.");
@@ -285,7 +400,7 @@ export async function setUnitLocation(_: FormState, fd: FormData): Promise<FormS
   const approxLat = Number((lat + (d * Math.cos(angle)) / 111_320).toFixed(5));
   const approxLng = Number((lng + (d * Math.sin(angle)) / (111_320 * Math.cos((lat * Math.PI) / 180))).toFixed(5));
   const { data, error } = await supabase
-    .from("rto_units")
+    .from(isDev(fd) ? "rto_dev_units" : "rto_units")
     .update({ approx_lat: approxLat, approx_lng: approxLng, updated_at: new Date().toISOString() })
     .eq("id", unit)
     .select("id");
@@ -318,13 +433,27 @@ export async function setTenantPlan(_: FormState, fd: FormData): Promise<FormSta
   const dpTarget = num(fd, "dp_target");
   const contract = text(fd, "contract_signed_at", 10);
   const ppjb = text(fd, "ppjb_signed_at", 10);
+  const devUnit = text(fd, "target_dev_unit_id", 40);
   if (!id) return { error: "Data tidak lengkap." };
+  let price = targetPrice > 0 ? targetPrice : null;
+  let dp = dpTarget > 0 ? dpTarget : null;
+  let devId: string | null = null;
+  // Rumah tujuan dari developer mitra: harga dan target DP terisi dari unit kalau dikosongkan
+  if (UUID.test(devUnit)) {
+    const { data: u } = await supabase.from("rto_dev_units").select("id, price, dp_min_pct").eq("id", devUnit).maybeSingle();
+    const unit = u as { id: string; price: number; dp_min_pct: number } | null;
+    if (!unit) return { error: "Rumah tujuan tidak ditemukan." };
+    devId = unit.id;
+    price = price ?? Number(unit.price);
+    dp = dp ?? Math.round((Number(unit.price) * Number(unit.dp_min_pct)) / 100);
+  }
   const { data, error } = await supabase
     .from("rto_tenants")
     .update({
       path: ["siap-berdaya", "siap-bangun", "siap-beli"].includes(path) ? path : null,
-      target_price: targetPrice > 0 ? targetPrice : null,
-      dp_target: dpTarget > 0 ? dpTarget : null,
+      target_price: price,
+      dp_target: dp,
+      target_dev_unit_id: devId,
       contract_signed_at: isDate(contract) ? contract : null,
       ppjb_signed_at: isDate(ppjb) ? ppjb : null,
       updated_at: new Date().toISOString(),
