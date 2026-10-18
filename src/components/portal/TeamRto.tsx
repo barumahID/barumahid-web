@@ -448,7 +448,7 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                         <AutoSelect action={setDevUnitStatus} fields={{ id: u.id }} name="status" value={u.status} label={`Status rumah ${u.title}`} options={DEV_OPTIONS} />
                       </div>
                       <p className="mt-1.5 text-[12px] text-brand-gray">
-                        Tayangkan setelah legalitas dicek dan MoU Developer ditandatangani. Rumah tayang muncul di tab Siap Berdaya sebagai rumah tujuan.
+                        Tayangkan setelah legalitas dicek dan MoU Developer ditandatangani. Rumah tayang muncul di tab Rumah Berdaya sebagai rumah tujuan.
                         {live && (
                           <>
                             {" "}

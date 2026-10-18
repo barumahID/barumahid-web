@@ -7,7 +7,9 @@ import {
   GUIDES,
   PRICE_LOCK_STAGES,
   READINESS_BANDS,
+  READINESS_ASPECTS,
   REFUND_POLICY,
+  REFUND_PROCESS,
   RTO_DOCUMENTS,
   RTO_ROLES,
   RTO_UNLOCK_MONTHS,
@@ -61,9 +63,12 @@ export default function RtoGuidePage() {
                     {role.name}
                   </h2>
                   <p className={`mt-4 text-[15px] leading-relaxed ${dark ? "text-white/65" : "text-brand-gray"}`}>{g.intro}</p>
-                  <div className="mt-7">
-                    <ButtonLink href={GFORMS[role.form.code]} variant="red">
-                      {role.form.label}
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <ButtonLink href={role.portal.href} variant="red">
+                      {role.portal.label}
+                    </ButtonLink>
+                    <ButtonLink href={GFORMS[role.form.code]} variant={dark ? "outline-light" : "outline-dark"} arrow={false}>
+                      {role.form.label} ({role.form.code})
                     </ButtonLink>
                   </div>
                 </Reveal>
@@ -114,12 +119,21 @@ export default function RtoGuidePage() {
               </Reveal>
             ))}
           </div>
-          <p className="mt-6 text-[13.5px] leading-relaxed text-brand-gray">
-            Lima aspek skor dan bobotnya ada di{" "}
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            {READINESS_ASPECTS.map((a) => (
+              <li key={a.name} className="rounded-2xl bg-white px-4 py-3 card-shadow">
+                <p className="text-[13.5px] font-extrabold text-brand-dark">
+                  {a.name} <span className="font-semibold text-brand-gray">· maks {a.max}</span>
+                </p>
+                <p className="mt-0.5 text-[12.5px] leading-snug text-brand-gray">{a.hint}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-[13.5px] leading-relaxed text-brand-gray">
+            Skor diisi lewat asesmen di dashboard dan dicek tim. Dihitung ulang setiap 6 bulan, atau lebih cepat kalau penghasilan atau asetmu berubah.{" "}
             <Link href="/layanan/rto#level" className="font-bold text-brand-dark underline-offset-4 hover:underline">
-              halaman Rent-to-Own
+              Lihat level perjalanan
             </Link>
-            . Skor dihitung ulang setiap 6 bulan, atau lebih cepat kalau penghasilan atau asetmu berubah.
           </p>
         </div>
       </section>
@@ -130,27 +144,24 @@ export default function RtoGuidePage() {
           <div className="lg:col-span-2">
             <p className="type-micro text-brand-red">Aturan dana</p>
             <h2 className="mt-5 max-w-3xl text-[clamp(1.8rem,3.6vw,2.6rem)] font-extrabold leading-[1.08] tracking-[-0.02em]">
-              Pengembalian saldo dan penguncian harga.
+              Harga terkunci, aturan mundur jelas.
             </h2>
             <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-white/65">
-              Saldo DP adalah dana titipan atas namamu di rekening terpisah atas nama perusahaan. Saldo tidak hilang saat kamu pindah jalur.
+              Saldo DP adalah dana titipan atas namamu di rekening terpisah atas nama perusahaan. Saldo tidak hilang saat kamu pindah jalur, dan
+              tidak bisa dipakai untuk keluar-masuk program sesuka hati.
             </p>
           </div>
           <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 md:p-7">
             <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Kalau kamu mundur dari program</p>
-            <table className="mt-4 w-full text-left text-[14px]">
-              <tbody>
-                {REFUND_POLICY.map((r) => (
-                  <tr key={r.when} className="border-t border-white/10">
-                    <td className="py-2.5 pr-4 text-white/80">{r.when}</td>
-                    <td className="py-2.5 text-right text-[16px] font-extrabold">{r.back}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">
-              Saldo DP itu uangmu, tidak ditahan. Ajukan lewat formulir pengembalian, dicairkan paling lambat 14 hari kerja.
-            </p>
+            <ul className="mt-4 divide-y divide-white/10 border-t border-white/10">
+              {REFUND_POLICY.map((r) => (
+                <li key={r.when} className="grid gap-0.5 py-2.5 text-[14px] sm:grid-cols-2 sm:gap-4">
+                  <span className="font-semibold text-white">{r.when}</span>
+                  <span className="text-white/70">{r.rule}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">{REFUND_PROCESS} Nominal biaya administrasi tertulis di Kontrak RTO.</p>
           </div>
           <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 md:p-7">
             <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga terkunci dari MoU sampai konversi</p>
@@ -182,10 +193,13 @@ export default function RtoGuidePage() {
           <div className="mt-10 overflow-hidden rounded-3xl bg-white card-shadow">
             <ul>
               {RTO_DOCUMENTS.map((d, i) => (
-                <li key={d.name} className={`grid gap-1 px-6 py-5 md:grid-cols-12 md:items-center md:gap-4 ${i ? "border-t border-brand-dark/10" : ""}`}>
-                  <span className="text-[16px] font-extrabold text-brand-dark md:col-span-4">{d.name}</span>
-                  <span className="text-[14px] text-brand-gray md:col-span-4">{d.who}</span>
-                  <span className="text-[14px] text-brand-dark md:col-span-4">{d.when}</span>
+                <li key={d.name} className={`grid gap-1 px-6 py-4 md:grid-cols-12 md:items-center md:gap-4 ${i ? "border-t border-brand-dark/10" : ""}`}>
+                  <span className="md:col-span-4">
+                    <span className="block text-[15.5px] font-extrabold text-brand-dark">{d.name}</span>
+                    <span className="block text-[13px] text-brand-gray">{d.who}</span>
+                  </span>
+                  <span className="text-[14px] text-brand-dark md:col-span-5">{d.what}</span>
+                  <span className="text-[13.5px] text-brand-gray md:col-span-3">{d.when}</span>
                 </li>
               ))}
             </ul>

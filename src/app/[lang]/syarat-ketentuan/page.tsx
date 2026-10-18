@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import Link from "@/i18n/Link";
 import { EMAIL, SITE, WA_ADMIN_1_LABEL } from "@/data/site";
-import { REFUND_POLICY, RTO_CONVERT_YEARS, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE } from "@/data/rto";
+import { REFUND_POLICY, REFUND_PROCESS, RTO_CONVERT_YEARS, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE } from "@/data/rto";
 
 export const metadata: Metadata = {
   title: "Syarat dan Ketentuan",
@@ -58,36 +58,33 @@ const sections: { title: string; body: React.ReactNode }[] = [
             Pengajuan RTO terbuka setelah KTP terverifikasi, {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu di unit mitra, dan Skor Siap Punya Rumah minimal{" "}
             {RTO_UNLOCK_SCORE}. Persetujuan tetap melalui peninjauan tim.
           </li>
-          <li>
-            Sewa biasa adalah harga yang disepakati dengan pemilik ditambah biaya layanan barumahID {Math.round(RTO_PROGRAM_FEE * 100)}%. Pemilik menerima
-            harga yang disepakati itu penuh.
-          </li>
+          <li>Sewa biasa sudah termasuk biaya layanan barumahID. Sewa dibayar ke barumahID, lalu disetorkan ke pemilik sesuai MoU Mitra Penyedia.</li>
           <li>
             Setelah Kontrak RTO ditandatangani, kamu membayar sewa program: sewa biasa ditambah setoran DP. {Math.round(RTO_RATE * 100)}% dari setiap sewa
             program yang lunas dicatat sebagai saldo DP atas namamu.
           </li>
           <li>
-            Saldo DP dipakai untuk uang muka rumah dari developer mitra RTO (jalur Siap Berdaya), atau untuk modal awal pembangunan sampai 25% dari
-            RAB (jalur Siap Bangun). Saldo DP tidak dipakai untuk unit kos atau rumah sewa yang sedang kamu tempati.
+            Saldo DP dipakai untuk uang muka rumah dari developer mitra RTO (jalur Rumah Berdaya), atau untuk modal awal pembangunan sampai 25% dari
+            RAB (jalur Rumah Bangun). Saldo DP tidak dipakai untuk unit kos atau rumah sewa yang sedang kamu tempati.
           </li>
           <li>
-            Rumah tujuan dan jadwal konversi dicatat di MoU dengan developer mitra di awal program, dan harga rumahnya dikunci sampai konversi. Saldo
-            dikonversi jadi DP setelah masa RTO{" "}
-            {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun, sesuai jadwal di MoU.
+            Rumah tujuan, harga terkunci, dan jadwal konversi dicatat di MoU Rumah Tujuan (penyewa, developer mitra, dan barumahID). Saldo dikonversi
+            jadi DP setelah masa RTO {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun, sesuai jadwal di MoU.
           </li>
           <li>
             Saldo DP adalah dana titipan untuk uang muka kepemilikan, disimpan di rekening terpisah atas nama perusahaan. Saldo ini bukan simpanan
             perbankan dan tidak berbunga.
           </li>
           <li>
-            Saldo DP sepenuhnya milikmu dan tidak ditahan. Kalau program berhenti, saldo dikembalikan dengan ketentuan berikut:
+            Kalau program berhenti sebelum konversi:
             <ul className="mt-2 list-[circle] space-y-1 pl-5">
               {REFUND_POLICY.map((r) => (
                 <li key={r.when}>
-                  {r.when}: {r.back}
+                  {r.when}: {r.rule}
                 </li>
               ))}
             </ul>
+            <span className="mt-1 block">{REFUND_PROCESS} Nominal biaya administrasi tertulis di Kontrak RTO.</span>
           </li>
           <li>barumahID tidak menjamin persetujuan KPR. Keputusan tetap ada di bank.</li>
         </ul>
@@ -100,9 +97,10 @@ const sections: { title: string; body: React.ReactNode }[] = [
       <ul>
         <li>Unit yang didaftarkan wajib sesuai kondisi sebenarnya dan lolos inspeksi sebelum tayang.</li>
         <li>Kerja sama diatur dalam MoU Mitra Penyedia atau MoU Developer. Data calon penyewa dan pembeli hanya dibuka setelah NDA ditandatangani.</li>
+        <li>Penyedia kos menerima harga yang disepakati, disetor barumahID sesuai jadwal di MoU. Developer mitra mengunci harga rumah tujuan sampai konversi.</li>
         <li>Dilarang menghubungi pengguna barumahID di luar platform untuk melewati program.</li>
         <li>
-          Listing Siap Beli adalah iklan jual beli di luar program RTO. barumahID mempertemukan pembeli dan penjual. Harga, dokumen, dan transaksi tetap
+          Listing Rumah Beli adalah iklan jual beli di luar program RTO. barumahID mempertemukan pembeli dan penjual. Harga, dokumen, dan transaksi tetap
           kesepakatan kedua pihak.
         </li>
       </ul>

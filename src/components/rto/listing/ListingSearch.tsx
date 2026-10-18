@@ -6,11 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import Link from "@/i18n/Link";
 import { UNIT_FACILITIES } from "@/lib/rto";
-import { CLOSED_STATUS, listingKind, listingPlace, listingPrice, listingRto, listingStatusLabel, priceSortValue, type Listing } from "@/data/listings";
+import { CLOSED_STATUS, listingKind, listingPlace, listingPrice, listingRto, listingTone, priceSortValue, type Listing } from "@/data/listings";
 import ListingCard, { PhotoPlaceholder } from "./ListingCard";
 import SearchPill, { type PillValue } from "./SearchPill";
 import { useSaved } from "./useSaved";
-import { KINDS, priceMain, rpShort, type KindFilter } from "./format";
+import { KINDS, priceMain, type KindFilter } from "./format";
 import type { MapItem } from "./ListingMap";
 
 // Halaman cari unit: kolom cari + filter (Program RTO, fasilitas, tersimpan, urutan), kartu di kiri dan peta pin
@@ -30,13 +30,6 @@ const SORTS: { value: Sort; label: string }[] = [
 ];
 
 /** Teks pin peta: harga ringkas, atau status kalau unit tidak bisa dipesan */
-function pinLabel(l: Listing): string {
-  if (CLOSED_STATUS.includes(l.status)) return listingStatusLabel(l);
-  const p = listingPrice(l);
-  if (p.value === null) return listingStatusLabel(l);
-  return p.max ? `${rpShort(p.value)}+` : rpShort(p.value);
-}
-
 function kindMatch(l: Listing, jenis: KindFilter) {
   if (!jenis) return true;
   if (jenis === "beli") return l.category === "siap-beli";
@@ -106,7 +99,7 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
     () =>
       results
         .filter((l) => l.approx)
-        .map((l) => ({ slug: l.slug, lat: l.approx!.lat, lng: l.approx!.lng, label: pinLabel(l), title: l.title, rto: listingRto(l) && l.status === "tersedia" })),
+        .map((l) => ({ slug: l.slug, lat: l.approx!.lat, lng: l.approx!.lng, title: l.title, tone: listingTone(l) })),
     [results],
   );
   const noPoint = results.length - points.length;

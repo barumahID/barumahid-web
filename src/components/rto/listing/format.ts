@@ -29,7 +29,7 @@ export const KINDS = [
   { value: "rumah", label: "Rumah sewa" },
   { value: "tujuan", label: "Rumah developer RTO" },
   { value: "beli", label: "Rumah dijual" },
-  { value: "lahan", label: "Siap Bangun" },
+  { value: "lahan", label: "Rumah Bangun" },
 ] as const;
 
 export type KindFilter = (typeof KINDS)[number]["value"];

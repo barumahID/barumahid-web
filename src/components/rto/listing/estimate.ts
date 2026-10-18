@@ -3,9 +3,9 @@ import type { Listing } from "@/data/listings";
 import { rpShort } from "./format";
 
 // Estimasi DP per jalur, tampil di bawah harga kartu dan di panel unit:
-// - Siap Berdaya: saldo DP saat konversi setelah 3 tahun RTO (25% sewa program per bulan), arahan user Okt 2026.
-// - Siap Bangun: modal mulai bangun, 25% dari nilai bangunan (RAB).
-// - Siap Beli: DP 10 sampai 20% dari harga.
+// - Rumah Berdaya: saldo DP saat konversi setelah 3 tahun RTO (25% sewa program per bulan), arahan user Okt 2026.
+// - Rumah Bangun: modal mulai bangun, 25% dari nilai bangunan (RAB).
+// - Rumah Beli: DP 10 sampai 20% dari harga.
 // - Rumah tujuan (developer mitra): DP minimal developer (bawaan 10%), dikumpulkan dari saldo DP sewa.
 // Unit sewa yang pemiliknya belum ikut program tetap diberi estimasi dengan label "kalau ikut RTO".
 

@@ -11,13 +11,12 @@ import {
   dpPerMonth,
   kprInstallment,
   maxHomePrice,
-  ownerDeal,
   programRent,
   saldoAfter,
   topUpPerMonth,
 } from "@/data/rto";
 import { rp, rpShort } from "./listing/format";
-import { Chips, RentSplit, Slider } from "./SimParts";
+import { Chips, Slider } from "./SimParts";
 
 // Simulasi lengkap Rent-to-Own (/layanan/rto#simulasi). Model konversi, arahan user Okt 2026:
 // 6 bulan sewa biasa -> RTO terbuka, rumah tujuan dipilih dan MoU dengan developer mitra di awal -> 25% sewa program
@@ -153,11 +152,6 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
               )}
             </p>
           )}
-
-          <div className="mt-5 border-t border-white/10 pt-5">
-            <p className="mb-3 text-[12px] text-white/55">Pembagian sewa program tiap bulan, terbuka:</p>
-            <RentSplit owner={ownerDeal(sewa)} fee={sewa - ownerDeal(sewa)} dp={dpPerMonth(sewa)} dark />
-          </div>
 
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/10 pt-5">
             <div>

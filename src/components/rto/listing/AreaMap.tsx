@@ -1,14 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { MapTone } from "@/data/listings";
 
-// Peta area perkiraan di halaman detail unit (lingkaran, bukan titik persis). Leaflet dimuat hanya di sisi browser.
+// Peta di halaman detail unit: satu titik berwarna status (titik sudah digeser, bukan lokasi persis).
+// Leaflet dimuat hanya di sisi browser.
 
 const ListingMap = dynamic(() => import("./ListingMap"), {
   ssr: false,
   loading: () => <div className="h-full w-full animate-pulse bg-brand-cream-warm" />,
 });
 
-export default function AreaMap({ lat, lng }: { lat: number; lng: number }) {
-  return <ListingMap area={{ lat, lng, radius: 450 }} scrollZoom={false} />;
+export default function AreaMap({ lat, lng, tone }: { lat: number; lng: number; tone: MapTone }) {
+  return <ListingMap area={{ lat, lng, tone }} scrollZoom={false} />;
 }
