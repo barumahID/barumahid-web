@@ -8,9 +8,21 @@ import FacilityIcon from "@/components/rto/listing/FacilityIcon";
 import PhotoMosaic from "@/components/rto/listing/PhotoMosaic";
 import { ListingRow } from "@/components/rto/listing/ListingRows";
 import { SaveTextButton, ShareButton } from "@/components/rto/listing/Buttons";
-import { priceMain, rp } from "@/components/rto/listing/format";
+import { priceMain, rp, rpShort } from "@/components/rto/listing/format";
 import { listingKind, listingPath, listingPlace, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
-import { RTO_PATHS, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE, dpPerMonth, programRent } from "@/data/rto";
+import {
+  RTO_CONVERT_OPTIONS,
+  RTO_CONVERT_YEARS,
+  RTO_PATHS,
+  RTO_PROGRAM_FEE,
+  RTO_RATE,
+  RTO_UNLOCK_MONTHS,
+  RTO_UNLOCK_SCORE,
+  dpPerMonth,
+  maxHomePrice,
+  programRent,
+  saldoAfter,
+} from "@/data/rto";
 import { SITE, waLink } from "@/data/site";
 import { getAllListings, getListing } from "@/lib/rto-listing";
 
@@ -279,7 +291,11 @@ function highlights(l: Listing): { icon: string; title: string; body: string }[]
   const out: { icon: string; title: string; body: string }[] = [];
   if (l.category === "rumah-tujuan") {
     out.push({ icon: ICON.key, title: "Rumah tujuan saldo DP", body: "Peserta RTO bisa memakai saldo DP dari sewa di kos mitra untuk uang muka rumah ini." });
-    out.push({ icon: ICON.shield, title: "Harga dikunci bertahap", body: "Reservasi saat saldo DP 30% target, PPJB dan harga terkunci saat 50%." });
+    out.push({
+      icon: ICON.shield,
+      title: "Harga dicatat di MoU",
+      body: `Rumah dan harganya disepakati lewat MoU di awal. Saldo dikonversi jadi DP setelah ${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun.`,
+    });
   } else if (l.category === "siap-bangun") {
     out.push(
       l.status === "selesai"
@@ -331,6 +347,10 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
           <div className="flex items-center justify-between gap-3 border-t border-brand-dark/15 px-4 py-3">
             <dt className="text-brand-gray">Jadi saldo DP</dt>
             <dd className="font-bold text-credit">{rp(dpPerMonth(l.sewaPerBulan))}/bulan</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-t border-brand-dark/15 px-4 py-3">
+            <dt className="text-brand-gray">Saldo setelah {RTO_CONVERT_YEARS.default} tahun</dt>
+            <dd className="font-bold text-credit">±{rpShort(saldoAfter(l.sewaPerBulan, RTO_CONVERT_YEARS.default))}</dd>
           </div>
         </dl>
       )}
@@ -539,8 +559,16 @@ export default async function ListingDetailPage({ params }: Props) {
                 <ol className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
                   {[
                     { k: `Bulan 1 sampai ${RTO_UNLOCK_MONTHS}`, t: "Sewa biasa", b: `${rp(l.sewaPerBulan)}/bulan, bayar tepat waktu, isi Skor Siap Punya Rumah.` },
-                    { k: "RTO terbuka", t: "Kontrak RTO", b: `Sewa program ${rp(programRent(l.sewaPerBulan))}/bulan, termasuk biaya program ${fee}%.` },
-                    { k: "Setiap bulan", t: "Saldo DP tumbuh", b: `${rp(dp)} tercatat atas namamu, untuk uang muka rumah dari developer mitra.` },
+                    {
+                      k: "RTO terbuka",
+                      t: "Kontrak RTO dan MoU",
+                      b: `Pilih rumah dari developer mitra. Sewa program ${rp(programRent(l.sewaPerBulan))}/bulan, termasuk biaya program ${fee}%.`,
+                    },
+                    {
+                      k: `${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun`,
+                      t: "Saldo jadi DP",
+                      b: `${rp(dp)} tercatat tiap bulan, lalu dikonversi jadi DP rumah tujuan sesuai jadwal di MoU.`,
+                    },
                   ].map((s, i) => (
                     <li key={s.k} className="rounded-2xl border border-brand-dark/10 bg-white p-5">
                       <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-red text-[12px] font-extrabold text-white">{i + 1}</span>
@@ -551,17 +579,23 @@ export default async function ListingDetailPage({ params }: Props) {
                   ))}
                 </ol>
                 <div className="mt-5 rounded-2xl bg-brand-dark p-5 text-white md:p-6">
-                  <p className="text-[13px] font-semibold text-white/60">Saldo DP setelah RTO terbuka</p>
+                  <p className="text-[13px] font-semibold text-white/60">Saldo DP saat konversi, dan rumah yang DP 10%-nya tertutup</p>
                   <div className="mt-4 space-y-3">
-                    {[12, 24, 36].map((m) => (
-                      <div key={m} className="grid grid-cols-[72px_1fr_auto] items-center gap-3 text-[13.5px]">
-                        <span className="text-white/70">{m} bulan</span>
-                        <span className="h-2.5 overflow-hidden rounded-full bg-white/10">
-                          <span className="block h-full rounded-full bg-brand-red" style={{ width: `${(m / 36) * 100}%` }} />
-                        </span>
-                        <span className="font-extrabold tabular-nums">{rp(dp * m)}</span>
-                      </div>
-                    ))}
+                    {RTO_CONVERT_OPTIONS.map((y) => {
+                      const s = saldoAfter(l.sewaPerBulan, y);
+                      return (
+                        <div key={y} className="grid grid-cols-[64px_1fr_auto] items-center gap-3 text-[13.5px]">
+                          <span className="text-white/70">{y} tahun</span>
+                          <span className="h-2.5 overflow-hidden rounded-full bg-white/10">
+                            <span className="block h-full rounded-full bg-brand-red" style={{ width: `${(y / RTO_CONVERT_YEARS.max) * 100}%` }} />
+                          </span>
+                          <span className="text-right">
+                            <span className="block font-extrabold tabular-nums">{rpShort(s)}</span>
+                            <span className="block text-[11.5px] text-white/55">rumah s.d. {rpShort(maxHomePrice(s, 10))}</span>
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                   <p className="mt-4 text-[12px] leading-relaxed text-white/50">
                     Tanpa channel tambahan, dengan harga sewa hari ini. Saldo DP adalah dana titipan, bukan simpanan bank.{" "}
@@ -608,7 +642,7 @@ export default async function ListingDetailPage({ params }: Props) {
                 : l.category === "rumah-tujuan"
                   ? {
                       t: "Sebelum memilih rumah",
-                      items: ["Survei lokasi dan unit bersama tim.", "Reservasi saat saldo DP 30% target, PPJB saat 50%.", "Keputusan KPR tetap ada di bank."],
+                      items: ["Survei lokasi dan unit bersama tim.", "Unit, harga, dan jadwal konversi dicatat di MoU sejak awal.", "Keputusan KPR tetap ada di bank."],
                     }
                   : l.category === "siap-beli"
                   ? {

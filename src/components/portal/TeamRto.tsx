@@ -160,7 +160,7 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                 score,
                 rtoStatus: t?.rto_status ?? "belum",
                 contractSigned: !!t?.contract_signed_at,
-                ppjbSigned: !!t?.ppjb_signed_at,
+                contractSignedAt: t?.contract_signed_at ?? null,
                 dpBalance: balance,
                 dpTarget: t?.dp_target ?? null,
               });

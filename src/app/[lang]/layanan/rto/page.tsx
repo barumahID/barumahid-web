@@ -18,6 +18,7 @@ import {
   RTO_ROLES,
   RTO_UNLOCK_MONTHS,
   RTO_UNLOCK_SCORE,
+  RTO_CONVERT_YEARS,
 } from "@/data/rto";
 import { GFORMS } from "@/data/google-forms";
 import { getAllListings } from "@/lib/rto-listing";
@@ -111,7 +112,10 @@ export default async function RtoPage() {
         title="Sewa hari ini. Miliki hunian nantinya."
         subtitle={
           <>
-            <p>Pilih jalurmu, lihat unitnya, hitung DP-nya. Setelah RTO terbuka, 25% dari setiap sewa dicatat jadi saldo DP atas namamu.</p>
+            <p>
+              Pilih jalurmu, lihat unitnya, hitung DP-nya. Setelah RTO terbuka, 25% dari setiap sewa dicatat jadi saldo DP atas namamu, lalu dikonversi jadi DP
+              rumah setelah {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun.
+            </p>
             <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-white">
               <span className="h-2 w-2 animate-pulse-dot rounded-full bg-brand-red" aria-hidden="true" />
               Tahap persiapan. Pendaftaran sudah dibuka.
@@ -183,11 +187,11 @@ export default async function RtoPage() {
               <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Persentase dari saldo DP. Dicairkan paling lambat 14 hari kerja.</p>
             </div>
             <div className="rounded-3xl bg-white/[0.06] p-6 md:p-7">
-              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga unit dikunci bertahap</p>
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Dari MoU sampai konversi</p>
               <ol className="mt-4 space-y-0">
                 {PRICE_LOCK_STAGES.map((s, i) => (
                   <li key={s.at} className="flex gap-4 border-t border-white/10 py-2.5">
-                    <span className={`w-28 shrink-0 text-[14px] font-extrabold ${i === 2 ? "text-brand-red" : "text-white"}`}>{s.at}</span>
+                    <span className={`w-28 shrink-0 text-[14px] font-extrabold ${i === 1 ? "text-brand-red" : "text-white"}`}>{s.at}</span>
                     <span className="text-[14px] leading-snug text-white/75">{s.body}</span>
                   </li>
                 ))}
@@ -209,11 +213,11 @@ export default async function RtoPage() {
           <Reveal>
             <Heading
               label="Percepatan DP"
-              title="Lima cara saldo DP-mu bertambah."
+              title="Empat cara saldo DP-mu bertambah."
               body="Selain sewa, layanan sehari-hari di ekosistem barumahID akan ikut menambah saldo DP. Dibuka bertahap."
             />
           </Reveal>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {DP_CHANNELS.map((c, i) => (
               <Reveal key={c.name} delay={i * 60}>
                 <li className={`flex h-full flex-col rounded-3xl p-5 ${c.status === "inti" ? "bg-brand-dark text-white" : "border border-brand-dark/10 bg-white"}`}>
@@ -231,7 +235,10 @@ export default async function RtoPage() {
             ))}
           </ul>
           <div id="simulasi" className="mt-12 scroll-mt-24">
-            <p className="mb-6 text-[clamp(1.4rem,2.6vw,1.9rem)] font-extrabold leading-tight text-brand-dark">Hitung sendiri perjalanan DP-mu.</p>
+            <p className="text-[clamp(1.4rem,2.6vw,1.9rem)] font-extrabold leading-tight text-brand-dark">Hitung saldo DP-mu saat konversi.</p>
+            <p className="mb-6 mt-2 max-w-2xl text-[14.5px] leading-relaxed text-brand-gray">
+              Pilih kapan saldo dikonversi jadi DP ({RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun), lalu lihat rumah seharga berapa yang DP-nya tertutup.
+            </p>
             <DPSimulator formAnchor="#daftar" />
           </div>
         </div>
