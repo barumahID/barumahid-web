@@ -4,9 +4,11 @@ import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import type { FormState } from "@/app/portal/actions";
 import {
+  acceptTerms,
   addLedger,
   applyRto,
   createTenancy,
+  recordAgreement,
   recordPayment,
   reportPayment,
   setTenantPlan,
@@ -22,6 +24,9 @@ import {
 import {
   ASSESSMENT_QUESTIONS,
   DEV_FACILITIES,
+  DOC_LABEL,
+  DOC_VERSION,
+  type AgreementDoc,
   UNIT_FACILITIES,
   type RtoDevUnit,
   type RtoTenancy,
@@ -408,6 +413,52 @@ export function DevUnitForm({ unit, owners }: { unit?: RtoDevUnit; owners?: { id
       </fieldset>
       {!unit && <p className="text-[12px] text-brand-gray">Foto dan render diunggah setelah rumah tersimpan, lewat daftar rumah di atas.</p>}
       <Submit tone={unit ? "dark" : "red"}>{unit ? "Simpan data rumah" : "Kirim rumah untuk ditinjau"}</Submit>
+    </form>
+  );
+}
+
+/** Persetujuan NDA secara elektronik oleh mitra (tercatat dengan akun, tanggal, dan versi) */
+export function NdaAcceptForm() {
+  const [state, action] = useActionState(acceptTerms, {});
+  if (state.ok) return <Notice state={state} />;
+  return (
+    <form action={action} className="space-y-2">
+      <Notice state={state} />
+      <input type="hidden" name="doc" value="nda" />
+      <label className="flex items-start gap-2.5 text-[12.5px] leading-snug text-brand-dark">
+        <input type="checkbox" name="agree" required className="mt-0.5 h-4 w-4 accent-[#C53B3B]" />
+        Saya menyetujui Perjanjian Kerahasiaan (NDA) barumahID versi {DOC_VERSION.nda}: menjaga data calon penyewa dan pembeli, harga khusus program, dan
+        dokumen kerja sama.
+      </label>
+      <Submit>Setujui NDA</Submit>
+    </form>
+  );
+}
+
+/** Tim mencatat dokumen yang sudah ditandatangani untuk satu akun */
+export function AgreementRecordForm({ userId, docs }: { userId: string; docs: AgreementDoc[] }) {
+  const [state, action] = useActionState(recordAgreement, {});
+  return (
+    <form action={action} className="space-y-2">
+      <Notice state={state} />
+      <input type="hidden" name="user_id" value={userId} />
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] sm:items-end">
+        <label className={label}>
+          Dokumen
+          <select name="doc" defaultValue={docs[0]} className={input}>
+            {docs.map((d) => (
+              <option key={d} value={d}>
+                {DOC_LABEL[d]} ({DOC_VERSION[d]})
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={label}>
+          Tanggal tanda tangan
+          <input name="signed_on" type="date" defaultValue={today()} required className={input} />
+        </label>
+        <Submit>Catat</Submit>
+      </div>
     </form>
   );
 }

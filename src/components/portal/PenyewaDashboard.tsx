@@ -7,6 +7,8 @@ import {
   ASSESSMENT_MAX,
   ASSESSMENT_QUESTIONS,
   DOC_LABEL,
+  DOC_WHEN,
+  DOCS_BY_ROLE,
   LEDGER_LABEL,
   PAYMENT_STATUS_LABEL,
   RTO_STATUS_LABEL,
@@ -87,7 +89,7 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
   const waAdmin = waLink(`Halo Admin barumahID, saya ${name} (akun penyewa ${profile.email}).`, WA_ADMIN_1);
   const waKtp = waLink(`Halo Admin barumahID, saya ${name} (akun penyewa ${profile.email}). Saya mau verifikasi KTP.`, WA_ADMIN_1);
   const signedDocs = new Map(agreements.map((a) => [a.doc, a]));
-  const docsForTenant: AgreementDoc[] = ["syarat_ketentuan", "perjanjian_sewa", "bast", "kontrak_rto"];
+  const docsForTenant: AgreementDoc[] = DOCS_BY_ROLE.penyewa;
 
   return (
     <div className="space-y-5">
@@ -431,7 +433,7 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
                       {a.method === "klik" ? "Disetujui" : "Ditandatangani"} {dateLabel(a.signed_on ?? a.created_at)}
                     </span>
                   ) : (
-                    <span className="text-[12.5px] text-brand-mute">{d === "kontrak_rto" ? "Setelah RTO disetujui" : "Saat check-in"}</span>
+                    <span className="text-[12.5px] text-brand-mute">{DOC_WHEN[d]}</span>
                   )}
                 </li>
               );
