@@ -29,7 +29,7 @@ export default function DevUnits({ units, pipeline }: { units: RtoDevUnit[]; pip
     { t: "Tinjauan dan MoU", b: "Tim mengecek legalitas, lalu NDA dan MoU Developer ditandatangani." },
     { t: "Tayang sebagai rumah tujuan", b: "Peserta RTO bisa memilih rumah Anda dari halaman Rent-to-Own." },
     {
-      t: "MoU peserta, harga terkunci",
+      t: "MoU Rumah Tujuan, harga terkunci",
       b: `Harga dikunci sampai konversi. Setelah ${RTO_CONVERT_YEARS.min} sampai ${RTO_CONVERT_YEARS.max} tahun, saldo peserta jadi DP, lalu PPJB dan KPR.`,
     },
   ];
@@ -170,7 +170,7 @@ export default function DevUnits({ units, pipeline }: { units: RtoDevUnit[]; pip
       <section className={card}>
         <h2 className="text-[16px] font-extrabold">Daftarkan rumah tujuan</h2>
         <p className="mb-4 mt-0.5 text-[12.5px] text-brand-gray">
-          Rumah ditinjau tim barumahID, lalu tayang di halaman Rent-to-Own setelah NDA dan MoU Developer. Fee konversi mengikuti MoU Developer.
+          Rumah ditinjau tim barumahID, lalu tayang di halaman Rent-to-Own setelah NDA dan MoU Developer. Imbal jasa dibayar saat akad, sesuai MoU Developer.
         </p>
         <DevUnitForm />
       </section>

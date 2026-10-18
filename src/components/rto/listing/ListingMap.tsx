@@ -3,23 +3,24 @@
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
+import type { MapTone } from "@/data/listings";
 
 // Peta listing (Leaflet + ubin OpenStreetMap, atribusi wajib tampil). Dimuat dinamis tanpa SSR dari halaman
 // yang memakainya, jadi halaman lain tidak ikut berat. Dua mode:
-// - pin harga per unit (halaman cari), sinkron dengan kartu yang disorot;
-// - area perkiraan (halaman detail): lingkaran, bukan titik persis. Titik di database sudah digeser.
+// - titik per unit (halaman cari), sinkron dengan kartu yang disorot;
+// - satu titik unit (halaman detail).
+// Titik saja tanpa label (arahan user Okt 2026): biru = buka, hijau = penuh, merah = proses. Titik di database sudah
+// digeser, jadi bukan lokasi persis.
 
 export interface MapItem {
   slug: string;
   lat: number;
   lng: number;
-  label: string;
   title: string;
-  rto?: boolean;
+  tone: MapTone;
 }
 
 const INDONESIA: [number, number] = [-2.5, 118];
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 export default function ListingMap({
   items = [],
@@ -30,7 +31,7 @@ export default function ListingMap({
   scrollZoom = true,
 }: {
   items?: MapItem[];
-  area?: { lat: number; lng: number; radius: number };
+  area?: { lat: number; lng: number; tone: MapTone };
   active?: string | null;
   selected?: string | null;
   onSelect?: (slug: string | null) => void;
@@ -99,8 +100,8 @@ export default function ListingMap({
     };
   }, [scrollZoom]);
 
-  // Pin atau area
-  const areaKey = area ? `${area.lat},${area.lng},${area.radius}` : "";
+  // Titik unit atau satu titik area
+  const areaKey = area ? `${area.lat},${area.lng},${area.tone}` : "";
   useEffect(() => {
     const lib = L.current;
     const m = map.current;
@@ -109,16 +110,11 @@ export default function ListingMap({
     group.clearLayers();
     markers.current.clear();
     if (area) {
-      lib.circle([area.lat, area.lng], { radius: area.radius, color: "#C53B3B", weight: 1.5, fillColor: "#C53B3B", fillOpacity: 0.12 }).addTo(group);
       lib
         .marker([area.lat, area.lng], {
           interactive: false,
           keyboard: false,
-          icon: lib.divIcon({
-            className: "",
-            iconSize: undefined,
-            html: '<span class="map-home"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11 12 4l9 7M5 9.5V20h14V9.5"/></svg></span>',
-          }),
+          icon: lib.divIcon({ className: "", iconSize: undefined, html: `<span class="map-dot is-lg is-${area.tone}"></span>` }),
         })
         .addTo(group);
       fit.current = () => m.setView([area.lat, area.lng], 15);
@@ -129,7 +125,7 @@ export default function ListingMap({
       const marker = lib.marker([it.lat, it.lng], {
         title: it.title,
         riseOnHover: true,
-        icon: lib.divIcon({ className: "", iconSize: undefined, html: `<span class="map-pin${it.rto ? " is-rto" : ""}">${esc(it.label)}</span>` }),
+        icon: lib.divIcon({ className: "", iconSize: undefined, html: `<span class="map-dot is-${it.tone}"></span>` }),
       });
       marker.on("click", (e) => {
         lib.DomEvent.stopPropagation(e);

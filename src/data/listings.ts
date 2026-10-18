@@ -12,7 +12,7 @@
 
 import type { RtoCategory } from "./rto";
 
-/** tersedia, terisi (penuh), segera (belum dibuka), terjual (Siap Beli), selesai (Siap Bangun sudah dibangun) */
+/** tersedia, terisi (penuh), segera (belum dibuka), terjual (Rumah Beli), selesai (Rumah Bangun sudah dibangun) */
 export type ListingStatus = "tersedia" | "terisi" | "segera" | "terjual" | "selesai";
 
 export const STATUS_LABEL: Record<ListingStatus, string> = {
@@ -28,7 +28,7 @@ export const CLOSED_STATUS: ListingStatus[] = ["terisi", "terjual", "selesai"];
 
 /**
  * Kategori listing. Tiga jalur RTO, ditambah "rumah-tujuan": unit dari developer mitra RTO yang jadi tujuan saldo DP
- * peserta Siap Berdaya. Arahan user Okt 2026: Siap Berdaya itu dua sisi seperti marketplace, penyewa ngekos di unit
+ * peserta Rumah Berdaya. Arahan user Okt 2026: Rumah Berdaya itu dua sisi seperti marketplace, penyewa ngekos di unit
  * penyedia kos, lalu saldo DP-nya untuk rumah developer mitra (bukan kos yang disewa).
  */
 export type ListingCategory = RtoCategory | "rumah-tujuan";
@@ -138,7 +138,7 @@ export interface SiapBangunListing extends ListingBase {
   rekomendasi?: string;
 }
 
-/** Rumah dari developer mitra RTO: tujuan uang muka dari saldo DP peserta Siap Berdaya */
+/** Rumah dari developer mitra RTO: tujuan uang muka dari saldo DP peserta Rumah Berdaya */
 export interface RumahTujuanListing extends ListingBase {
   category: "rumah-tujuan";
   harga: number;
@@ -156,7 +156,7 @@ export interface RumahTujuanListing extends ListingBase {
 
 export type Listing = SiapBerdayaListing | SiapBeliListing | SiapBangunListing | RumahTujuanListing;
 
-/** Jalur RTO tempat listing tampil (rumah tujuan ikut tab Siap Berdaya) */
+/** Jalur RTO tempat listing tampil (rumah tujuan ikut tab Rumah Berdaya) */
 export function listingPath(l: Listing): RtoCategory {
   return l.category === "rumah-tujuan" ? "siap-berdaya" : l.category;
 }
@@ -275,7 +275,7 @@ export const LISTINGS: Listing[] = [
     luasBangunan: 193,
     rekomendasi: "Kos 2 lantai (fase 1), struktur siap dikembangkan sampai 4 lantai",
     description:
-      "Rumah lama di Kapuk, Cengkareng yang direncanakan jadi kos lewat jalur Siap Bangun. Saat ini masih tahap penawaran jasa desain dan analisa struktur dengan pemilik, bersama Jururancang.\nRancangan tahap awal: kos 2 lantai di lahan 7 x 14 m, luas bangunan 193 m², 8 kamar per lantai (16 kamar), 3 kamar mandi bersama per lantai.\nStrukturnya dihitung untuk 4 lantai sejak awal. Jadi saat lantai 3 dan 4 dibangun nanti, struktur bawah tidak perlu dibongkar.",
+      "Rumah lama di Kapuk, Cengkareng yang direncanakan jadi kos lewat jalur Rumah Bangun. Saat ini masih tahap penawaran jasa desain dan analisa struktur dengan pemilik, bersama Jururancang.\nRancangan tahap awal: kos 2 lantai di lahan 7 x 14 m, luas bangunan 193 m², 8 kamar per lantai (16 kamar), 3 kamar mandi bersama per lantai.\nStrukturnya dihitung untuk 4 lantai sejak awal. Jadi saat lantai 3 dan 4 dibangun nanti, struktur bawah tidak perlu dibongkar.",
     rincian: [
       {
         title: "Rencana bangunan",
@@ -319,7 +319,7 @@ export const LISTINGS: Listing[] = [
     kamarMandi: 3,
     fasilitas: ["Ruang tamu", "Dapur", "Garasi mobil"],
     description:
-      "Contoh jalur Siap Bangun: rumah 2 lantai yang sudah berdiri di atas lahan milik pemiliknya sendiri. Luas bangunan sekitar 128 m² dengan 5 kamar tidur, 3 kamar mandi, carport, taman, dan balkon. Nilainya di kisaran Rp750 juta sampai Rp1 miliar.\nFoto pertama adalah rumahnya yang sudah jadi, foto lainnya render desainnya.\nPunya lahan dan ingin membangun bertahap? Ceritakan rencanamu ke tim barumahID.",
+      "Contoh jalur Rumah Bangun: rumah 2 lantai yang sudah berdiri di atas lahan milik pemiliknya sendiri. Luas bangunan sekitar 128 m² dengan 5 kamar tidur, 3 kamar mandi, carport, taman, dan balkon. Nilainya di kisaran Rp750 juta sampai Rp1 miliar.\nFoto pertama adalah rumahnya yang sudah jadi, foto lainnya render desainnya.\nPunya lahan dan ingin membangun bertahap? Ceritakan rencanamu ke tim barumahID.",
     rincian: [
       {
         title: "Bangunan",
@@ -359,7 +359,15 @@ export function listingStatusLabel(l: Listing): string {
   return l.statusLabel ?? STATUS_LABEL[l.status];
 }
 
-/** Bisa diikutkan program RTO (unit Siap Berdaya yang pemiliknya bersedia) */
+/** Bisa diikutkan program RTO (unit Rumah Berdaya yang pemiliknya bersedia) */
+/** Warna titik di peta (arahan user Okt 2026): biru = buka, hijau = penuh/terjual/selesai, merah = masih proses */
+export type MapTone = "open" | "full" | "process";
+export function listingTone(l: Listing): MapTone {
+  if (l.status === "tersedia") return "open";
+  if (l.status === "segera") return "process";
+  return "full";
+}
+
 export function listingRto(l: Listing): boolean {
   return l.category === "siap-berdaya" && l.rtoReady !== false;
 }

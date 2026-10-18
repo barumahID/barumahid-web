@@ -9,12 +9,11 @@ import PhotoMosaic from "@/components/rto/listing/PhotoMosaic";
 import { ListingRow } from "@/components/rto/listing/ListingRows";
 import { SaveTextButton, ShareButton } from "@/components/rto/listing/Buttons";
 import { priceMain, rp, rpShort } from "@/components/rto/listing/format";
-import { listingKind, listingPath, listingPlace, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
+import { listingKind, listingPath, listingPlace, listingPrice, listingRto, listingStatusLabel, listingTone, type Listing } from "@/data/listings";
 import {
   RTO_CONVERT_OPTIONS,
   RTO_CONVERT_YEARS,
   RTO_PATHS,
-  RTO_PROGRAM_FEE,
   RTO_RATE,
   RTO_UNLOCK_MONTHS,
   RTO_UNLOCK_SCORE,
@@ -238,7 +237,6 @@ function facts(l: Listing): string[] {
   ].filter(Boolean);
 }
 
-const fee = Math.round(RTO_PROGRAM_FEE * 100);
 const ratePct = Math.round(RTO_RATE * 100);
 
 function Svg({ d }: { d: string }) {
@@ -254,7 +252,7 @@ function statusNote(l: Listing): string | null {
   if (l.status === "terisi")
     return l.availableFrom ? `Sedang dikontrak. Tersedia lagi mulai ${l.availableFrom}. Kamu bisa pesan duluan.` : "Unit ini sedang penuh. Kami kabari kalau ada kamar kosong.";
   if (l.status === "terjual") return "Rumah ini sudah terjual. Cari rumah serupa? Ceritakan kebutuhanmu ke tim kami.";
-  if (l.status === "selesai") return "Sudah dibangun di lahan milik pemiliknya lewat jalur Siap Bangun.";
+  if (l.status === "selesai") return "Sudah dibangun di lahan milik pemiliknya lewat jalur Rumah Bangun.";
   if (l.status === "segera") return `${listingStatusLabel(l)}. Belum bisa dipesan, kami kabari saat dibuka.`;
   return null;
 }
@@ -264,7 +262,7 @@ function primaryCta(l: Listing, waText: string): { label: string; text: string }
   const unit = `"${l.title}" (${SITE.url}/layanan/rto/${l.slug})`;
   if (l.status === "terisi") return { label: "Kabari saya", text: `Halo barumahID, saya tertarik dengan unit ${unit}. Tolong kabari kalau sudah bisa disewa.` };
   if (l.status === "terjual") return { label: "Cari rumah serupa", text: `Halo barumahID, saya cari rumah seperti ${unit}. Bisa dibantu?` };
-  if (l.status === "selesai") return { label: "Konsultasi Siap Bangun", text: `Halo barumahID, saya punya lahan dan ingin membangun seperti ${unit}. Bisa konsultasi?` };
+  if (l.status === "selesai") return { label: "Konsultasi Rumah Bangun", text: `Halo barumahID, saya punya lahan dan ingin membangun seperti ${unit}. Bisa konsultasi?` };
   if (l.status === "segera") return { label: "Kabari saya", text: `Halo barumahID, saya tertarik dengan ${unit}. Tolong kabari saat sudah dibuka.` };
   if (l.category === "rumah-tujuan")
     return { label: "Tanya rumah ini", text: `Halo barumahID, saya tertarik dengan ${unit} sebagai rumah tujuan DP program RTO. Bisa dijelaskan?` };
@@ -282,7 +280,7 @@ const ICON = {
 const PARTNER: Record<Listing["category"], { title: string; body: string }> = {
   "siap-berdaya": { title: "Mitra penyedia barumahID", body: "Unit dari jaringan mitra penyedia kos dan rumah sewa barumahID." },
   "siap-beli": { title: "Jaringan rumah barumahID", body: "Rumah dari jaringan pemilik dan developer mitra barumahID." },
-  "siap-bangun": { title: "Proyek Siap Bangun", body: "Dirancang dan didampingi tim Jasa Konstruksi barumahID bersama pemilik lahan." },
+  "siap-bangun": { title: "Proyek Rumah Bangun", body: "Dirancang dan didampingi tim Jasa Konstruksi barumahID bersama pemilik lahan." },
   "rumah-tujuan": { title: "Developer mitra RTO", body: "Unit dari developer yang bekerja sama di program Rent-to-Own barumahID." },
 };
 
@@ -299,10 +297,10 @@ function highlights(l: Listing): { icon: string; title: string; body: string }[]
   } else if (l.category === "siap-bangun") {
     out.push(
       l.status === "selesai"
-        ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Siap Bangun: rumah dibangun di lahan milik pemiliknya. Foto pertama rumah jadinya, sisanya render desain." }
+        ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Rumah Bangun: rumah dibangun di lahan milik pemiliknya. Foto pertama rumah jadinya, sisanya render desain." }
         : { icon: ICON.plan, title: "Desain dari tim barumahID", body: "Denah dan visualisasi 3D dibuat untuk rencana ini. Foto terakhir menunjukkan kondisi bangunan saat ini." },
     );
-    out.push({ icon: ICON.key, title: "Bangun bertahap", body: "Jalur Siap Bangun cocok untuk pemilik lahan yang ingin membangun sambil mengumpulkan modal." });
+    out.push({ icon: ICON.key, title: "Bangun bertahap", body: "Jalur Rumah Bangun cocok untuk pemilik lahan yang ingin membangun sambil mengumpulkan modal." });
   } else if (l.status === "terjual") {
     out.push({ icon: ICON.key, title: "Sudah terjual", body: "Rumah ini sudah laku. Masih bisa jadi gambaran harga dan tipe rumah di area ini." });
   } else {
@@ -382,8 +380,7 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
       {rto && (
         <p className="mt-4 border-t border-brand-dark/10 pt-4 text-[12.5px] leading-relaxed text-brand-gray">
           Saldo DP mulai dicatat setelah RTO terbuka: KTP terverifikasi, {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu, dan skor minimal {RTO_UNLOCK_SCORE}.
-          Sewa program = sewa biasa + setoran DP, dan sewa biasa sudah termasuk biaya layanan barumahID {fee}%. Saldo DP dipakai untuk rumah dari developer
-          mitra, bukan unit ini.
+          Sewa program = sewa biasa + setoran DP. Saldo DP dipakai untuk rumah dari developer mitra, bukan unit ini.
         </p>
       )}
     </div>
@@ -621,13 +618,13 @@ export default async function ListingDetailPage({ params }: Props) {
           <p className="mt-1 text-[15px] text-brand-gray">{place}</p>
           {l.approx ? (
             <div className="mt-5 h-[320px] overflow-hidden rounded-2xl md:h-[420px]">
-              <AreaMap lat={l.approx.lat} lng={l.approx.lng} />
+              <AreaMap lat={l.approx.lat} lng={l.approx.lng} tone={listingTone(l)} />
             </div>
           ) : (
             <p className="mt-4 rounded-2xl bg-white px-5 py-4 text-[14px] text-brand-gray">Titik peta menyusul setelah survei lokasi.</p>
           )}
           <p className="mt-3 text-[13px] text-brand-gray">
-            {l.approx ? "Lingkaran di peta adalah area perkiraan. " : ""}Alamat lengkap dibagikan saat jadwal survei.
+            {l.approx ? "Titik di peta adalah area perkiraan. " : ""}Alamat lengkap dibagikan saat jadwal survei.
           </p>
         </section>
 

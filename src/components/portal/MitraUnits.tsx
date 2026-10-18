@@ -96,7 +96,8 @@ export default function MitraUnits({ units, tenancies, payments }: { units: RtoU
       <section className={card}>
         <h2 className="text-[16px] font-extrabold">Daftarkan unit</h2>
         <p className="mb-4 mt-0.5 text-[12.5px] text-brand-gray">
-          Unit diperiksa tim paling lambat 5 hari kerja setelah dikirim. Unit tayang di website setelah inspeksi dan MoU Mitra Penyedia.
+          Unit diperiksa tim paling lambat 5 hari kerja setelah dikirim, lalu tayang setelah inspeksi dan MoU Mitra Penyedia. Sewa ditagih barumahID dan
+          disetorkan ke Anda setiap bulan sesuai jadwal di MoU.
         </p>
         <UnitSubmitForm />
       </section>

@@ -96,7 +96,7 @@ const pointOf = (lat: number | string | null, lng: number | string | null) => {
 
 const numOrUndef = (v: number | string | null) => (v === null || v === undefined ? undefined : Number(v));
 
-/** Rumah tujuan dari developer mitra jadi listing "rumah-tujuan" (tampil di tab Siap Berdaya) */
+/** Rumah tujuan dari developer mitra jadi listing "rumah-tujuan" (tampil di tab Rumah Berdaya) */
 function toDevListing(u: PublicDevUnitRow): Listing {
   const rows: [string, string][] = [];
   if (u.project) rows.push(["Proyek", u.project]);

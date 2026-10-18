@@ -131,8 +131,8 @@ export function ApplyRtoForm() {
       <div className="grid gap-2 sm:grid-cols-2">
         {(
           [
-            { id: "siap-berdaya", title: "Siap Berdaya", hint: "Belum punya lahan. DP menuju KPR bersama developer mitra." },
-            { id: "siap-bangun", title: "Siap Bangun", hint: "Punya lahan. Modal menuju bangun bersama Jasa Konstruksi barumahID." },
+            { id: "siap-berdaya", title: "Rumah Berdaya", hint: "Belum punya lahan. DP menuju KPR bersama developer mitra." },
+            { id: "siap-bangun", title: "Rumah Bangun", hint: "Punya lahan. Modal menuju bangun bersama Jasa Konstruksi barumahID." },
           ] as const
         ).map((o) => (
           <button
@@ -190,7 +190,7 @@ export function UnitSubmitForm() {
         <div>
           <label htmlFor="u-rent" className={label}>Harga sewa yang Anda terima per bulan (Rp)</label>
           <input id="u-rent" name="rent_monthly" inputMode="numeric" required className={input} />
-          <p className="mt-1 text-[11.5px] leading-snug text-brand-gray">Harga final disepakati saat negosiasi. Di website tampil ditambah biaya layanan barumahID 9%.</p>
+          <p className="mt-1 text-[11.5px] leading-snug text-brand-gray">Harga final disepakati saat negosiasi dan Anda terima penuh. Harga di website sudah termasuk biaya layanan barumahID.</p>
         </div>
         <div>
           <label htmlFor="u-rooms" className={label}>Jumlah kamar atau unit</label>
@@ -458,9 +458,9 @@ export function TenantPlanForm({ tenant, devUnits = [] }: { tenant: RtoTenant; d
           <label className={label}>Jalur</label>
           <select name="path" defaultValue={tenant.path ?? ""} className={input}>
             <option value="">Belum ditentukan</option>
-            <option value="siap-berdaya">Siap Berdaya</option>
-            <option value="siap-bangun">Siap Bangun</option>
-            <option value="siap-beli">Siap Beli</option>
+            <option value="siap-berdaya">Rumah Berdaya</option>
+            <option value="siap-bangun">Rumah Bangun</option>
+            <option value="siap-beli">Rumah Beli</option>
           </select>
         </div>
         <div>

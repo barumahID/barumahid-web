@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Chips, RentSplit, Row, Slider } from "@/components/rto/SimParts";
+import { Chips, Row, Slider } from "@/components/rto/SimParts";
 import {
   DP_BOOST_TOTAL,
   DP_PCT_OPTIONS,
@@ -13,7 +13,6 @@ import {
   dpPerMonth,
   kprInstallment,
   maxHomePrice,
-  ownerDeal,
   programRent,
   rentForDp,
   saldoAfter,
@@ -24,12 +23,12 @@ import { CLOSED_STATUS, listingStatusLabel, type Listing } from "@/data/listings
 import { rp, rpShort } from "./format";
 
 // Simulasi di panel unit, mengikuti model bisnis dan model konversi (arahan user Okt 2026):
-// - Siap Berdaya (kos/rumah sewa): sewa di unit ini, 25% sewa program jadi saldo DP, MoU rumah tujuan dengan developer
+// - Rumah Berdaya (kos/rumah sewa): sewa di unit ini, 25% sewa program jadi saldo DP, MoU rumah tujuan dengan developer
 //   mitra di awal, lalu setelah 2 sampai 4 tahun saldo dikonversi jadi DP rumah itu (bukan unit yang disewa).
 //   Hasil: saldo saat konversi, harga rumah yang DP-nya tertutup, dan perkiraan cicilan KPR.
 // - Rumah tujuan (developer mitra): harga tetap; isian sewa kos dan lama RTO, hasil: DP tertutup atau kurang berapa.
-// - Siap Bangun: saldo 2 sampai 4 tahun ditambah tabungan sendiri sampai 25% RAB, lalu pembangunan dimulai.
-// - Siap Beli: listing jual beli di luar program RTO; simulasi DP dan cicilan KPR untuk pembeli.
+// - Rumah Bangun: saldo 2 sampai 4 tahun ditambah tabungan sendiri sampai 25% RAB, lalu pembangunan dimulai.
+// - Rumah Beli: listing jual beli di luar program RTO; simulasi DP dan cicilan KPR untuk pembeli.
 // Semua angka ilustrasi; ketentuan final ada di Kontrak RTO, MoU, dan keputusan bank.
 
 const ratePct = Math.round(RTO_RATE * 100);
@@ -40,7 +39,7 @@ function Eco({ on, set }: { on: boolean; set: (v: boolean) => void }) {
     <label className="flex items-start gap-2.5 rounded-2xl border border-brand-dark/10 bg-white p-4 text-[13.5px] text-brand-dark">
       <input type="checkbox" checked={on} onChange={(e) => set(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#C53B3B]" />
       <span>
-        Tambah channel percepatan DP (laundry, pilah sampah, jasa titip dan pindahan), sekitar {rp(DP_BOOST_TOTAL)}/bulan.{" "}
+        Tambah channel percepatan (Kosanesia Laundry, Angkut, GreenPoint), sekitar {rp(DP_BOOST_TOTAL)}/bulan.{" "}
         <span className="text-brand-gray">Segera, belum berjalan.</span>
       </span>
     </label>
@@ -81,9 +80,6 @@ function Berdaya({ rent }: { rent: number }) {
       <div className="rounded-2xl bg-white p-4">
         <Row label={`Sewa biasa (${RTO_UNLOCK_MONTHS} bulan pertama)`} value={`${rp(rent)}/bln`} />
         <Row label="Sewa program RTO (sewa biasa + setoran DP)" value={`${rp(programRent(rent))}/bln`} />
-        <div className="pb-3 pt-1">
-          <RentSplit owner={ownerDeal(rent)} fee={rent - ownerDeal(rent)} dp={dpPerMonth(rent)} />
-        </div>
         <Row label={`Jadi saldo DP (${ratePct}% sewa program)${eco ? " + channel" : ""}`} value={`${rp(dpPerMonth(rent) + extra)}/bln`} tone="credit" />
         <Row label={`Saldo setelah ${years} tahun`} value={rp(saldo)} tone="credit" />
         <Row label={`Rumah yang bisa dituju (DP ${pct}%)`} value={`s.d. ${rpShort(max)}`} strong tone="red" />
@@ -131,7 +127,7 @@ function Tujuan({ price, dpMin }: { price: number; dpMin: number }) {
   );
 }
 
-/** Siap Bangun: saldo DP dari sewa ditambah tabungan sendiri sampai 25% RAB */
+/** Rumah Bangun: saldo DP dari sewa ditambah tabungan sendiri sampai 25% RAB */
 function Bangun({ start }: { start: number }) {
   const [rab, setRab] = useState(start);
   const [rent, setRent] = useState(1_500_000);
@@ -178,7 +174,7 @@ function Bangun({ start }: { start: number }) {
   );
 }
 
-/** Siap Beli: listing jual beli (di luar RTO), simulasi untuk pembeli */
+/** Rumah Beli: listing jual beli (di luar RTO), simulasi untuk pembeli */
 function Beli({ start }: { start: number }) {
   const [harga, setHarga] = useState(start);
   const [pct, setPct] = useState(10);
