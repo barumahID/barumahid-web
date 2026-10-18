@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import Link from "@/i18n/Link";
-import { dpPerMonth } from "@/data/rto";
 import { listingKind, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
 import { SaveHeart } from "./Buttons";
-import { priceMain, rp } from "./format";
+import { dpEstimate } from "./estimate";
+import { priceMain } from "./format";
 
 // Kartu listing gaya katalog hunian: foto bisa digeser (panah saat disorot di desktop, usap di HP), hati untuk
 // menyimpan, lencana Program RTO untuk unit yang pemiliknya bersedia ikut program.
@@ -44,15 +44,47 @@ const BADGE: Record<string, string> = {
   segera: "bg-build text-white",
 };
 
+/** Area foto: tautan ke detail, atau tombol pilih di mode platform */
+function PhotoArea({ href, onSelect, children }: { href: string; onSelect?: () => void; children: React.ReactNode }) {
+  if (onSelect)
+    return (
+      <button type="button" tabIndex={-1} aria-hidden onClick={onSelect} className="absolute inset-0 block w-full cursor-pointer text-left">
+        {children}
+      </button>
+    );
+  return (
+    <Link href={href} tabIndex={-1} aria-hidden className="absolute inset-0">
+      {children}
+    </Link>
+  );
+}
+
+function TextArea({ href, onSelect, active, children }: { href: string; onSelect?: () => void; active: boolean; children: React.ReactNode }) {
+  if (onSelect)
+    return (
+      <button type="button" onClick={onSelect} aria-pressed={active} className="mt-3 block w-full cursor-pointer text-left">
+        {children}
+      </button>
+    );
+  return (
+    <Link href={href} className="mt-3 block">
+      {children}
+    </Link>
+  );
+}
+
 export default function ListingCard({
   l,
   active = false,
   onHover,
+  onSelect,
   sizes = "(min-width: 1280px) 22vw, (min-width: 640px) 45vw, 90vw",
 }: {
   l: Listing;
   active?: boolean;
   onHover?: (slug: string | null) => void;
+  /** Mode platform: klik kartu memilih unit (panel simulasi dan form), bukan pindah halaman */
+  onSelect?: () => void;
   sizes?: string;
 }) {
   const href = `/layanan/rto/${l.slug}`;
@@ -63,6 +95,7 @@ export default function ListingCard({
   const rto = listingRto(l);
   const place = l.kelurahan || l.kecamatan || l.city;
   const facts = cardFacts(l);
+  const estimate = dpEstimate(l);
 
   const go = (dir: 1 | -1) => {
     const el = track.current;
@@ -76,7 +109,7 @@ export default function ListingCard({
           active ? "shadow-[0_0_0_2px_#141414]" : ""
         }`}
       >
-        <Link href={href} tabIndex={-1} aria-hidden className="absolute inset-0">
+        <PhotoArea href={href} onSelect={onSelect}>
           <div
             ref={track}
             onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))}
@@ -92,7 +125,7 @@ export default function ListingCard({
               <PhotoPlaceholder />
             )}
           </div>
-        </Link>
+        </PhotoArea>
 
         {/* Lencana */}
         {BADGE[l.status] ? (
@@ -143,7 +176,7 @@ export default function ListingCard({
         )}
       </div>
 
-      <Link href={href} className="mt-3 block">
+      <TextArea href={href} onSelect={onSelect} active={active}>
         <h3 className="truncate text-[15px] font-bold text-brand-dark">
           {listingKind(l)} di {place}
         </h3>
@@ -154,12 +187,20 @@ export default function ListingCard({
           <span className="font-extrabold">{priceMain(price)}</span>
           {price.suffix && price.value !== null && <span className="text-brand-gray"> {price.suffix.replace("/", "/ ")}</span>}
         </p>
-        {l.status === "terisi" && l.availableFrom ? (
+        {l.status === "terisi" && l.availableFrom && (
           <p className="truncate text-[13px] font-semibold text-build">Tersedia lagi mulai {l.availableFrom}</p>
-        ) : rto && l.category === "siap-berdaya" && l.status === "tersedia" ? (
-          <p className="truncate text-[13px] font-semibold text-credit">Saldo DP {rp(dpPerMonth(l.sewaPerBulan))}/bln saat RTO</p>
-        ) : null}
-      </Link>
+        )}
+        {estimate && (
+          <p className="truncate text-[13px] text-credit">
+            {estimate.label}: <span className="font-bold">{estimate.value}</span>
+          </p>
+        )}
+      </TextArea>
+      {onSelect && (
+        <Link href={href} className="mt-1.5 inline-block text-[12.5px] font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
+          Lihat detail unit
+        </Link>
+      )}
     </article>
   );
 }

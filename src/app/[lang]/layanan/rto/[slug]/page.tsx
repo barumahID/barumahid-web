@@ -307,7 +307,7 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
             Buat akun penyewa
           </ButtonLink>
         ) : (
-          <ButtonLink href="/layanan/rto#jalur" variant="outline-dark" arrow={false} className="w-full">
+          <ButtonLink href={`/layanan/rto#${l.category}`} variant="outline-dark" arrow={false} className="w-full">
             Pelajari jalur {RTO_PATHS.find((p) => p.id === l.category)?.name}
           </ButtonLink>
         )}
