@@ -1,5 +1,4 @@
 import { LISTINGS, type Listing } from "@/data/listings";
-import { regularRent } from "@/data/rto";
 
 // Listing RTO publik (server saja). Unit kos dan rumah sewa dari mitra penyedia kos dibaca dari database lewat
 // fungsi rto_public_units: hanya unit tayang/penuh yang lolos inspeksi, dan hanya kolom aman (tanpa alamat,
@@ -25,7 +24,8 @@ interface PublicUnitRow {
   city: string;
   kecamatan: string | null;
   kelurahan: string | null;
-  rent_monthly: number | string;
+  /** Sewa biasa yang tampil, dihitung di database dari harga deal (harga deal sendiri tidak dikirim) */
+  rent_regular: number | string;
   rooms: number | null;
   facilities: string[] | null;
   rto_ready: boolean;
@@ -137,8 +137,7 @@ function toListing(u: PublicUnitRow): Listing {
     status: u.status === "penuh" ? "terisi" : "tersedia",
     photos: photosOf(u.photos, u.title),
     description: u.description ?? undefined,
-    // rent_monthly = harga deal yang diterima pemilik; yang tampil di listing = sewa biasa (deal + layanan barumahID)
-    sewaPerBulan: regularRent(Number(u.rent_monthly)),
+    sewaPerBulan: Number(u.rent_regular),
     kind: u.kind,
     rooms: u.rooms ?? undefined,
     rtoReady: u.rto_ready,

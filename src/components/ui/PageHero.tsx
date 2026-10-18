@@ -4,7 +4,7 @@ import Image from "next/image";
 // Foto proyek dipakai sebagai "bayangan" dengan overlay gelap 75-85% (arahan visual PRD).
 // `slides`: beberapa foto yang berganti pelan (crossfade + zoom halus, CSS saja). Overlay dibuat sedikit
 // lebih terang di sisi kanan supaya fotonya terasa, teks tetap terbaca di sisi kiri.
-// `backdrop`: lapisan latar bergerak di atas foto dan overlay, di bawah teks (mis. RtoHeroMotion).
+// `backdrop`: lapisan latar bergerak di atas foto dan overlay, di bawah teks (mis. LightStreaks).
 
 const SLIDE_SECONDS = 6;
 

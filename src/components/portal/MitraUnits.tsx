@@ -1,6 +1,5 @@
 import { UNIT_OWNER_EDITABLE, UNIT_STATUS_LABEL, UNIT_STATUS_TONE, monthLabel, rupiah, type RtoPayment, type RtoTenancy, type RtoUnit } from "@/lib/rto";
 import { unitPhotoUrl } from "@/lib/rto-listing";
-import { regularRent } from "@/data/rto";
 import { DescriptionForm, UnitSubmitForm } from "./RtoForms";
 import UnitPhotos from "./UnitPhotos";
 
@@ -46,7 +45,7 @@ export default function MitraUnits({ units, tenancies, payments }: { units: RtoU
                 </div>
                 <p className="text-[13px] font-semibold text-brand-dark md:col-span-2">
                   {rupiah(u.rent_monthly)}/bln
-                  <span className="block text-[11.5px] font-normal text-brand-gray">diterima Anda · tampil {rupiah(regularRent(u.rent_monthly))}</span>
+                  <span className="block text-[11.5px] font-normal text-brand-gray">diterima Anda · tampil {rupiah(u.rent_regular)}</span>
                 </p>
                 <p className="text-[12.5px] text-brand-gray md:col-span-2">{activeByUnit.get(u.id) ?? 0} penyewa aktif</p>
                 <div className="flex flex-wrap items-center gap-2 md:col-span-3 md:justify-end">

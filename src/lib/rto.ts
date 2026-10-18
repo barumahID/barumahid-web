@@ -53,7 +53,10 @@ export interface RtoUnit {
   kecamatan: string | null;
   kelurahan: string | null;
   address_private: string | null;
+  /** Harga deal yang diterima pemilik */
   rent_monthly: number;
+  /** Sewa biasa yang tampil di listing (kolom hasil hitung di database) */
+  rent_regular: number;
   rooms: number | null;
   facilities: string[];
   rto_ready: boolean;

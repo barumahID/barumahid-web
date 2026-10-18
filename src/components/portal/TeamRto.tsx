@@ -1,5 +1,5 @@
 import { confirmPayment, endTenancy, rejectPayment, setDevUnitStatus, setRtoStatus, setUnitStatus, verifyKtp } from "@/app/portal/rto-actions";
-import { RTO_LEVELS, RTO_PATHS, programRent, regularRent } from "@/data/rto";
+import { RTO_LEVELS, RTO_PATHS, programRent } from "@/data/rto";
 import type { Profile } from "@/lib/portal";
 import {
   DEV_UNIT_STATUS_LABEL,
@@ -364,7 +364,7 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                   <span className="min-w-[200px] font-bold text-brand-dark">{u.title}</span>
                   <span className="text-brand-gray">{[u.kelurahan, u.kecamatan, u.city].filter(Boolean).join(", ")}</span>
                   <span className="text-brand-dark">
-                    {rupiah(u.rent_monthly)}/bln ke pemilik · sewa biasa {rupiah(regularRent(u.rent_monthly))} · sewa program {rupiah(programRent(regularRent(u.rent_monthly)))}
+                    {rupiah(u.rent_monthly)}/bln ke pemilik · sewa biasa {rupiah(u.rent_regular)} · sewa program {rupiah(programRent(Number(u.rent_regular)))}
                   </span>
                   <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-bold ${UNIT_STATUS_TONE[u.status]}`}>{UNIT_STATUS_LABEL[u.status]}</span>
                   {u.rto_ready && <span className="text-[12px] font-semibold text-[#2D7A4F]">Bersedia RTO</span>}

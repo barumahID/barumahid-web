@@ -11,8 +11,9 @@ export const RTO_RATE = 0.25;
 // - RTO terbuka setelah KTP terverifikasi, 6 bulan sewa tepat waktu di unit mitra, dan Skor Siap Punya Rumah >= 36.
 // - Model dua harga, semuanya terbuka (keputusan user Okt 2026, "model yang paling aman"):
 //   harga deal = hasil nego dengan penyedia kos, pemilik selalu menerima ini penuh;
-//   sewa biasa = harga deal + biaya layanan barumahID (RTO_PROGRAM_FEE; harga yang tampil di listing, dibayar 6 bulan pertama dan
-//   oleh penyewa yang tidak ikut RTO);
+//   sewa biasa = harga deal + biaya layanan barumahID (harga yang tampil di listing, dibayar 6 bulan pertama dan oleh penyewa
+//   yang tidak ikut RTO). Sewa biasa dihitung di database (kolom rto_units.rent_regular), jadi persen biaya layanan tidak
+//   ada di kode situs ini (repo publik) dan harga deal tidak keluar lewat API publik;
 //   sewa program = sewa biasa + setoran DP, dibayar setelah RTO terbuka. 25% dari sewa program jadi saldo DP, jadi
 //   setoran DP = sepertiga sewa biasa. Fungsi database mencatat 25% dari pembayaran setelah Kontrak RTO, jadi tim
 //   mencatat sewa peserta RTO dengan harga sewa program.
@@ -22,19 +23,14 @@ export const RTO_RATE = 0.25;
 //   bukan kelalaian penyewa atau force majeure; penuh plus kompensasi kalau barumahID wanprestasi).
 export const RTO_UNLOCK_MONTHS = 6;
 export const RTO_UNLOCK_SCORE = 36;
-export const RTO_PROGRAM_FEE = 0.09;
 
 const round1k = (n: number) => Math.round(n / 1_000) * 1_000;
-/** Sewa biasa (yang tampil di listing) dari harga deal dengan pemilik: ditambah biaya layanan barumahID */
-export const regularRent = (deal: number) => round1k(deal * (1 + RTO_PROGRAM_FEE));
-/** Harga deal yang diterima pemilik dari sewa biasa */
-export const ownerDeal = (rent: number) => round1k(rent / (1 + RTO_PROGRAM_FEE));
 /** Sewa program RTO = sewa biasa + setoran DP, supaya 25% dari sewa program jadi saldo DP */
 export const programRent = (rent: number) => round1k(rent / (1 - RTO_RATE));
 /** Setoran DP per bulan = 25% dari sewa program = selisih sewa program dan sewa biasa */
 export const dpPerMonth = (rent: number) => programRent(rent) - rent;
-/** Contoh pembagian yang ditampilkan terbuka di halaman RTO: harga deal dengan pemilik Rp1,8 juta */
-export const PRICE_EXAMPLE_DEAL = 1_800_000;
+/** Contoh sewa biasa di halaman RTO (contoh sewa program dan FAQ), sama dengan nilai awal simulasi */
+export const PRICE_EXAMPLE_RENT = 2_000_000;
 
 // Konversi (arahan user Okt 2026): setelah RTO terbuka, rumah tujuan dipilih dan MoU dengan developer mitra
 // ditandatangani di awal. 2 sampai 4 tahun kemudian saldo dikonversi jadi DP. Simulasi menghitung saldo saat konversi
@@ -406,7 +402,7 @@ export const WHY_RTO = [
   { title: "Rumah yang sudah dicek", body: "Developer dan legalitas rumah dicek tim sebelum tayang." },
 ];
 
-const EX = regularRent(PRICE_EXAMPLE_DEAL);
+const EX = PRICE_EXAMPLE_RENT;
 
 export const RTO_FAQ = [
   {

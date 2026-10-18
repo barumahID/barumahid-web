@@ -6,7 +6,6 @@ import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import DPSimulator from "@/components/rto/DPSimulator";
 import LevelJourney from "@/components/rto/LevelJourney";
 import RtoPlatform from "@/components/rto/listing/RtoPlatform";
-import RtoHeroMotion from "@/components/rto/RtoHeroMotion";
 import LightStreaks from "@/components/ui/LightStreaks";
 import Link from "@/i18n/Link";
 import {
@@ -26,8 +25,8 @@ import { GFORMS } from "@/data/google-forms";
 import { getAllListings } from "@/lib/rto-listing";
 import { waLink } from "@/data/site";
 
-// Halaman Rent-to-Own (arahan user Okt 2026): halaman 1 hero (latar bergerak RtoHeroMotion: setoran mengisi rumah, plus
-// tiga fakta singkat), halaman 2 platform listing tiga jalur (Rumah Berdaya,
+// Halaman Rent-to-Own (arahan user Okt 2026): halaman 1 hero (latar garis cahaya LightStreaks, plus tiga fakta singkat;
+// animasi rumah terisi butir sudah dihapus atas arahan user), halaman 2 platform listing tiga jalur (Rumah Berdaya,
 // Rumah Bangun, Rumah Beli). Bagian bawah dibuat ringkas: kenapa lewat barumahID + keamanan dana + aturan mundur
 // (tanpa rincian persen dan pembagian, karena itu model bisnis), percepatan DP + simulasi, lalu daftar (peran, akun
 // Portal, formulir resmi, FAQ). Dua bagian gelap memakai latar garis cahaya (LightStreaks) yang sama dengan halaman Profil.
@@ -93,7 +92,7 @@ export default async function RtoPage() {
           </>
         }
         image="/images/hero-card.webp"
-        backdrop={<RtoHeroMotion />}
+        backdrop={<LightStreaks />}
         size="lg"
       >
         <ButtonLink href="#listing" variant="red">
