@@ -177,6 +177,10 @@ export const KEMITRAAN: Record<string, string> = {
   Internal: "Internal",
   "Tenaga kerja, kontraktor, supplier, penyedia kos, dan developer mitra.": "Workers, contractors, suppliers, boarding house owners, and partner developers.",
   "Dashboard monitoring tim, struktur organisasi, dan data mitra.": "Team monitoring dashboard, organization structure, and partner data.",
-  "Mitra dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.":
-    "Partners and the barumahID team sign in through the Portal. Partner accounts become active after our team verifies them.",
+  "Penyewa, mitra, dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.":
+    "Tenants, partners, and the barumahID team sign in through the Portal. Partner accounts become active after our team verifies them.",
+  "Penyewa dan calon pemilik rumah": "Tenant and future homeowner",
+  "Buat akun penyewa, naik level menuju RTO, dan pantau saldo DP-mu.": "Create a tenant account, level up toward RTO, and track your DP balance.",
+  "Tenaga kerja, kontraktor, supplier, penyedia kos, dan developer mitra. Penyedia kos bisa mendaftarkan unit dari dashboard.":
+    "Workers, contractors, suppliers, boarding house owners, and partner developers. Boarding house owners can list units from the dashboard.",
 };

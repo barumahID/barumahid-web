@@ -4,7 +4,9 @@ import type { FormCode } from "@/data/google-forms";
 // project barumahid-web, tabel portal_*, tidak di repo (repo publik). File ini aman dipakai komponen client;
 // fungsi sesi (server saja) ada di src/lib/portal-session.ts.
 
-export type Role = "admin" | "tim" | "mitra";
+export type Role = "admin" | "tim" | "mitra" | "penyewa";
+
+export const ROLE_LABEL: Record<Role, string> = { admin: "Admin", tim: "Tim barumahID", mitra: "Mitra", penyewa: "Penyewa" };
 export type MitraCategory = "tenaga_kerja" | "kontraktor_mandor" | "supplier_vendor" | "penyedia_kos" | "developer";
 export type MitraStatus = "terdaftar" | "bersedia" | "terverifikasi" | "aktif" | "nonaktif";
 

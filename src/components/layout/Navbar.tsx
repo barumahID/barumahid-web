@@ -131,7 +131,10 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   // Beranda pakai hero berlatar terang, jadi navbar selalu solid di sana supaya teksnya terbaca.
-  const solid = scrolled || mobileOpen || pathname === "/";
+  // Begitu juga halaman cari unit dan detail unit RTO (latar krem sejak atas).
+  const lightTop =
+    pathname === "/" || (pathname.startsWith("/layanan/rto/") && pathname !== "/layanan/rto/panduan");
+  const solid = scrolled || mobileOpen || lightTop;
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
   const serviceActive = SERVICE_LINKS.some((s) => isActive(s.href)) || pathname === "/layanan";
@@ -276,7 +279,7 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <p className="mx-3 mb-2 mt-2 border-t border-brand-dark/10 pt-3 text-[12px] leading-relaxed text-brand-gray">
-                  {t("Mitra dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
+                  {t("Penyewa, mitra, dan tim barumahID masuk lewat Portal. Akun mitra aktif setelah diverifikasi tim kami.")}
                 </p>
               </div>
             </div>

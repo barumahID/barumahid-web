@@ -148,7 +148,10 @@ export default function Footer({ lang }: { lang: Lang }) {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-5 text-[12px] text-white/40 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {SITE.company}. {t("Hak cipta dilindungi.")}</p>
-          <p>
+          <p className="flex gap-4">
+            <Link href="/syarat-ketentuan" className="hover:text-white">
+              {t("Syarat dan ketentuan")}
+            </Link>
             <Link href="/kebijakan-privasi" className="hover:text-white">
               {t("Kebijakan privasi")}
             </Link>

@@ -1,18 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RTO_RATE } from "@/data/rto";
+import { RTO_RATE, RTO_UNLOCK_MONTHS } from "@/data/rto";
 
 // Simulasi saldo DP Rent-to-Own (PRD Website v1, bagian Layanan RTO).
 // Isian: sewa per bulan, target harga rumah, persen DP, tambahan channel percepatan.
 // Hasil: saldo DP per bulan, perkiraan bulan sampai DP tercapai, grafik saldo.
-// Angka channel percepatan adalah estimasi dari PRD v3.2; semua channel itu belum berjalan.
+// Angka channel percepatan mengikuti simulasi PRD v3.2 (laundry 30 kg, pilah sampah 20 kg per bulan); semua channel
+// itu belum berjalan. Saldo DP baru dicatat setelah RTO terbuka, jadi waktu total ditambah masa sewa awal.
 
 const ECO = [
-  { id: "laundry", label: "Rajin laundry di mitra Kosanesia", value: 80_000 },
-  { id: "sampah", label: "Pilah sampah rutin (GreenPoint)", value: 40_000 },
-  { id: "titip", label: "Pakai jasa titip", value: 50_000 },
-  { id: "pindahan", label: "Pakai jasa pindahan", value: 15_000 },
+  { id: "laundry", label: "Laundry di mitra Kosanesia (±30 kg)", value: 21_000 },
+  { id: "sampah", label: "Pilah sampah GreenPoint (±20 kg)", value: 24_000 },
+  { id: "titip", label: "Pakai jasa titip", value: 15_000 },
 ];
 
 const rp = (n: number) => "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(n));
@@ -202,11 +202,11 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
               )}
             </div>
             <div>
-              <dt className="text-[12px] text-white/55">Perkiraan waktu</dt>
+              <dt className="text-[12px] text-white/55">Waktu menabung DP</dt>
               <dd className="mt-1 text-[26px] font-black leading-none md:text-[30px]">
                 {Number.isFinite(r.months) ? `${r.months} bln` : "-"}
               </dd>
-              <dd className="mt-1 text-[12px] text-white/50">sekitar {years(r.months)} tahun</dd>
+              <dd className="mt-1 text-[12px] text-white/50">sekitar {years(r.months)} tahun setelah RTO terbuka</dd>
             </div>
           </dl>
           <div className="mt-6">{Number.isFinite(r.months) && <Chart months={r.months} perMonth={r.perMonth} target={r.target} />}</div>
@@ -216,7 +216,8 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
             </p>
           )}
           <p className="mt-5 text-[12px] leading-relaxed text-white/50">
-            Ini simulasi indikatif dengan harga hari ini. Harga rumah bisa naik selama kamu menabung, dan skema final
+            Saldo DP mulai dicatat setelah RTO terbuka, yaitu setelah {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu.
+            {Number.isFinite(r.months) && ` Total dari awal sewa sekitar ${r.months + RTO_UNLOCK_MONTHS} bulan.`} Ini simulasi indikatif dengan harga hari ini. Harga rumah bisa naik selama kamu menabung, dan skema final
             diumumkan saat program dibuka.
           </p>
           <a
