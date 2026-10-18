@@ -61,6 +61,10 @@ const sections: { title: string; body: React.ReactNode }[] = [
           <li>
             Setelah Kontrak RTO ditandatangani, {Math.round(RTO_RATE * 100)}% dari setiap sewa yang lunas dicatat sebagai saldo DP atas namamu.
           </li>
+          <li>
+            Saldo DP dipakai untuk uang muka rumah dari developer mitra RTO (jalur Siap Berdaya), atau untuk modal awal pembangunan sampai 25% dari
+            RAB (jalur Siap Bangun). Saldo DP tidak dipakai untuk unit kos atau rumah sewa yang sedang kamu tempati.
+          </li>
           <li>Sewa program sudah termasuk biaya program {Math.round(RTO_PROGRAM_FEE * 100)}% di atas harga sewa mitra.</li>
           <li>
             Saldo DP adalah dana titipan untuk uang muka kepemilikan, disimpan di rekening terpisah atas nama perusahaan. Saldo ini bukan simpanan
@@ -88,6 +92,10 @@ const sections: { title: string; body: React.ReactNode }[] = [
         <li>Unit yang didaftarkan wajib sesuai kondisi sebenarnya dan lolos inspeksi sebelum tayang.</li>
         <li>Kerja sama diatur dalam MoU Mitra Penyedia atau MoU Developer. Data calon penyewa dan pembeli hanya dibuka setelah NDA ditandatangani.</li>
         <li>Dilarang menghubungi pengguna barumahID di luar platform untuk melewati program.</li>
+        <li>
+          Listing Siap Beli adalah iklan jual beli di luar program RTO. barumahID mempertemukan pembeli dan penjual. Harga, dokumen, dan transaksi tetap
+          kesepakatan kedua pihak.
+        </li>
       </ul>
     ),
   },

@@ -34,56 +34,59 @@ export const RTO_PATHS: RtoPath[] = [
   {
     id: "siap-berdaya",
     name: "Siap Berdaya",
-    explainer: "Sewa sambil menabung DP",
+    explainer: "Sewa kos sambil menabung DP",
     forWho: "Untuk kamu yang belum punya DP dan ingin mulai dari sewa.",
-    how: "Tinggal di unit mitra. Setelah RTO terbuka, 25% dari sewa jadi saldo DP. Saat cukup, lanjut ke KPR bersama developer mitra.",
+    how: "Tinggal di kos atau rumah sewa mitra. Setelah syarat terpenuhi dan RTO terbuka, 25% dari sewa jadi saldo DP untuk rumah tujuan dari developer mitra, bukan untuk unit yang kamu sewa.",
     status: "Inti program",
   },
   {
     id: "siap-bangun",
     name: "Siap Bangun",
     explainer: "Punya lahan, siap membangun",
-    forWho: "Untuk kamu yang sudah punya tanah tapi modal bangun belum cukup.",
-    how: "Sewa sambil mengumpulkan modal. Saat modal sudah 25% dari RAB, tim Jasa Konstruksi barumahID membangun di tanahmu dengan pembayaran bertahap.",
+    forWho: "Untuk kamu yang sudah punya lahan atau aset, tapi modal bangun belum cukup.",
+    how: "Selama sewa kos atau ngontrak di unit mitra, kamu ikut program RTO. Saldo DP dari sewa dikumpulkan sampai 25% dari RAB, lalu barumahID atau developer mitra mulai membangun di lahanmu.",
     status: "Inti program",
   },
   {
     id: "siap-beli",
     name: "Siap Beli",
-    explainer: "Unit dijual, lengkap dengan simulasi KPR",
-    forWho: "Untuk kamu yang ingin langsung membeli rumah siap huni.",
-    how: "Unit yang dijual pemiliknya lewat barumahID. Kami bantu hitung DP, cicilan KPR, dan biaya transaksi.",
-    status: "Segera",
+    explainer: "Properti dijual, kami pertemukan pembeli dan penjual",
+    forWho: "Untuk pemilik yang ingin menjual propertinya dan pembeli yang mencari rumah siap huni.",
+    how: "Pemilik mengiklankan properti lewat barumahID. Kami cek, tayangkan, lalu menghubungkan pembeli dan penjual, termasuk bantu hitung DP dan KPR. Jalur ini listing jual beli, di luar program RTO.",
+    status: "Jual beli",
   },
 ];
 
 /** Langkah singkat per jalur, tampil di platform listing halaman RTO (Siap Berdaya memakai RTO_STEPS) */
 export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: string; body: string }[]> = {
   "siap-bangun": [
-    { title: "Ceritakan lahanmu", body: "Lahan atas namamu atau keluarga. Tim kami survei lokasi dan kebutuhanmu." },
-    { title: "Desain dan RAB", body: "Denah, analisa struktur, dan RAB disusun bersama Jururancang, partner desain barumahID." },
-    { title: "Kumpulkan modal 25%", body: "Sewa sambil menabung sampai modal mencapai 25% dari RAB." },
-    { title: "Bangun bertahap", body: "Tim Jasa Konstruksi barumahID membangun dengan pembayaran bertahap." },
+    { title: "Sewa di unit mitra", body: `Ngekos atau ngontrak di unit mitra sambil memenuhi syarat RTO: ${RTO_UNLOCK_MONTHS} bulan tepat waktu dan skor minimal ${RTO_UNLOCK_SCORE}.` },
+    { title: "Ceritakan lahan atau asetmu", body: "Tim survei lokasi, lalu desain dan RAB disusun bersama Jururancang, partner desain barumahID." },
+    { title: "Saldo DP sampai 25% RAB", body: "Setelah masuk program RTO, 25% sewa terkumpul jadi saldo DP sampai mencapai 25% dari RAB." },
+    { title: "Pembangunan dimulai", body: "barumahID atau developer mitra membangun di lahanmu. Sisanya dibayar bertahap." },
   ],
   "siap-beli": [
-    { title: "Pilih unit", body: "Rumah siap huni dari pemilik dan developer mitra yang sudah kami cek." },
-    { title: "Hitung DP dan KPR", body: "Kami bantu hitung DP, cicilan, BPHTB, dan biaya notaris." },
-    { title: "Siapkan DP", body: "Kumpulkan DP sendiri, atau mulai dulu lewat jalur Siap Berdaya." },
-    { title: "Akad", body: "Akad jual beli dan KPR. Keputusan KPR tetap ada di bank." },
+    { title: "Pemilik pasang iklan", body: "Pemilik atau developer mendaftarkan properti yang ingin dijual." },
+    { title: "Dicek dan ditayangkan", body: "Tim mengecek data dan foto sebelum properti tayang." },
+    { title: "Pembeli ajukan minat", body: "Pembeli survei, lalu hitung DP, cicilan, BPHTB, dan biaya notaris bersama tim." },
+    { title: "Kami pertemukan", body: "barumahID menghubungkan pembeli dan penjual sampai akad. Keputusan KPR tetap ada di bank." },
   ],
 };
 
 export const RTO_STEPS = [
-  { title: "Sewa unit mitra", body: "Pilih kos atau rumah sewa dari mitra barumahID yang sudah kami cek kondisinya." },
+  { title: "Ngekos di unit mitra", body: "Pilih kos atau rumah sewa dari penyedia mitra barumahID yang sudah kami cek kondisinya." },
   {
-    title: "Buka RTO",
-    body: `Bayar sewa tepat waktu ${RTO_UNLOCK_MONTHS} bulan dan capai Skor Siap Punya Rumah minimal ${RTO_UNLOCK_SCORE}. Setelah itu kamu boleh mengajukan RTO.`,
+    title: "Penuhi syarat RTO",
+    body: `KTP terverifikasi, ${RTO_UNLOCK_MONTHS} bulan bayar tepat waktu, dan Skor Siap Punya Rumah minimal ${RTO_UNLOCK_SCORE}. Kami kabari begitu syaratnya terpenuhi.`,
   },
   {
-    title: "25% jadi saldo DP",
-    body: "Setelah Kontrak RTO ditandatangani, seperempat sewamu dicatat jadi saldo DP atas namamu, di rekening terpisah.",
+    title: "Ajukan RTO, 25% jadi DP",
+    body: "Risiko dan aturan pengembalian dijelaskan dulu. Setelah Kontrak RTO ditandatangani, 25% sewamu dicatat jadi saldo DP atas namamu.",
   },
-  { title: "Kunci harga, lalu akad", body: "Saat saldo cukup, harga unit dikunci lewat PPJB, lalu lanjut KPR atau bangun di lahan sendiri." },
+  {
+    title: "Pilih rumah developer mitra",
+    body: "Saldo DP untuk uang muka rumah tujuan dari developer mitra, bukan kos yang kamu sewa. Harga dikunci lewat PPJB, lalu akad KPR.",
+  },
 ];
 
 // ---- Level perjalanan (gamifikasi): penyewa naik level dengan menyelesaikan misi; RTO terbuka di gerbang ----
@@ -255,7 +258,7 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
         title: "Kontrak RTO",
         body: "Mulai bulan pertama program, 25% sewa dicatat jadi saldo DP. Laporan saldo dikirim di awal bulan berikutnya.",
       },
-      { title: "Kunci harga dan akad", body: "Pilih unit target. DP 50% berarti PPJB dan harga terkunci. DP 100% berarti lanjut KPR atau bangun." },
+      { title: "Kunci harga dan akad", body: "Pilih unit target dari developer mitra, bukan unit yang kamu sewa. DP 50% berarti PPJB dan harga terkunci. DP 100% berarti lanjut KPR atau bangun." },
     ],
     notes: [
       "Sewa program sudah termasuk biaya program 9% di atas harga sewa mitra. Angkanya tertulis jelas sebelum kamu tanda tangan.",
@@ -383,6 +386,16 @@ export const RTO_FAQ = [
     question: "Bagaimana kalau saya mundur sebelum DP cukup?",
     answer:
       "Saldo DP dikembalikan sesuai lama program: 70% sebelum 6 bulan, 80% di bulan ke-6 sampai 12, 90% setelah 12 bulan. Kalau KPR ditolak bukan karena kelalaianmu, kembali 100%.",
+  },
+  {
+    question: "Saldo DP saya untuk rumah yang mana?",
+    answer:
+      "Untuk uang muka rumah tujuan dari developer mitra RTO, atau modal pembangunan di lahanmu sendiri (Siap Bangun). Bukan untuk kos atau rumah sewa yang sedang kamu tempati.",
+  },
+  {
+    question: "Apa bedanya Siap Beli dengan program RTO?",
+    answer:
+      "Siap Beli adalah listing properti yang dijual pemiliknya. barumahID mempertemukan pembeli dan penjual, lalu membantu hitung DP dan KPR. Jalur ini tidak memakai saldo DP dari sewa.",
   },
   {
     question: "Di kota mana program ini akan dibuka?",
