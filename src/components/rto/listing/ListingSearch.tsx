@@ -212,7 +212,7 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
             <ListingMap items={points} active={hover} selected={selected} onSelect={setSelected} />
             {(noPoint > 0 || points.length === 0) && (
               <p className="pointer-events-none absolute left-3 top-3 z-[500] max-w-[70%] rounded-xl bg-white/95 px-3 py-2 text-[12px] text-brand-gray shadow">
-                {points.length === 0 ? "Titik unit muncul di sini setelah unit tayang." : `${noPoint} unit belum punya titik peta.`} Lokasi di peta adalah area perkiraan.
+                {points.length === 0 ? "Pin unit muncul di sini setelah unit tayang." : `${noPoint} unit belum punya pin peta.`} Lokasi pin adalah area perkiraan.
               </p>
             )}
             {picked && (

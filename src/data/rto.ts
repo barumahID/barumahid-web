@@ -18,8 +18,8 @@ export const RTO_RATE = 0.25;
 //   mencatat sewa peserta RTO dengan harga sewa program.
 // - Harga rumah tujuan DIKUNCI di MoU sejak awal sampai konversi. Ini keunggulan utama RTO: developer mitra sudah
 //   memperhitungkan masa tunggunya, penyewa aman karena harga tidak naik.
-// - Pengembalian saldo DP: TIDAK ditahan. Saldo sepenuhnya hak penyewa, bisa ditarik 100% kapan saja (keputusan user
-//   Okt 2026, menggantikan potongan 70/80/90% dari PRD). 105% kalau barumahID wanprestasi tetap berlaku (REFUND_POLICY).
+// - Mundur dari program: lihat REFUND_POLICY (setoran kembali dipotong biaya administrasi; kembali penuh kalau KPR ditolak
+//   bukan kelalaian penyewa atau force majeure; penuh plus kompensasi kalau barumahID wanprestasi).
 export const RTO_UNLOCK_MONTHS = 6;
 export const RTO_UNLOCK_SCORE = 36;
 export const RTO_PROGRAM_FEE = 0.09;
@@ -82,7 +82,7 @@ export const RTO_PATHS: RtoPath[] = [
     name: "Rumah Berdaya",
     explainer: "Ngekos sambil menabung DP rumah",
     forWho: "Belum punya DP? Mulai dari ngekos di unit mitra.",
-    how: `${RTO_UNLOCK_MONTHS} bulan pertama sewa biasa. Lolos syarat RTO, kamu pilih rumah developer mitra dengan harga terkunci di MoU, lalu bayar sewa program: 25%-nya jadi saldo DP. Setelah ${CONV_MIN}-${CONV_MAX} tahun, saldo dikonversi jadi DP rumah itu.`,
+    how: "Harga rumah tujuan dikunci sejak MoU, DP-nya terkumpul dari sewa. Saldo DP untuk rumah developer mitra, bukan kos yang kamu tempati.",
     status: "Inti program",
   },
   {
@@ -90,7 +90,7 @@ export const RTO_PATHS: RtoPath[] = [
     name: "Rumah Bangun",
     explainer: "Punya lahan, bangun rumah sendiri",
     forWho: "Punya lahan atau aset, tapi modal bangun belum cukup.",
-    how: `Ngekos atau ngontrak di unit mitra sambil ikut RTO. Saldo ${CONV_MIN}-${CONV_MAX} tahun ditambah tabunganmu jadi modal awal 25% RAB, lalu barumahID atau developer mitra mulai membangun di lahanmu.`,
+    how: "Lahanmu jadi rumah. Saldo DP dari sewa ditambah tabunganmu jadi modal awal 25% RAB, lalu barumahID atau developer mitra yang membangun.",
     status: "Inti program",
   },
   {
@@ -98,7 +98,7 @@ export const RTO_PATHS: RtoPath[] = [
     name: "Rumah Beli",
     explainer: "Rumah siap huni, langsung jual beli",
     forWho: "Untuk penjual properti dan pembeli yang sudah siap KPR.",
-    how: "Listing jual beli di luar RTO. Properti dicek sebelum tayang, lalu kami pertemukan pembeli dan penjual, termasuk hitung DP, KPR, BPHTB, dan notaris.",
+    how: "Di luar program RTO. Properti dicek sebelum tayang, lalu kami pertemukan pembeli dan penjual sampai akad.",
     status: "Jual beli",
   },
 ];
@@ -109,7 +109,7 @@ export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: s
     { title: "Ngekos di unit mitra", body: `${RTO_UNLOCK_MONTHS} bulan tepat waktu, skor minimal ${RTO_UNLOCK_SCORE}.` },
     { title: "Survei lahan dan RAB", body: "Desain dan RAB disusun bersama Jururancang." },
     { title: "Kumpulkan modal 25% RAB", body: `Saldo ${CONV_MIN}-${CONV_MAX} tahun ditambah tabunganmu.` },
-    { title: "Mulai bangun", body: "Sisanya bertahap, atau mulai dari tahap pertama." },
+    { title: "Mulai bangun", body: "Sisa biaya bertahap, atau mulai dari tahap pertama." },
   ],
   "siap-beli": [
     { title: "Pasang iklan", body: "Pemilik atau developer mendaftarkan properti." },
@@ -122,8 +122,8 @@ export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: s
 export const RTO_STEPS = [
   { title: "Ngekos di unit mitra", body: `${RTO_UNLOCK_MONTHS} bulan sewa biasa, bayar tepat waktu, KTP terverifikasi.` },
   { title: "Lolos Gerbang RTO", body: `Skor Siap Punya Rumah minimal ${RTO_UNLOCK_SCORE}. Kami kabari begitu terpenuhi.` },
-  { title: "MoU, harga terkunci", body: "Pilih rumah developer mitra. Kontrak RTO dan MoU ditandatangani." },
-  { title: `Saldo ${CONV_MIN}-${CONV_MAX} tahun jadi DP`, body: "25% sewa program jadi saldo, lalu PPJB dan KPR." },
+  { title: "Pilih rumah, harga dikunci", body: "Kontrak RTO dan MoU Rumah Tujuan dengan developer mitra." },
+  { title: `Jadi DP dalam ${CONV_MIN}-${CONV_MAX} tahun`, body: "25% sewa program masuk saldo, lalu PPJB dan KPR." },
 ];
 
 // ---- Level perjalanan (gamifikasi): penyewa naik level dengan menyelesaikan misi; RTO terbuka di gerbang ----
@@ -400,10 +400,10 @@ export const FUND_SAFETY = [
 
 /** Kenapa menabung DP lewat barumahID, bukan sendiri di bank (pertanyaan user Okt 2026) */
 export const WHY_RTO = [
-  { title: "Harga rumah dikunci", body: "Tabungan bank tidak bisa mengunci harga rumah. Di sini harganya tertulis di MoU, tidak ikut naik." },
+  { title: "Harga rumah dikunci", body: "Tabungan bank tidak bisa mengunci harga rumah. Di sini harganya tertulis di MoU sampai konversi." },
   { title: "Jalan untuk yang belum bankable", body: "Riwayat sewa dan Skor Siap Punya Rumah jadi bukti kelayakan saat KPR. Berkasnya kami dampingi." },
-  { title: "Disiplin otomatis", body: "Setoran DP satu tagihan dengan sewa, jadi tidak terpakai untuk hal lain." },
-  { title: "Rumah yang sudah dicek", body: "Developer dan legalitas rumahnya dicek tim sebelum tayang." },
+  { title: "Disiplin otomatis", body: "Setoran DP satu tagihan dengan sewa. Tidak terpakai untuk hal lain." },
+  { title: "Rumah yang sudah dicek", body: "Developer dan legalitas rumah dicek tim sebelum tayang." },
 ];
 
 const EX = regularRent(PRICE_EXAMPLE_DEAL);
@@ -411,12 +411,12 @@ const EX = regularRent(PRICE_EXAMPLE_DEAL);
 export const RTO_FAQ = [
   {
     question: "Apakah program RTO sudah berjalan?",
-    answer: "Belum. Program pertama sedang disiapkan bersama mitra. Daftar sekarang supaya dapat kabar pertama.",
+    answer: "Belum. Program pertama sedang disiapkan bersama mitra. Daftar sekarang untuk dapat kabar pertama.",
   },
   {
     question: "Kenapa nabung DP di barumahID, bukan di bank?",
     answer:
-      "Di bank kamu menabung sendiri, sementara harga rumah terus naik. Di sini harga rumah tujuan dikunci di MoU, setoran DP otomatis satu tagihan dengan sewa, dan riwayat sewamu jadi bukti kelayakan saat KPR. Dananya tetap di rekening terpisah atas namamu. Sudah bankable? Langsung KPR lewat Rumah Beli juga bisa.",
+      "Di bank kamu menabung sendiri, sementara harga rumah terus naik. Di sini harga rumah tujuan dikunci di MoU, setoran DP satu tagihan dengan sewa, dan riwayat sewamu jadi bukti kelayakan KPR. Dananya di rekening terpisah atas namamu. Sudah siap KPR? Langsung lewat Rumah Beli.",
   },
   {
     question: "Berapa lama sampai saldo jadi DP?",

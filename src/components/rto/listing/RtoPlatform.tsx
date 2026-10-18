@@ -190,7 +190,7 @@ function ProgramExample() {
           </div>
         ))}
       </div>
-      <p className="mt-2 text-[12px] leading-snug text-brand-gray">Selisih sewa program dan sewa biasa adalah setoran DP. Tidak ada biaya tambahan lain.</p>
+      <p className="mt-2 text-[12px] leading-snug text-brand-gray">Selisihnya setoran DP, dan itu uangmu. Tanpa biaya tambahan lain.</p>
     </div>
   );
 }
@@ -204,7 +204,7 @@ function TujuanGuide({ kos }: { kos: Listing[] }) {
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
         <div>
           <p className="text-[16px] font-extrabold text-brand-dark">Rumah tujuan dari developer mitra</p>
-          <p className="mt-0.5 text-[13px] leading-snug text-brand-gray">Sedang dikurasi. Sambil menunggu: harga rumah yang DP 10%-nya tertutup saldo dari sewa di kos mitra.</p>
+          <p className="mt-0.5 text-[13px] leading-snug text-brand-gray">Sedang dikurasi. Sementara, ini harga rumah yang DP 10%-nya tertutup saldo dari sewa kos mitra.</p>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
           <a href="#simulasi" className={linkCls}>

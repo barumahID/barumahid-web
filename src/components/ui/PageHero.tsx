@@ -4,6 +4,7 @@ import Image from "next/image";
 // Foto proyek dipakai sebagai "bayangan" dengan overlay gelap 75-85% (arahan visual PRD).
 // `slides`: beberapa foto yang berganti pelan (crossfade + zoom halus, CSS saja). Overlay dibuat sedikit
 // lebih terang di sisi kanan supaya fotonya terasa, teks tetap terbaca di sisi kiri.
+// `backdrop`: lapisan latar bergerak di atas foto dan overlay, di bawah teks (mis. RtoHeroMotion).
 
 const SLIDE_SECONDS = 6;
 
@@ -15,6 +16,7 @@ export default function PageHero({
   imageAlt = "",
   slides,
   children,
+  backdrop,
   align = "left",
   size = "md",
 }: {
@@ -25,6 +27,7 @@ export default function PageHero({
   imageAlt?: string;
   slides?: { src: string; alt: string }[];
   children?: React.ReactNode;
+  backdrop?: React.ReactNode;
   align?: "left" | "center";
   size?: "sm" | "md" | "lg";
 }) {
@@ -61,6 +64,11 @@ export default function PageHero({
       />
       {hasSlides && <div className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/80 via-transparent to-brand-dark/40" />}
       {!hasSlides && <div className="hero-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true" />}
+      {backdrop && (
+        <div className="absolute inset-0 -z-10" aria-hidden="true">
+          {backdrop}
+        </div>
+      )}
       <div className={`relative mx-auto max-w-[1280px] px-5 md:px-10 lg:px-14 ${pad} ${align === "center" ? "text-center" : ""}`}>
         {label && <p className="type-micro text-brand-red">{label}</p>}
         <h1

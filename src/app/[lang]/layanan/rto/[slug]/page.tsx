@@ -621,10 +621,10 @@ export default async function ListingDetailPage({ params }: Props) {
               <AreaMap lat={l.approx.lat} lng={l.approx.lng} tone={listingTone(l)} />
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl bg-white px-5 py-4 text-[14px] text-brand-gray">Titik peta menyusul setelah survei lokasi.</p>
+            <p className="mt-4 rounded-2xl bg-white px-5 py-4 text-[14px] text-brand-gray">Pin peta menyusul setelah survei lokasi.</p>
           )}
           <p className="mt-3 text-[13px] text-brand-gray">
-            {l.approx ? "Titik di peta adalah area perkiraan. " : ""}Alamat lengkap dibagikan saat jadwal survei.
+            {l.approx ? "Unit ada di dalam lingkaran, sekitar 300 m dari pin. " : ""}Alamat lengkap dibagikan saat jadwal survei.
           </p>
         </section>
 

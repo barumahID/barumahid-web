@@ -72,7 +72,7 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
           )}
         </div>
         <fieldset className="rounded-2xl border border-brand-dark/10 bg-white p-5">
-          <legend className="px-1 text-[12px] font-bold uppercase tracking-[0.12em] text-brand-gray">Tambahan dari channel percepatan (segera)</legend>
+          <legend className="px-1 text-[12px] font-bold uppercase tracking-[0.12em] text-brand-gray">Percepatan DP dari Kosanesia (segera)</legend>
           <div className="mt-2 space-y-2">
             {DP_BOOST.map((c) => (
               <label key={c.id} className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-2 py-2 hover:bg-brand-cream">
@@ -89,7 +89,7 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
               </label>
             ))}
           </div>
-          <p className="mt-3 text-[12px] leading-relaxed text-brand-mute">Angka tambahan adalah perkiraan. Channel percepatan belum berjalan dan akan dibuka bertahap.</p>
+          <p className="mt-3 text-[12px] leading-relaxed text-brand-mute">Perkiraan. Layanan ini belum berjalan dan dibuka bertahap.</p>
         </fieldset>
       </div>
 
@@ -169,8 +169,8 @@ export default function DPSimulator({ formAnchor = "#daftar" }: { formAnchor?: s
           </div>
 
           <p className="mt-5 text-[12px] leading-relaxed text-white/50">
-            Total sekitar {years1(years * 12 + RTO_UNLOCK_MONTHS)} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa, lalu {years} tahun RTO sampai konversi. Harga
-            rumah dikunci di MoU dengan developer mitra sejak awal, jadi tidak naik selama kamu menabung. Belum termasuk biaya akad (notaris, BPHTB, asuransi), dan keputusan KPR ada di bank.
+            Total sekitar {years1(years * 12 + RTO_UNLOCK_MONTHS)} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa + {years} tahun RTO. Harga rumah dikunci di MoU
+            sejak awal. Belum termasuk biaya akad (notaris, BPHTB, asuransi). Keputusan KPR ada di bank.
           </p>
           <a
             href={formAnchor}
