@@ -22,6 +22,8 @@ export interface RtoTenant {
   rto_decided_at: string | null;
   contract_signed_at: string | null;
   ppjb_signed_at: string | null;
+  /** Rumah tujuan dari developer mitra (diisi tim setelah MoU) */
+  target_dev_unit_id: string | null;
   created_at: string;
 }
 
@@ -155,6 +157,88 @@ export const UNIT_STATUS_TONE: Record<UnitStatus, string> = {
   ditolak: "bg-brand-red/10 text-brand-red",
   nonaktif: "bg-brand-dark/[0.06] text-brand-mute",
 };
+
+// ---- Rumah tujuan dari developer mitra (tabel rto_dev_units) ----
+
+export type DevUnitStatus = "diajukan" | "ditinjau" | "perbaikan" | "tayang" | "habis" | "ditolak" | "nonaktif";
+
+export interface RtoDevUnit {
+  id: string;
+  owner_user_id: string | null;
+  slug: string;
+  title: string;
+  /** Nama proyek atau perumahan */
+  project: string | null;
+  city: string;
+  kecamatan: string | null;
+  kelurahan: string | null;
+  address_private: string | null;
+  /** Harga rumah, dikunci di MoU sampai konversi */
+  price: number;
+  dp_min_pct: number;
+  tipe: string | null;
+  land_area: number | null;
+  building_area: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  units_available: number | null;
+  legal: string | null;
+  facilities: string[];
+  description: string | null;
+  photos: string[];
+  approx_lat: number | null;
+  approx_lng: number | null;
+  status: DevUnitStatus;
+  review_note: string | null;
+  created_at: string;
+}
+
+export const DEV_UNIT_STATUS_LABEL: Record<DevUnitStatus, string> = {
+  diajukan: "Diajukan",
+  ditinjau: "Ditinjau tim",
+  perbaikan: "Perlu perbaikan",
+  tayang: "Tayang",
+  habis: "Unit habis",
+  ditolak: "Tidak lolos",
+  nonaktif: "Nonaktif",
+};
+
+export const DEV_UNIT_STATUS_TONE: Record<DevUnitStatus, string> = {
+  diajukan: "bg-brand-dark/[0.06] text-brand-gray",
+  ditinjau: "bg-[#1A5C9A]/10 text-[#1A5C9A]",
+  perbaikan: "bg-[#C25E20]/10 text-[#C25E20]",
+  tayang: "bg-[#2D7A4F]/10 text-[#2D7A4F]",
+  habis: "bg-brand-dark text-white",
+  ditolak: "bg-brand-red/10 text-brand-red",
+  nonaktif: "bg-brand-dark/[0.06] text-brand-mute",
+};
+
+/** Rumah tujuan yang developernya masih bisa mengubah foto dan deskripsi (setelah tayang hanya tim) */
+export const DEV_OWNER_EDITABLE: DevUnitStatus[] = ["diajukan", "ditinjau", "perbaikan"];
+
+/** Fasilitas rumah tujuan yang bisa dipilih developer */
+export const DEV_FACILITIES = ["Carport", "Taman", "Dapur", "Ruang tamu", "Ruang keluarga", "Area mesin cuci", "One gate system", "Masjid atau musala", "Taman bermain"] as const;
+
+/** Baris pipeline developer: peserta yang memilih rumahnya, tanpa identitas (fungsi rto_dev_pipeline) */
+export interface DevPipelineRow {
+  unit_id: string;
+  unit_title: string;
+  rto_status: RtoStatus;
+  contract_signed_at: string | null;
+  dp_target: number | null;
+  balance: number;
+}
+
+/** Rumah tujuan milik penyewa yang masuk (fungsi rto_my_target) */
+export interface MyTarget {
+  title: string;
+  project: string | null;
+  city: string;
+  price: number;
+  dp_min_pct: number;
+  slug: string;
+  status: DevUnitStatus;
+}
 
 export const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = { dilaporkan: "Menunggu konfirmasi", lunas: "Lunas", ditolak: "Ditolak" };
 export const LEDGER_LABEL: Record<LedgerKind, string> = { setoran: "Setoran 25% sewa", koreksi: "Koreksi", pengembalian: "Pengembalian", konversi: "Dipakai untuk DP" };

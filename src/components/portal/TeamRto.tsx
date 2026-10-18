@@ -1,7 +1,9 @@
-import { confirmPayment, endTenancy, rejectPayment, setRtoStatus, setUnitStatus, verifyKtp } from "@/app/portal/rto-actions";
+import { confirmPayment, endTenancy, rejectPayment, setDevUnitStatus, setRtoStatus, setUnitStatus, verifyKtp } from "@/app/portal/rto-actions";
 import { RTO_LEVELS, RTO_PATHS, programRent, regularRent } from "@/data/rto";
 import type { Profile } from "@/lib/portal";
 import {
+  DEV_UNIT_STATUS_LABEL,
+  DEV_UNIT_STATUS_TONE,
   LEDGER_LABEL,
   PAYMENT_STATUS_LABEL,
   RTO_STATUS_LABEL,
@@ -12,7 +14,9 @@ import {
   dateLabel,
   monthLabel,
   rupiah,
+  type DevUnitStatus,
   type RtoAssessment,
+  type RtoDevUnit,
   type RtoLedgerEntry,
   type RtoPayment,
   type RtoStatus,
@@ -23,12 +27,24 @@ import {
 } from "@/lib/rto";
 import AutoSelect from "./AutoSelect";
 import { waHref } from "./PortalShell";
-import { ActionButton, DescriptionForm, InspectionForm, LedgerForm, LocationForm, RecordPaymentForm, TenancyForm, TenantPlanForm } from "./RtoForms";
+import {
+  ActionButton,
+  DescriptionForm,
+  DevReviewForm,
+  DevUnitForm,
+  InspectionForm,
+  LedgerForm,
+  LocationForm,
+  RecordPaymentForm,
+  TenancyForm,
+  TenantPlanForm,
+} from "./RtoForms";
 import UnitPhotos from "./UnitPhotos";
 import { unitPhotoUrl } from "@/lib/rto-listing";
 
 // Tab Rent-to-Own di Portal tim: penyewa (verifikasi KTP, rencana, keputusan RTO, sewa, pembayaran, saldo DP) dan unit
-// penyedia kos (inspeksi, tayang). Pencatatan 25% sewa jadi saldo DP dilakukan fungsi database saat pembayaran dikonfirmasi.
+// penyedia kos (inspeksi, tayang), dan rumah tujuan dari developer mitra (tinjauan, tayang, dihubungkan ke penyewa lewat
+// rencana DP). Pencatatan 25% sewa jadi saldo DP dilakukan fungsi database saat pembayaran dikonfirmasi.
 
 export interface RtoTeamData {
   tenants: RtoTenant[];
@@ -37,11 +53,13 @@ export interface RtoTeamData {
   payments: RtoPayment[];
   ledger: RtoLedgerEntry[];
   units: RtoUnit[];
+  devUnits: RtoDevUnit[];
 }
 
 const card = "rounded-2xl border border-brand-dark/10 bg-white";
 const RTO_OPTIONS = (Object.keys(RTO_STATUS_LABEL) as RtoStatus[]).map((v) => ({ value: v, label: RTO_STATUS_LABEL[v] }));
 const UNIT_OPTIONS = (Object.keys(UNIT_STATUS_LABEL) as UnitStatus[]).map((v) => ({ value: v, label: UNIT_STATUS_LABEL[v] }));
+const DEV_OPTIONS = (Object.keys(DEV_UNIT_STATUS_LABEL) as DevUnitStatus[]).map((v) => ({ value: v, label: DEV_UNIT_STATUS_LABEL[v] }));
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -53,7 +71,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 }
 
 export default function TeamRto({ data, accounts }: { data: RtoTeamData; accounts: Profile[] }) {
-  const { tenants, assessments, tenancies, payments, ledger, units } = data;
+  const { tenants, assessments, tenancies, payments, ledger, units, devUnits } = data;
   const profileOf = new Map(accounts.map((a) => [a.user_id, a]));
   const tenantOf = new Map(tenants.map((t) => [t.user_id, t]));
   const penyewa = accounts.filter((a) => a.role === "penyewa");
@@ -64,6 +82,11 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
   const reported = payments.filter((p) => p.status === "dilaporkan");
   const applied = tenants.filter((t) => t.rto_status === "diajukan");
   const newUnits = units.filter((u) => u.status === "diajukan");
+  const newDevUnits = devUnits.filter((u) => u.status === "diajukan");
+  const developers = accounts
+    .filter((a) => a.role === "mitra" && a.requested_category === "developer")
+    .map((a) => ({ id: a.user_id, name: a.company || a.full_name || a.email }));
+  const pickable = (current: string | null) => devUnits.filter((u) => u.status === "tayang" || u.status === "habis" || u.id === current);
   const totalBalance = ledger.reduce((s, e) => s + Number(e.amount), 0);
   const nameOf = (id: string) => profileOf.get(id)?.full_name || profileOf.get(id)?.email || "Penyewa";
 
@@ -73,12 +96,13 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
     { label: "Sewa aktif", value: tenancies.filter((t) => t.status === "aktif").length },
     { label: "Peserta RTO", value: tenants.filter((t) => t.rto_status === "disetujui").length },
     { label: "Total saldo DP", value: rupiah(totalBalance) },
-    { label: "Unit tayang", value: units.filter((u) => u.status === "tayang" || u.status === "penuh").length },
+    { label: "Unit kos tayang", value: units.filter((u) => u.status === "tayang" || u.status === "penuh").length },
+    { label: "Rumah tujuan tayang", value: devUnits.filter((u) => u.status === "tayang").length },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
         {stats.map((s) => (
           <div key={s.label} className={`${card} px-4 py-3.5`}>
             <p className="text-[12px] text-brand-gray">{s.label}</p>
@@ -90,7 +114,7 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
       {/* Perlu tindakan */}
       <section className={`${card} p-5`}>
         <h2 className="text-[15px] font-extrabold">Perlu tindakan</h2>
-        {reported.length + applied.length + newUnits.length === 0 ? (
+        {reported.length + applied.length + newUnits.length + newDevUnits.length === 0 ? (
           <p className="mt-2 text-[13px] text-brand-mute">Tidak ada yang menunggu.</p>
         ) : (
           <ul className="mt-3 divide-y divide-brand-dark/[0.07]">
@@ -129,6 +153,16 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                 </span>
                 <a href={`#unit-${u.id}`} className="text-[12.5px] font-bold text-brand-red hover:underline">
                   Jadwalkan inspeksi
+                </a>
+              </li>
+            ))}
+            {newDevUnits.map((u) => (
+              <li key={u.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-[13.5px]">
+                <span>
+                  Rumah tujuan baru <span className="font-bold">{u.title}</span> · {u.city} dari {u.owner_user_id ? nameOf(u.owner_user_id) : "tim"}
+                </span>
+                <a href={`#dev-${u.id}`} className="text-[12.5px] font-bold text-brand-red hover:underline">
+                  Tinjau
                 </a>
               </li>
             ))}
@@ -222,7 +256,7 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                     </Panel>
                     {t && (
                       <Panel title="Rencana DP dan dokumen">
-                        <TenantPlanForm tenant={t} />
+                        <TenantPlanForm tenant={t} devUnits={pickable(t.target_dev_unit_id)} />
                       </Panel>
                     )}
                     <Panel title="Sewa">
@@ -366,6 +400,105 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
             ))}
           </div>
         )}
+      </section>
+
+      {/* Rumah tujuan dari developer mitra */}
+      <section className={`${card} p-5`}>
+        <h2 className="text-[15px] font-extrabold">Rumah tujuan developer mitra</h2>
+        <p className="mt-0.5 text-[12.5px] text-brand-gray">
+          Alur: diajukan, ditinjau (legalitas, NDA, MoU Developer), lalu tayang. Penyewa dihubungkan ke rumah lewat Rencana DP; harganya dikunci di MoU.
+        </p>
+        {devUnits.length === 0 ? (
+          <p className="mt-3 text-[13px] text-brand-mute">Belum ada rumah tujuan.</p>
+        ) : (
+          <div className="mt-3 divide-y divide-brand-dark/[0.07]">
+            {devUnits.map((u) => {
+              const chosen = tenants.filter((t) => t.target_dev_unit_id === u.id);
+              const live = u.status === "tayang" || u.status === "habis";
+              return (
+                <details key={u.id} id={`dev-${u.id}`} className="scroll-mt-24 py-3">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-1 text-[13.5px]">
+                    <span className="min-w-[200px] font-bold text-brand-dark">{u.title}</span>
+                    <span className="text-brand-gray">{[u.project, u.kelurahan, u.kecamatan, u.city].filter(Boolean).join(", ")}</span>
+                    <span className="text-brand-dark">
+                      {rupiah(u.price)} · DP min {u.dp_min_pct}%
+                    </span>
+                    <span className="text-[12.5px] text-brand-gray">{chosen.length} peserta</span>
+                    <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-bold ${DEV_UNIT_STATUS_TONE[u.status]}`}>{DEV_UNIT_STATUS_LABEL[u.status]}</span>
+                  </summary>
+                  <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    <Panel title="Data dan status">
+                      <p className="text-[13px]">
+                        Developer: {u.owner_user_id ? nameOf(u.owner_user_id) : "dikelola tim"}
+                        {u.tipe ? ` · Tipe ${u.tipe}` : ""}
+                        {u.land_area ? ` · LT ${u.land_area} m²` : ""}
+                        {u.building_area ? ` · LB ${u.building_area} m²` : ""}
+                        {u.bedrooms ? ` · ${u.bedrooms} KT` : ""}
+                        {u.bathrooms ? ` · ${u.bathrooms} KM` : ""}
+                        {u.units_available ? ` · ${u.units_available} unit untuk program` : ""}
+                      </p>
+                      {u.legal && <p className="mt-1 text-[13px] text-brand-gray">Legalitas: {u.legal}</p>}
+                      {u.address_private && <p className="mt-1 text-[13px] text-brand-gray">Alamat: {u.address_private}</p>}
+                      {u.facilities.length > 0 && <p className="mt-1 text-[12.5px] text-brand-gray">{u.facilities.join(", ")}</p>}
+                      {chosen.length > 0 && (
+                        <p className="mt-1 text-[12.5px] text-brand-gray">Dipilih: {chosen.map((t) => nameOf(t.user_id)).join(", ")}</p>
+                      )}
+                      <div className="mt-3 flex items-center gap-2 text-[13px]">
+                        <span className="text-brand-gray">Status</span>
+                        <AutoSelect action={setDevUnitStatus} fields={{ id: u.id }} name="status" value={u.status} label={`Status rumah ${u.title}`} options={DEV_OPTIONS} />
+                      </div>
+                      <p className="mt-1.5 text-[12px] text-brand-gray">
+                        Tayangkan setelah legalitas dicek dan MoU Developer ditandatangani. Rumah tayang muncul di tab Siap Berdaya sebagai rumah tujuan.
+                        {live && (
+                          <>
+                            {" "}
+                            <a href={`/layanan/rto/${u.slug}`} target="_blank" rel="noopener" className="font-bold text-brand-dark underline underline-offset-2">
+                              Lihat di website
+                            </a>
+                          </>
+                        )}
+                      </p>
+                      {live && u.photos.length === 0 && <p className="mt-1.5 text-[12px] font-semibold text-brand-red">Rumah tayang tanpa foto. Tambahkan foto di bawah.</p>}
+                    </Panel>
+                    <Panel title="Catatan untuk developer">
+                      <DevReviewForm unit={u} />
+                    </Panel>
+                    <Panel title={`Foto dan render (${u.photos.length})`}>
+                      <UnitPhotos
+                        kind="dev"
+                        unitId={u.id}
+                        editable
+                        photos={u.photos.flatMap((p) => {
+                          const url = unitPhotoUrl(p);
+                          return url ? [{ path: p, url }] : [];
+                        })}
+                      />
+                    </Panel>
+                    <div className="grid gap-3">
+                      <Panel title="Deskripsi listing">
+                        <DescriptionForm unit={u} kind="dev" />
+                      </Panel>
+                      <Panel title="Titik peta (area perkiraan)">
+                        <LocationForm unit={u} kind="dev" />
+                      </Panel>
+                    </div>
+                    <div className="lg:col-span-2">
+                      <Panel title="Ubah data rumah">
+                        <DevUnitForm unit={u} />
+                      </Panel>
+                    </div>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        )}
+        <details className="mt-4 rounded-xl border border-dashed border-brand-dark/20 p-4">
+          <summary className="cursor-pointer text-[13.5px] font-bold text-brand-dark">+ Tambah rumah tujuan</summary>
+          <div className="mt-3">
+            <DevUnitForm owners={developers} />
+          </div>
+        </details>
       </section>
     </div>
   );

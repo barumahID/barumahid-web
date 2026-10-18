@@ -45,10 +45,13 @@ export default function UnitPhotos({
   unitId,
   photos,
   editable,
+  kind = "unit",
 }: {
   unitId: string;
   photos: { path: string; url: string }[];
   editable: boolean;
+  /** "dev" = rumah tujuan developer mitra (rto_dev_units) */
+  kind?: "unit" | "dev";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState("");
@@ -68,6 +71,7 @@ export default function UnitPhotos({
           const blob = await compress(list[i]);
           const fd = new FormData();
           fd.append("unit_id", unitId);
+          fd.append("kind", kind);
           fd.append("file", new File([blob], `foto.${blob.type === "image/webp" ? "webp" : "jpg"}`, { type: blob.type }));
           const res = await uploadUnitPhoto(fd);
           if (res.error) {
@@ -89,6 +93,7 @@ export default function UnitPhotos({
     start(async () => {
       const fd = new FormData();
       fd.append("unit_id", unitId);
+      fd.append("kind", kind);
       fd.append("photos", JSON.stringify(next));
       const res = await setUnitPhotos(fd);
       if (res.error) setError(res.error);
@@ -132,7 +137,9 @@ export default function UnitPhotos({
           ))}
         </ul>
       ) : (
-        <p className="text-[12.5px] text-brand-gray">Belum ada foto. Unit dengan foto asli lebih cepat dilirik calon penyewa.</p>
+        <p className="text-[12.5px] text-brand-gray">
+          Belum ada foto. {kind === "dev" ? "Rumah dengan foto asli atau render yang jelas lebih cepat dilirik calon pembeli." : "Unit dengan foto asli lebih cepat dilirik calon penyewa."}
+        </p>
       )}
 
       {editable && (

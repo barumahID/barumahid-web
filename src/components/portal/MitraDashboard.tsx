@@ -59,6 +59,9 @@ export default function MitraDashboard({ profile, mitra }: { profile: Profile; m
             <>
               <p className="mt-2 text-[13.5px] leading-relaxed text-brand-gray">
                 Akun Anda sudah dibuat. Dashboard lengkap aktif setelah tim barumahID memverifikasi data Anda.
+                {category && CATEGORY_LINE[category] === "Rent-to-Own"
+                  ? ` Sambil menunggu, Anda sudah bisa mendaftarkan ${category === "developer" ? "rumah tujuan" : "unit kos"} di bagian bawah halaman ini.`
+                  : ""}
               </p>
               <ol className="mt-4 border-t border-brand-dark/10">
                 {[
