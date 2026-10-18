@@ -31,6 +31,8 @@ function cardFacts(l: Listing): string[] {
   if (l.category === "siap-beli") {
     return [l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "", l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "", ...(l.fasilitas ?? []).slice(-1)].filter(Boolean);
   }
+  if (l.luasBangunan || l.kamarTidur)
+    return [l.lantai ? `${l.lantai} lantai` : "", l.luasBangunan ? `${l.luasBangunan} m²` : "", l.kamarTidur ? `${l.kamarTidur} kamar tidur` : ""].filter(Boolean);
   return [l.luasLahan ? `Lahan ${l.luasLahan} m²` : "", l.dimensi ?? ""].filter(Boolean);
 }
 

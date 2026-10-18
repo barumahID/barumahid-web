@@ -187,7 +187,14 @@ function facts(l: Listing): string[] {
       l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "",
     ].filter(Boolean);
   }
-  return [l.luasLahan ? `Lahan ${l.luasLahan} m²` : "", l.dimensi ?? "", l.kontur ?? ""].filter(Boolean);
+  return [
+    l.lantai ? `${l.lantai} lantai` : "",
+    l.luasBangunan ? `Bangunan ${l.luasBangunan} m²` : "",
+    l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "",
+    l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "",
+    l.luasLahan ? `Lahan ${l.luasLahan} m²` : "",
+    l.dimensi ?? "",
+  ].filter(Boolean);
 }
 
 const fee = Math.round(RTO_PROGRAM_FEE * 100);
@@ -241,7 +248,7 @@ function highlights(l: Listing): { icon: string; title: string; body: string }[]
   if (l.category === "siap-bangun") {
     out.push(
       l.status === "selesai"
-        ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Siap Bangun: rumah dibangun di lahan milik pemiliknya." }
+        ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Siap Bangun: rumah dibangun di lahan milik pemiliknya. Foto pertama rumah jadinya, sisanya render desain." }
         : { icon: ICON.plan, title: "Desain dari tim barumahID", body: "Denah dan visualisasi 3D dibuat untuk rencana ini. Foto terakhir menunjukkan kondisi bangunan saat ini." },
     );
     out.push({ icon: ICON.key, title: "Bangun bertahap", body: "Jalur Siap Bangun cocok untuk pemilik lahan yang ingin membangun sambil mengumpulkan modal." });
@@ -325,7 +332,7 @@ export default async function ListingDetailPage({ params }: Props) {
   const path = RTO_PATHS.find((p) => p.id === l.category);
   const place = listingPlace(l);
   const rto = listingRto(l) && l.category === "siap-berdaya";
-  const facilities = l.category !== "siap-bangun" ? (l.fasilitas ?? []) : [];
+  const facilities = l.fasilitas ?? [];
   const others = all.filter((x) => x.city === l.city && x.slug !== l.slug).slice(0, 10);
   const waText = `Halo barumahID, saya tertarik dengan unit "${l.title}" (${SITE.url}/layanan/rto/${l.slug}). Bisa jadwalkan survei?`;
   const dp = l.category === "siap-berdaya" ? dpPerMonth(l.sewaPerBulan) : 0;

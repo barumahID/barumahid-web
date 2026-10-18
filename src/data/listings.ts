@@ -111,6 +111,12 @@ export interface SiapBangunListing extends ListingBase {
   /** Kisaran nilai proyek kalau bukan jual lahan (misalnya rumah yang sudah dibangun) */
   harga?: number;
   hargaMaks?: number;
+  /** Bangunan yang sudah atau akan dibangun */
+  lantai?: number;
+  luasBangunan?: number;
+  kamarTidur?: number;
+  kamarMandi?: number;
+  fasilitas?: string[];
   dimensi?: string;
   kontur?: string;
   sertifikat?: "SHM" | "SHGB" | "AJB" | "Lainnya";
@@ -230,26 +236,32 @@ export const LISTINGS: Listing[] = [
     category: "siap-bangun",
     kindLabel: "Rencana kos",
     title: "Rencana kos 2 lantai, 16 kamar",
-    kelurahan: "",
-    kecamatan: "",
+    kelurahan: "Kapuk",
+    kecamatan: "Cengkareng",
     city: "Jakarta Barat",
     status: "segera",
     statusLabel: "Tahap penawaran",
     luasLahan: 98,
     dimensi: "7 m x 14 m",
+    lantai: 2,
+    luasBangunan: 193,
     rekomendasi: "Kos 2 lantai (fase 1), struktur siap dikembangkan sampai 4 lantai",
     description:
-      "Rumah lama di Jakarta Barat yang direncanakan jadi kos lewat jalur Siap Bangun. Saat ini masih tahap penawaran dengan pemilik.\nRancangan tim barumahID: kos 2 lantai di lahan 7 x 14 m, 8 kamar per lantai (16 kamar), 3 kamar mandi bersama per lantai. Strukturnya beton bertulang supaya nanti bisa ditambah sampai 4 lantai.",
+      "Rumah lama di Kapuk, Cengkareng yang direncanakan jadi kos lewat jalur Siap Bangun. Saat ini masih tahap penawaran jasa desain dan analisa struktur dengan pemilik, bersama Jururancang.\nRancangan tahap awal: kos 2 lantai di lahan 7 x 14 m, luas bangunan 193 m², 8 kamar per lantai (16 kamar), 3 kamar mandi bersama per lantai.\nStrukturnya dihitung untuk 4 lantai sejak awal. Jadi saat lantai 3 dan 4 dibangun nanti, struktur bawah tidak perlu dibongkar.",
     rincian: [
       {
         title: "Rencana bangunan",
         rows: [
           ["Jumlah lantai (fase 1)", "2 lantai, rencana 4 lantai"],
+          ["Luas bangunan tahap 1", "193 m² (14,00 m x 6,90 m)"],
+          ["Rencana penuh", "386 m², sampai 4 lantai"],
           ["Jumlah kamar", "16 kamar, 8 per lantai"],
           ["Ukuran kamar", "2,8 m x 2,8 m"],
           ["Kamar mandi", "3 kamar mandi bersama per lantai"],
           ["Struktur", "Beton bertulang untuk 4 lantai"],
           ["Dinding", "Bata ringan"],
+          ["Acuan perhitungan", "SNI 1726 (gempa) dan SNI 2847 (beton)"],
+          ["Desain dan struktur", "Jururancang Engineering Mahaksa"],
         ],
       },
     ],
@@ -260,21 +272,45 @@ export const LISTINGS: Listing[] = [
       "Denah 2D kos 14 x 7 meter",
       "Kondisi bangunan lama saat ini",
     ]),
+    approx: { lat: -6.14765, lng: 106.77147 },
   },
   {
     slug: "rumah-2-lantai-hasil-siap-bangun",
     category: "siap-bangun",
     kindLabel: "Rumah 2 lantai",
-    title: "Rumah 2 lantai di lahan milik pemilik",
-    kelurahan: "",
-    kecamatan: "",
+    title: "Rumah 2 lantai, 5 kamar, di lahan milik pemilik",
+    kelurahan: "Kubu Dalam Parak Karakah",
+    kecamatan: "Padang Timur",
     city: "Padang",
     status: "selesai",
     harga: 750_000_000,
     hargaMaks: 1_000_000_000,
+    lantai: 2,
+    luasBangunan: 128,
+    kamarTidur: 5,
+    kamarMandi: 3,
+    fasilitas: ["Ruang tamu", "Dapur", "Garasi mobil"],
     description:
-      "Contoh jalur Siap Bangun: rumah 2 lantai yang sudah berdiri di atas lahan milik pemiliknya sendiri. Nilainya di kisaran Rp750 juta sampai Rp1 miliar.\nPunya lahan dan ingin membangun bertahap? Ceritakan rencanamu ke tim barumahID.",
-    photos: foto("rumah-2-lantai-hasil-siap-bangun", ["Tampak depan rumah 2 lantai", "Jalan di depan rumah"]),
+      "Contoh jalur Siap Bangun: rumah 2 lantai yang sudah berdiri di atas lahan milik pemiliknya sendiri. Luas bangunan sekitar 128 m² dengan 5 kamar tidur, 3 kamar mandi, carport, taman, dan balkon. Nilainya di kisaran Rp750 juta sampai Rp1 miliar.\nFoto pertama adalah rumahnya yang sudah jadi, foto lainnya render desainnya.\nPunya lahan dan ingin membangun bertahap? Ceritakan rencanamu ke tim barumahID.",
+    rincian: [
+      {
+        title: "Bangunan",
+        rows: [
+          ["Lantai 1", "74,70 m²: 3 kamar tidur, ruang tamu, ruang keluarga, dapur, 2 kamar mandi"],
+          ["Lantai 2", "53,45 m²: 2 kamar tidur, ruang keluarga, 1 kamar mandi, balkon, ruang jemur"],
+          ["Total luas bangunan", "128,15 m²"],
+          ["Luar bangunan", "Carport dan taman"],
+        ],
+      },
+    ],
+    photos: foto("rumah-2-lantai-hasil-siap-bangun", [
+      "Rumah 2 lantai yang sudah dibangun",
+      "Render desain tampak depan",
+      "Render desain tampak depan saat senja",
+      "Render ruang keluarga dan tangga",
+      "Render kamar tidur",
+    ]),
+    approx: { lat: -0.95197, lng: 100.39167 },
   },
 ];
 
