@@ -7,10 +7,11 @@ import type { MapTone } from "@/data/listings";
 
 // Peta listing (Leaflet + ubin OpenStreetMap, atribusi wajib tampil). Dimuat dinamis tanpa SSR dari halaman
 // yang memakainya, jadi halaman lain tidak ikut berat. Dua mode:
-// - titik per unit (halaman cari), sinkron dengan kartu yang disorot;
-// - satu titik unit (halaman detail).
-// Titik saja tanpa label (arahan user Okt 2026): biru = buka, hijau = penuh, merah = proses. Titik di database sudah
-// digeser, jadi bukan lokasi persis.
+// - pin per unit (halaman cari), sinkron dengan kartu yang disorot;
+// - satu pin unit + lingkaran area 300 m (halaman detail).
+// Pin gaya shareloc tanpa label (arahan user Okt 2026): biru = buka, hijau = penuh, merah = proses. Pin jatuh pelan saat
+// muncul dan ujungnya berdenyut (CSS `.map-pin` di globals.css). Titik di database sudah digeser 120-300 m, jadi
+// lingkaran 300 m di halaman detail memuat lokasi aslinya tanpa membukanya.
 
 export interface MapItem {
   slug: string;
@@ -21,6 +22,12 @@ export interface MapItem {
 }
 
 const INDONESIA: [number, number] = [-2.5, 118];
+const AREA_RADIUS_M = 300;
+
+/** Pin: badan berwarna status dengan titik putih, denyut di ujungnya. `i` menggeser jeda animasi supaya tidak serempak. */
+const pinHtml = (tone: MapTone, i = 0, lg = false) =>
+  `<span class="map-pin is-${tone}${lg ? " is-lg" : ""}" style="--d:${(i % 12) * 70}ms"><span class="map-pin-pulse"></span>` +
+  `<svg class="map-pin-body" viewBox="0 0 28 36" aria-hidden="true"><path d="M14 35C14 35 3 23.6 3 14a11 11 0 0 1 22 0c0 9.6-11 21-11 21z"/><circle cx="14" cy="14" r="4.6"/></svg></span>`;
 
 export default function ListingMap({
   items = [],
@@ -100,7 +107,7 @@ export default function ListingMap({
     };
   }, [scrollZoom]);
 
-  // Titik unit atau satu titik area
+  // Pin unit, atau satu pin dengan lingkaran area
   const areaKey = area ? `${area.lat},${area.lng},${area.tone}` : "";
   useEffect(() => {
     const lib = L.current;
@@ -111,21 +118,24 @@ export default function ListingMap({
     markers.current.clear();
     if (area) {
       lib
+        .circle([area.lat, area.lng], { radius: AREA_RADIUS_M, interactive: false, weight: 1.5, dashArray: "4 5", fillOpacity: 0.1, className: `map-area is-${area.tone}` })
+        .addTo(group);
+      lib
         .marker([area.lat, area.lng], {
           interactive: false,
           keyboard: false,
-          icon: lib.divIcon({ className: "", iconSize: undefined, html: `<span class="map-dot is-lg is-${area.tone}"></span>` }),
+          icon: lib.divIcon({ className: "", iconSize: undefined, html: pinHtml(area.tone, 0, true) }),
         })
         .addTo(group);
       fit.current = () => m.setView([area.lat, area.lng], 15);
       fit.current();
       return;
     }
-    for (const it of items) {
+    items.forEach((it, i) => {
       const marker = lib.marker([it.lat, it.lng], {
         title: it.title,
         riseOnHover: true,
-        icon: lib.divIcon({ className: "", iconSize: undefined, html: `<span class="map-dot is-${it.tone}"></span>` }),
+        icon: lib.divIcon({ className: "", iconSize: undefined, html: pinHtml(it.tone, i) }),
       });
       marker.on("click", (e) => {
         lib.DomEvent.stopPropagation(e);
@@ -133,7 +143,7 @@ export default function ListingMap({
       });
       marker.addTo(group);
       markers.current.set(it.slug, marker);
-    }
+    });
     fit.current = () => {
       if (items.length) m.fitBounds(lib.latLngBounds(items.map((i) => [i.lat, i.lng] as [number, number])), { padding: [56, 56], maxZoom: 15 });
       else m.setView(INDONESIA, 5);

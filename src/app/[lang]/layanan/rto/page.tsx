@@ -6,6 +6,8 @@ import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import DPSimulator from "@/components/rto/DPSimulator";
 import LevelJourney from "@/components/rto/LevelJourney";
 import RtoPlatform from "@/components/rto/listing/RtoPlatform";
+import RtoHeroMotion from "@/components/rto/RtoHeroMotion";
+import LightStreaks from "@/components/ui/LightStreaks";
 import Link from "@/i18n/Link";
 import {
   DP_CHANNELS,
@@ -24,10 +26,11 @@ import { GFORMS } from "@/data/google-forms";
 import { getAllListings } from "@/lib/rto-listing";
 import { waLink } from "@/data/site";
 
-// Halaman Rent-to-Own (arahan user Okt 2026): halaman 1 hero, halaman 2 platform listing tiga jalur (Rumah Berdaya,
+// Halaman Rent-to-Own (arahan user Okt 2026): halaman 1 hero (latar bergerak RtoHeroMotion: setoran mengisi rumah, plus
+// tiga fakta singkat), halaman 2 platform listing tiga jalur (Rumah Berdaya,
 // Rumah Bangun, Rumah Beli). Bagian bawah dibuat ringkas: kenapa lewat barumahID + keamanan dana + aturan mundur
 // (tanpa rincian persen dan pembagian, karena itu model bisnis), percepatan DP + simulasi, lalu daftar (peran, akun
-// Portal, formulir resmi, FAQ).
+// Portal, formulir resmi, FAQ). Dua bagian gelap memakai latar garis cahaya (LightStreaks) yang sama dengan halaman Profil.
 
 export const metadata: Metadata = {
   title: "Rent-to-Own: Sewa Sambil Menabung DP Rumah",
@@ -56,6 +59,14 @@ const ARROW = (
 
 const section = "mx-auto max-w-[1280px] px-5 py-14 md:px-10 md:py-16 lg:px-14";
 
+const CHECK = (
+  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="m3.5 8.5 3 3 6-7" />
+  </svg>
+);
+
+const HERO_FACTS = ["Harga rumah dikunci di MoU", "25% sewa program jadi saldo DP", `Jadi DP dalam ${RTO_CONVERT_YEARS.min}-${RTO_CONVERT_YEARS.max} tahun`];
+
 export default async function RtoPage() {
   const listings = await getAllListings();
 
@@ -66,17 +77,23 @@ export default async function RtoPage() {
         title="Sewa hari ini. Miliki hunian nantinya."
         subtitle={
           <>
-            <p>
-              Ngekos di unit mitra, buka RTO, dan harga rumah tujuanmu dikunci sejak awal. 25% sewa program jadi saldo DP, lalu dikonversi setelah{" "}
-              {RTO_CONVERT_YEARS.min}-{RTO_CONVERT_YEARS.max} tahun.
-            </p>
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-white">
+            <p>Ngekos di unit mitra sambil mengumpulkan DP rumah. Harga rumah tujuanmu dikunci sejak awal, jadi tidak ikut naik.</p>
+            <ul className="mt-5 flex flex-wrap gap-2 text-[13px] font-semibold text-white">
+              {HERO_FACTS.map((f) => (
+                <li key={f} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 backdrop-blur-sm">
+                  <span className="text-brand-red">{CHECK}</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-white/70">
               <span className="h-2 w-2 animate-pulse-dot rounded-full bg-brand-red" aria-hidden="true" />
               Tahap persiapan. Pendaftaran sudah dibuka.
             </p>
           </>
         }
         image="/images/hero-card.webp"
+        backdrop={<RtoHeroMotion />}
         size="lg"
       >
         <ButtonLink href="#listing" variant="red">
@@ -118,7 +135,8 @@ export default async function RtoPage() {
       </section>
 
       {/* Kenapa lewat barumahID + keamanan dana + aturan mundur, ringkas */}
-      <section id="dana" className="scroll-mt-20 bg-brand-dark text-white">
+      <section id="dana" className="relative isolate scroll-mt-20 overflow-hidden bg-brand-dark text-white">
+        <LightStreaks className="-z-10" />
         <div className={section}>
           <Reveal>
             <Heading
@@ -128,25 +146,36 @@ export default async function RtoPage() {
               dark
             />
           </Reveal>
-          <div className="mt-8 grid gap-4 lg:grid-cols-12">
-            <ul className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
-              {WHY_RTO.map((w) => (
-                <li key={w.title} className="rounded-2xl border border-white/10 p-5">
-                  <p className="text-[16px] font-extrabold">{w.title}</p>
-                  <p className="mt-1 text-[13.5px] leading-relaxed text-white/65">{w.body}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="rounded-2xl bg-white/[0.06] p-5 lg:col-span-5">
+          {/* Empat alasan sebaris, lalu keamanan dana dan aturan mundur berdampingan (tinggi seimbang, tanpa kartu kosong) */}
+          <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {WHY_RTO.map((w, i) => (
+              <li key={w.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-[2px]">
+                <span className="text-[12px] font-extrabold text-brand-red">0{i + 1}</span>
+                <p className="mt-1 text-[16px] font-extrabold leading-snug">{w.title}</p>
+                <p className="mt-1 text-[13.5px] leading-relaxed text-white/65">{w.body}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 grid gap-4 lg:grid-cols-12">
+            <div className="flex flex-col rounded-2xl bg-white/[0.06] p-5 lg:col-span-5">
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Keamanan dana</p>
-              <ul className="mt-2 space-y-1.5">
+              <ul className="mb-4 mt-3 space-y-3">
                 {FUND_SAFETY.map((f) => (
-                  <li key={f.title} className="text-[13.5px] leading-snug text-white/75">
-                    <span className="font-bold text-white">{f.title}.</span> {f.body}
+                  <li key={f.title} className="flex gap-3 text-[13.5px] leading-snug">
+                    <span className="mt-0.5 text-brand-red">{CHECK}</span>
+                    <span>
+                      <span className="block font-bold text-white">{f.title}</span>
+                      <span className="text-white/65">{f.body}</span>
+                    </span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Kalau mundur dari program</p>
+              <p className="mt-auto border-t border-white/10 pt-3 text-[12.5px] leading-relaxed text-white/50">
+                Saldo DP berstatus dana titipan: tetap milikmu, dipakai untuk DP rumah tujuan atau modal bangun.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/[0.06] p-5 lg:col-span-7">
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Kalau mundur dari program</p>
               <ul className="mt-2 divide-y divide-white/10">
                 {REFUND_POLICY.map((r) => (
                   <li key={r.when} className="grid gap-0.5 py-2 text-[13px] sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-3">
@@ -170,7 +199,7 @@ export default async function RtoPage() {
       <section id="percepatan" className="scroll-mt-20 bg-brand-cream-warm">
         <div className={section}>
           <Reveal>
-            <Heading label="Percepatan DP" title="Empat cara saldo DP-mu bertambah." body="Selain sewa, layanan Kosanesia di ekosistem barumahID ikut menambah saldo. Dibuka bertahap." />
+            <Heading label="Percepatan DP" title="Empat cara saldo DP-mu bertambah." body="Selain sewa, layanan Kosanesia ikut menambah saldo. Dibuka bertahap." />
           </Reveal>
           <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {DP_CHANNELS.map((c) => (
@@ -190,7 +219,7 @@ export default async function RtoPage() {
           <div id="simulasi" className="mt-10 scroll-mt-24">
             <p className="text-[clamp(1.3rem,2.4vw,1.7rem)] font-extrabold leading-tight text-brand-dark">Hitung saldo DP-mu saat konversi.</p>
             <p className="mb-5 mt-1 max-w-2xl text-[14px] leading-relaxed text-brand-gray">
-              Pilih kapan saldo dikonversi ({RTO_CONVERT_YEARS.min}-{RTO_CONVERT_YEARS.max} tahun), lalu lihat rumah seharga berapa yang DP-nya tertutup.
+              Geser sewa, pilih lama RTO ({RTO_CONVERT_YEARS.min}-{RTO_CONVERT_YEARS.max} tahun), lalu lihat rumah seharga berapa yang DP-nya tertutup saldo.
             </p>
             <DPSimulator formAnchor="#daftar" />
           </div>
@@ -198,15 +227,14 @@ export default async function RtoPage() {
       </section>
 
       {/* Daftar: peran (akun Portal, formulir, panduan) dan FAQ */}
-      <section id="daftar" className="scroll-mt-20 bg-brand-dark">
+      <section id="daftar" className="relative isolate scroll-mt-20 overflow-hidden bg-brand-dark">
+        <LightStreaks flares={4} className="-z-10" />
         <div className={section}>
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <p className="type-micro text-brand-red">Daftar</p>
               <h2 className="mt-3 text-[clamp(1.6rem,3.2vw,2.4rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-white">Mulai dari peranmu.</h2>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-white/65">
-                Gratis. Setiap peran punya dashboard di Portal barumahID, formulir resmi, dan panduan.
-              </p>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-white/65">Gratis. Tiap peran punya dashboard di Portal, formulir resmi, dan panduan.</p>
               <div id="peran" className="mt-6 scroll-mt-24 space-y-3">
                 {RTO_ROLES.map((r) => (
                   <article key={r.id} className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">

@@ -423,25 +423,65 @@ textarea:focus-visible {
   }
 }
 
-/* Peta listing RTO (Leaflet): titik status tanpa label (biru buka, hijau penuh, merah proses), ubin dilembutkan */
+/* Peta listing RTO (Leaflet): pin gaya shareloc tanpa label (biru buka, hijau penuh, merah proses), ubin dilembutkan.
+   Ujung pin = titik lokasi. Pin jatuh pelan saat muncul (jeda --d per pin), ujungnya berdenyut seperti lokasi yang
+   dibagikan. Hover dan pin terpilih memakai `scale`/`translate` terpisah supaya tidak bentrok dengan animasi jatuh. */
 .leaflet-container { font-family: inherit; background: #efeae1; }
 .map-soft .leaflet-tile-pane { filter: saturate(0.6) brightness(1.03) sepia(0.06); }
-.map-dot {
+.map-pin {
+  position: relative;
   display: block;
-  width: 18px;
-  height: 18px;
-  transform: translate(-50%, -50%);
-  border-radius: 9999px;
-  border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(20, 20, 20, 0.35);
-  transition: transform 0.15s ease;
+  width: 28px;
+  height: 36px;
+  transform: translate(-50%, -100%);
   cursor: pointer;
 }
-.map-dot.is-open { background: #1a5c9a; }
-.map-dot.is-full { background: #2d7a4f; }
-.map-dot.is-process { background: #c53b3b; }
-.map-dot.is-lg { width: 26px; height: 26px; border-width: 4px; cursor: default; }
-.map-dot:hover, .map-dot.is-active { transform: translate(-50%, -50%) scale(1.4); }
+.map-pin.is-open, .map-area.is-open { color: #1a5c9a; }
+.map-pin.is-full, .map-area.is-full { color: #2d7a4f; }
+.map-pin.is-process, .map-area.is-process { color: #c53b3b; }
+.map-pin-body {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 3px 3px rgba(20, 20, 20, 0.3));
+  transition: scale 0.18s ease, translate 0.18s ease;
+  animation: map-pin-drop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) both;
+}
+.map-pin-body path { fill: currentColor; stroke: #fff; stroke-width: 2; }
+.map-pin-body circle { fill: #fff; }
+.map-pin-pulse {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 30px;
+  height: 12px;
+  margin: 0 0 -6px -15px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  animation: map-pin-pulse 2.4s ease-out calc(var(--d, 0ms) + 0.5s) infinite;
+}
+.map-pin:hover .map-pin-body, .map-pin.is-active .map-pin-body { scale: 1.2; translate: 0 -3px; }
+.map-pin.is-active .map-pin-pulse { animation-duration: 1.4s; }
+.map-pin.is-lg { width: 40px; height: 52px; cursor: default; }
+.map-pin.is-lg .map-pin-pulse { width: 64px; height: 24px; margin: 0 0 -12px -32px; }
+.map-area { stroke: currentColor; fill: currentColor; animation: map-area-breathe 3.2s ease-in-out infinite; }
+@keyframes map-pin-drop {
+  from { transform: translateY(-18px) scale(0.6); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes map-pin-pulse {
+  0% { transform: scale(0.25); opacity: 0.55; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes map-area-breathe {
+  0%, 100% { fill-opacity: 0.07; }
+  50% { fill-opacity: 0.16; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .map-dot { transition: none; }
+  .map-pin-body, .map-pin-pulse, .map-area { animation: none; transition: none; }
+  .map-pin-pulse { opacity: 0.2; transform: scale(0.6); }
 }

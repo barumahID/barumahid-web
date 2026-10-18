@@ -39,7 +39,7 @@ function Eco({ on, set }: { on: boolean; set: (v: boolean) => void }) {
     <label className="flex items-start gap-2.5 rounded-2xl border border-brand-dark/10 bg-white p-4 text-[13.5px] text-brand-dark">
       <input type="checkbox" checked={on} onChange={(e) => set(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#C53B3B]" />
       <span>
-        Tambah channel percepatan (Kosanesia Laundry, Angkut, GreenPoint), sekitar {rp(DP_BOOST_TOTAL)}/bulan.{" "}
+        Tambah percepatan Kosanesia (Laundry, Angkut, GreenPoint), sekitar {rp(DP_BOOST_TOTAL)}/bulan.{" "}
         <span className="text-brand-gray">Segera, belum berjalan.</span>
       </span>
     </label>
@@ -55,8 +55,8 @@ function TimeNote({ years }: { years: number }) {
   const total = (years * 12 + RTO_UNLOCK_MONTHS) / 12;
   return (
     <p className="pt-1 text-[12.5px] leading-snug text-brand-gray">
-      Total sekitar {total.toLocaleString("id-ID", { maximumFractionDigits: 1 })} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa, lalu {years} tahun RTO.
-      Harga rumah dikunci di MoU sejak awal, jadi tidak naik selama kamu menabung.
+      Total sekitar {total.toLocaleString("id-ID", { maximumFractionDigits: 1 })} tahun dari awal sewa: {RTO_UNLOCK_MONTHS} bulan sewa biasa + {years} tahun RTO.
+      Harga rumah dikunci di MoU, tidak naik selama kamu menabung.
     </p>
   );
 }
@@ -72,7 +72,7 @@ function Berdaya({ rent }: { rent: number }) {
   return (
     <div className="space-y-3">
       <p className="rounded-xl bg-brand-cream-warm px-4 py-2.5 text-[13px] leading-snug text-brand-dark">
-        Kamu ngekos di unit ini. Saldo DP dari sewanya dipakai untuk uang muka rumah tujuan dari developer mitra, bukan unit ini.
+        Saldo DP dari sewa unit ini dipakai untuk rumah tujuan dari developer mitra, bukan untuk unit ini.
       </p>
       <YearsChips value={years} onChange={setYears} />
       <Chips label="DP rumah dari developer" value={pct} options={DP_PCT_OPTIONS} onChange={setPct} />
@@ -102,7 +102,7 @@ function Tujuan({ price, dpMin }: { price: number; dpMin: number }) {
   return (
     <div className="space-y-3">
       <p className="rounded-xl bg-brand-cream-warm px-4 py-2.5 text-[13px] leading-snug text-brand-dark">
-        Rumah ini jadi tujuan saldo DP. Kamu ngekos di unit mitra, {ratePct}% sewanya terkumpul, lalu dikonversi jadi DP rumah ini sesuai jadwal di MoU.
+        Harga rumah ini dikunci di MoU. Kamu ngekos di unit mitra, {ratePct}% sewa program terkumpul jadi saldo, lalu dikonversi jadi DP rumah ini.
       </p>
       <Slider id="u-rent" label="Sewa biasa kos per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
       <YearsChips value={years} onChange={setYears} />
@@ -143,8 +143,7 @@ function Bangun({ start }: { start: number }) {
   return (
     <div className="space-y-3">
       <p className="rounded-xl bg-brand-cream-warm px-4 py-2.5 text-[13px] leading-snug text-brand-dark">
-        Selama ngekos atau ngontrak di unit mitra dan ikut RTO, saldo DP terkumpul. Saat konversi, saldo ditambah tabunganmu sampai 25% dari RAB, lalu pembangunan
-        dimulai di lahanmu.
+        Saldo DP dari sewa ditambah tabunganmu jadi modal 25% RAB. Begitu cukup, pembangunan dimulai di lahanmu.
       </p>
       <Slider id="u-rab" label="Nilai bangunan (RAB)" value={rab} min={100_000_000} max={2_000_000_000} step={25_000_000} onChange={setRab} display={rpShort(rab)} minLabel="Rp100 jt" maxLabel="Rp2 M" />
       <Slider id="u-rent-b" label="Sewa biasa kos atau kontrakan per bulan" value={rent} min={500_000} max={5_000_000} step={100_000} onChange={setRent} display={rpShort(rent)} minLabel="Rp500 rb" maxLabel="Rp5 jt" />
@@ -185,7 +184,7 @@ function Beli({ start }: { start: number }) {
   return (
     <div className="space-y-3">
       <p className="rounded-xl bg-brand-cream-warm px-4 py-2.5 text-[13px] leading-snug text-brand-dark">
-        Listing jual beli, di luar program RTO. barumahID mempertemukan pembeli dan penjual, lalu bantu hitung DP dan KPR.
+        Di luar program RTO. Kami pertemukan pembeli dan penjual, lalu bantu hitung DP dan KPR.
       </p>
       <Slider id="u-beli" label="Harga rumah" value={harga} min={150_000_000} max={2_000_000_000} step={25_000_000} onChange={setHarga} display={rpShort(harga)} minLabel="Rp150 jt" maxLabel="Rp2 M" />
       <Chips label="DP" value={pct} options={[10, 15, 20, 30]} onChange={setPct} />
