@@ -14,7 +14,10 @@ import {
   dateLabel,
   monthLabel,
   rupiah,
+  DOC_LABEL,
+  DOCS_BY_ROLE,
   type DevUnitStatus,
+  type RtoAgreement,
   type RtoAssessment,
   type RtoDevUnit,
   type RtoLedgerEntry,
@@ -27,8 +30,10 @@ import {
 } from "@/lib/rto";
 import AutoSelect from "./AutoSelect";
 import { waHref } from "./PortalShell";
+import { signedOf } from "./MitraDocs";
 import {
   ActionButton,
+  AgreementRecordForm,
   DescriptionForm,
   DevReviewForm,
   DevUnitForm,
@@ -54,6 +59,7 @@ export interface RtoTeamData {
   ledger: RtoLedgerEntry[];
   units: RtoUnit[];
   devUnits: RtoDevUnit[];
+  agreements: RtoAgreement[];
 }
 
 const card = "rounded-2xl border border-brand-dark/10 bg-white";
@@ -71,7 +77,9 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 }
 
 export default function TeamRto({ data, accounts }: { data: RtoTeamData; accounts: Profile[] }) {
-  const { tenants, assessments, tenancies, payments, ledger, units, devUnits } = data;
+  const { tenants, assessments, tenancies, payments, ledger, units, devUnits, agreements } = data;
+  const docsOf = (id: string) => agreements.filter((x) => x.user_id === id);
+  const rtoMitra = accounts.filter((x) => x.role === "mitra" && (x.requested_category === "penyedia_kos" || x.requested_category === "developer"));
   const profileOf = new Map(accounts.map((a) => [a.user_id, a]));
   const tenantOf = new Map(tenants.map((t) => [t.user_id, t]));
   const penyewa = accounts.filter((a) => a.role === "penyewa");
@@ -255,10 +263,24 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
                       </p>
                     </Panel>
                     {t && (
-                      <Panel title="Rencana DP dan dokumen">
+                      <Panel title="Rencana DP dan rumah tujuan">
                         <TenantPlanForm tenant={t} devUnits={pickable(t.target_dev_unit_id)} />
                       </Panel>
                     )}
+                    <Panel title="Dokumen (Legal Kit v2)">
+                      <ul className="mb-3 space-y-1 text-[12.5px]">
+                        {DOCS_BY_ROLE.penyewa.map((d) => {
+                          const doc = signedOf(docsOf(a.user_id), d);
+                          return (
+                            <li key={d} className="flex justify-between gap-2">
+                              <span>{DOC_LABEL[d]}</span>
+                              <span className={doc ? "font-semibold text-[#2D7A4F]" : "text-brand-mute"}>{doc ? `${dateLabel(doc.signed_on ?? doc.created_at)} · ${doc.version}` : "Belum"}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                      <AgreementRecordForm userId={a.user_id} docs={["perjanjian_sewa", "bast", "kontrak_rto", "mou_rumah_tujuan"]} />
+                    </Panel>
                     <Panel title="Sewa">
                       {myTenancies.length ? (
                         <ul className="mb-3 space-y-1.5 text-[13px]">
@@ -499,6 +521,42 @@ export default function TeamRto({ data, accounts }: { data: RtoTeamData; account
             <DevUnitForm owners={developers} />
           </div>
         </details>
+      </section>
+
+      {/* Dokumen mitra RTO (Legal Kit v2): NDA bisa disetujui mitra lewat Portal, MoU dicatat tim */}
+      <section className={`${card} p-5`}>
+        <h2 className="text-[15px] font-extrabold">Dokumen mitra RTO</h2>
+        <p className="mt-0.5 text-[12.5px] text-brand-gray">
+          Penyedia kos: S&K, NDA, MoU Mitra Penyedia. Developer: S&K, NDA, MoU Developer. NDA bisa disetujui mitra di Portal; MoU dicatat di sini setelah
+          ditandatangani.
+        </p>
+        {rtoMitra.length === 0 ? (
+          <p className="mt-3 text-[13px] text-brand-mute">Belum ada akun penyedia kos atau developer.</p>
+        ) : (
+          <div className="mt-3 divide-y divide-brand-dark/[0.07]">
+            {rtoMitra.map((m) => {
+              const role = m.requested_category === "developer" ? "developer" : "penyedia";
+              const docs = DOCS_BY_ROLE[role];
+              const mine = docsOf(m.user_id);
+              return (
+                <details key={m.user_id} className="py-3">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-1 text-[13.5px]">
+                    <span className="min-w-[200px] font-bold text-brand-dark">{m.company || m.full_name || m.email}</span>
+                    <span className="text-brand-gray">{role === "developer" ? "Developer mitra" : "Penyedia kos"}</span>
+                    {docs.map((d) => (
+                      <span key={d} className={`text-[12px] font-semibold ${signedOf(mine, d) ? "text-[#2D7A4F]" : "text-brand-mute"}`}>
+                        {DOC_LABEL[d]}: {signedOf(mine, d) ? "selesai" : "belum"}
+                      </span>
+                    ))}
+                  </summary>
+                  <div className="mt-3 max-w-2xl">
+                    <AgreementRecordForm userId={m.user_id} docs={docs.filter((d) => d !== "syarat_ketentuan")} />
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );

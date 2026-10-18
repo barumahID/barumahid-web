@@ -6,6 +6,7 @@ import TeamDashboard, { TABS, type Bagian, type TabId } from "@/components/porta
 import PenyewaDashboard from "@/components/portal/PenyewaDashboard";
 import MitraUnits from "@/components/portal/MitraUnits";
 import DevUnits from "@/components/portal/DevUnits";
+import MitraDocs from "@/components/portal/MitraDocs";
 import type { RtoTeamData } from "@/components/portal/TeamRto";
 import type {
   DevPipelineRow,
@@ -69,7 +70,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
     ]);
     let rto: RtoTeamData | null = null;
     if (bagian === "dashboard" && tab === "rto") {
-      const [tenants, assessments, tenancies, payments, ledger, units, devUnits] = await Promise.all([
+      const [tenants, assessments, tenancies, payments, ledger, units, devUnits, agreements] = await Promise.all([
         supabase.from("rto_tenants").select("*"),
         supabase.from("rto_assessments").select("*").order("created_at", { ascending: false }).limit(1000),
         supabase.from("rto_tenancies").select("*").order("start_date", { ascending: false }),
@@ -77,6 +78,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
         supabase.from("rto_dp_ledger").select("*").order("created_at", { ascending: false }).limit(2000),
         supabase.from("rto_units").select("*").order("created_at", { ascending: false }),
         supabase.from("rto_dev_units").select("*").order("created_at", { ascending: false }),
+        supabase.from("rto_agreements").select("*").order("created_at", { ascending: false }),
       ]);
       if (!tenants.error) {
         rto = {
@@ -87,6 +89,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
           ledger: (ledger.data ?? []) as RtoLedgerEntry[],
           units: (units.data ?? []) as RtoUnit[],
           devUnits: (devUnits.data ?? []) as RtoDevUnit[],
+          agreements: (agreements.data ?? []) as RtoAgreement[],
         };
       }
     }
@@ -152,6 +155,13 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
   const category = m?.category ?? profile.requested_category;
   const isKos = category === "penyedia_kos";
   let unitsPanel: React.ReactNode = null;
+  // Mitra RTO (penyedia kos dan developer): dokumen kerja sama sesuai Legal Kit v2
+  const rtoRole = category === "developer" ? "developer" : isKos ? "penyedia" : null;
+  let docsPanel: React.ReactNode = null;
+  if (rtoRole) {
+    const { data: agreements } = await supabase.from("rto_agreements").select("*").eq("user_id", user.id);
+    docsPanel = <MitraDocs role={rtoRole} agreements={(agreements ?? []) as RtoAgreement[]} name={profile.full_name || profile.email} />;
+  }
   // Developer mitra: rumah tujuan RTO dan pipeline peserta (tanpa identitas)
   if (category === "developer") {
     const [devUnits, pipeline] = await Promise.all([
@@ -177,6 +187,7 @@ export default async function PortalDashboardPage({ searchParams }: Props) {
   return (
     <PortalShell profile={profile} email={user.email ?? ""}>
       <MitraDashboard profile={profile} mitra={m} />
+      {docsPanel && <div className="mt-6">{docsPanel}</div>}
       {unitsPanel && <div className="mt-6">{unitsPanel}</div>}
     </PortalShell>
   );

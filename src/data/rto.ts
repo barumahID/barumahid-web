@@ -11,7 +11,7 @@ export const RTO_RATE = 0.25;
 // - RTO terbuka setelah KTP terverifikasi, 6 bulan sewa tepat waktu di unit mitra, dan Skor Siap Punya Rumah >= 36.
 // - Model dua harga, semuanya terbuka (keputusan user Okt 2026, "model yang paling aman"):
 //   harga deal = hasil nego dengan penyedia kos, pemilik selalu menerima ini penuh;
-//   sewa biasa = harga deal + biaya layanan barumahID 9% (harga yang tampil di listing, dibayar 6 bulan pertama dan
+//   sewa biasa = harga deal + biaya layanan barumahID (RTO_PROGRAM_FEE; harga yang tampil di listing, dibayar 6 bulan pertama dan
 //   oleh penyewa yang tidak ikut RTO);
 //   sewa program = sewa biasa + setoran DP, dibayar setelah RTO terbuka. 25% dari sewa program jadi saldo DP, jadi
 //   setoran DP = sepertiga sewa biasa. Fungsi database mencatat 25% dari pembayaran setelah Kontrak RTO, jadi tim

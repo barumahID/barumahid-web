@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getPortalSession } from "@/lib/portal-session";
 import { isTeam } from "@/lib/portal";
+import { DOC_LABEL, DOC_VERSION, type AgreementDoc } from "@/lib/rto";
 import { RTO_UNITS_TAG } from "@/lib/rto-listing";
 import type { FormState } from "./actions";
 
@@ -124,9 +125,25 @@ export async function acceptTerms(_: FormState, fd: FormData): Promise<FormState
   const doc = text(fd, "doc", 30);
   if (doc !== "syarat_ketentuan" && doc !== "nda") return { error: "Dokumen tidak dikenal." };
   if (fd.get("agree") !== "on") return { error: "Centang persetujuan dulu." };
-  const { error } = await supabase.from("rto_agreements").insert({ user_id: user.id, doc, version: "v1", method: "klik" });
+  const { error } = await supabase.from("rto_agreements").insert({ user_id: user.id, doc, version: DOC_VERSION[doc], method: "klik" });
   if (error && error.code !== "23505") return { error: "Persetujuan belum tersimpan. Coba lagi." };
-  return done("Terima kasih, persetujuanmu tercatat.");
+  return done("Terima kasih, persetujuan tercatat.");
+}
+
+/** Tim mencatat dokumen yang sudah ditandatangani (MoU, Kontrak RTO, Perjanjian Sewa, BAST, NDA bertanda tangan) */
+export async function recordAgreement(_: FormState, fd: FormData): Promise<FormState> {
+  const { supabase, user } = await requireTeam();
+  const id = text(fd, "user_id", 60);
+  const doc = text(fd, "doc", 30) as AgreementDoc;
+  const date = text(fd, "signed_on", 10);
+  if (!UUID.test(id) || !(doc in DOC_LABEL)) return { error: "Pilih dokumen." };
+  if (!isDate(date)) return { error: "Isi tanggal tanda tangan." };
+  const { error } = await supabase
+    .from("rto_agreements")
+    .insert({ user_id: id, doc, version: DOC_VERSION[doc], method: "tanda_tangan", signed_on: date, recorded_by: user!.id });
+  if (error?.code === "23505") return { error: `${DOC_LABEL[doc]} versi ini sudah tercatat.` };
+  if (error) return { error: "Dokumen belum tercatat." };
+  return done(`${DOC_LABEL[doc]} tercatat.`);
 }
 
 // ---------------- Mitra penyedia kos ----------------

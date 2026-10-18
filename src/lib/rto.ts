@@ -8,7 +8,15 @@ export type RtoStatus = "belum" | "diajukan" | "disetujui" | "ditolak" | "selesa
 export type UnitStatus = "diajukan" | "inspeksi" | "perbaikan" | "tayang" | "penuh" | "ditolak" | "nonaktif";
 export type PaymentStatus = "dilaporkan" | "lunas" | "ditolak";
 export type LedgerKind = "setoran" | "koreksi" | "pengembalian" | "konversi";
-export type AgreementDoc = "syarat_ketentuan" | "nda" | "perjanjian_sewa" | "kontrak_rto" | "mou_penyedia" | "mou_developer" | "bast";
+export type AgreementDoc =
+  | "syarat_ketentuan"
+  | "nda"
+  | "perjanjian_sewa"
+  | "kontrak_rto"
+  | "mou_penyedia"
+  | "mou_developer"
+  | "mou_rumah_tujuan"
+  | "bast";
 
 export interface RtoTenant {
   user_id: string;
@@ -249,7 +257,39 @@ export const DOC_LABEL: Record<AgreementDoc, string> = {
   kontrak_rto: "Kontrak RTO",
   mou_penyedia: "MoU Mitra Penyedia",
   mou_developer: "MoU Developer",
+  mou_rumah_tujuan: "MoU Rumah Tujuan",
   bast: "Berita Acara Serah Terima",
+};
+
+/** Versi dokumen yang berlaku (Legal Kit v2, Okt 2026; drafnya di folder privat, tidak di repo). S&K publik masih v1. */
+export const DOC_VERSION: Record<AgreementDoc, string> = {
+  syarat_ketentuan: "v1",
+  nda: "v2",
+  perjanjian_sewa: "v1",
+  kontrak_rto: "v2",
+  mou_penyedia: "v2",
+  mou_developer: "v2",
+  mou_rumah_tujuan: "v2",
+  bast: "v1",
+};
+
+/** Dokumen per peran, selaras dengan RTO_DOCUMENTS di halaman panduan dan Legal Kit v2 */
+export const DOCS_BY_ROLE: Record<"penyewa" | "penyedia" | "developer", AgreementDoc[]> = {
+  penyewa: ["syarat_ketentuan", "perjanjian_sewa", "bast", "kontrak_rto", "mou_rumah_tujuan"],
+  penyedia: ["syarat_ketentuan", "nda", "mou_penyedia"],
+  developer: ["syarat_ketentuan", "nda", "mou_developer"],
+};
+
+/** Kapan dokumen yang belum ada biasanya ditandatangani (teks status di dashboard) */
+export const DOC_WHEN: Record<AgreementDoc, string> = {
+  syarat_ketentuan: "Saat membuat akun",
+  nda: "Setujui di bawah",
+  perjanjian_sewa: "Saat check-in",
+  bast: "Saat check-in",
+  kontrak_rto: "Setelah lolos Gerbang RTO",
+  mou_rumah_tujuan: "Saat memilih rumah tujuan",
+  mou_penyedia: "Setelah inspeksi lolos",
+  mou_developer: "Setelah tinjauan tim",
 };
 
 // Pertanyaan asesmen Skor Siap Punya Rumah. Nilai poin hanya dihitung di database (rto_submit_assessment).
