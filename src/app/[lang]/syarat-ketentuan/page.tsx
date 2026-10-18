@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import Link from "@/i18n/Link";
 import { EMAIL, SITE, WA_ADMIN_1_LABEL } from "@/data/site";
-import { REFUND_POLICY, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE } from "@/data/rto";
+import { REFUND_POLICY, RTO_CONVERT_YEARS, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE } from "@/data/rto";
 
 export const metadata: Metadata = {
   title: "Syarat dan Ketentuan",
@@ -64,6 +64,10 @@ const sections: { title: string; body: React.ReactNode }[] = [
           <li>
             Saldo DP dipakai untuk uang muka rumah dari developer mitra RTO (jalur Siap Berdaya), atau untuk modal awal pembangunan sampai 25% dari
             RAB (jalur Siap Bangun). Saldo DP tidak dipakai untuk unit kos atau rumah sewa yang sedang kamu tempati.
+          </li>
+          <li>
+            Rumah tujuan, harga, dan jadwal konversi dicatat di MoU dengan developer mitra di awal program. Saldo dikonversi jadi DP setelah masa RTO{" "}
+            {RTO_CONVERT_YEARS.min} sampai {RTO_CONVERT_YEARS.max} tahun, sesuai jadwal di MoU.
           </li>
           <li>Sewa program sudah termasuk biaya program {Math.round(RTO_PROGRAM_FEE * 100)}% di atas harga sewa mitra.</li>
           <li>

@@ -12,6 +12,7 @@ import {
   RTO_STATUS_LABEL,
   computeJourney,
   dateLabel,
+  earliestConversion,
   monthLabel,
   rupiah,
   type AgreementDoc,
@@ -66,7 +67,7 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
     score: assessment?.score ?? null,
     rtoStatus,
     contractSigned: !!tenant?.contract_signed_at,
-    ppjbSigned: !!tenant?.ppjb_signed_at,
+    contractSignedAt: tenant?.contract_signed_at ?? null,
     dpBalance: balance,
     dpTarget: tenant?.dp_target ?? null,
   });
@@ -75,6 +76,9 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
   const target = tenant?.dp_target ?? 0;
   const pct = target > 0 ? Math.min(100, Math.round((balance / target) * 100)) : 0;
   const inProgram = rtoStatus === "disetujui" && !!tenant?.contract_signed_at;
+  const conversionAt = inProgram
+    ? earliestConversion(tenant?.contract_signed_at ?? null)?.toLocaleDateString("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" })
+    : null;
   const path = RTO_PATHS.find((p) => p.id === tenant?.path);
   const name = profile.full_name || profile.email.split("@")[0];
   const waAdmin = waLink(`Halo Admin barumahID, saya ${name} (akun penyewa ${profile.email}).`, WA_ADMIN_1);
@@ -204,11 +208,12 @@ export default function PenyewaDashboard({ profile, data }: { profile: Profile; 
                   {pct}% dari target {rupiah(target)}
                   {path ? ` · ${path.name}` : ""}
                 </span>
-                {tenant?.target_price ? <span>Harga unit target {rupiah(tenant.target_price)}</span> : null}
+                {tenant?.target_price ? <span>Harga rumah tujuan {rupiah(tenant.target_price)}</span> : null}
               </div>
+              {conversionAt && <p className="mt-2 text-[12.5px] font-semibold text-brand-dark">Konversi jadi DP paling cepat {conversionAt}, sesuai jadwal di MoU.</p>}
             </>
           ) : (
-            <p className="mt-3 text-[13px] text-brand-gray">Target DP ditentukan bersama tim saat RTO disetujui.</p>
+            <p className="mt-3 text-[13px] text-brand-gray">Target DP dicatat setelah kamu memilih rumah dari developer mitra dan MoU ditandatangani.</p>
           )}
           {!inProgram && (
             <p className="mt-4 rounded-xl bg-brand-cream px-4 py-3 text-[13px] leading-relaxed text-brand-dark">

@@ -1,9 +1,9 @@
-import { dpPerMonth } from "@/data/rto";
+import { RTO_CONVERT_YEARS, saldoAfter } from "@/data/rto";
 import type { Listing } from "@/data/listings";
-import { rp, rpShort } from "./format";
+import { rpShort } from "./format";
 
 // Estimasi DP per jalur, tampil di bawah harga kartu dan di panel unit:
-// - Siap Berdaya: saldo DP per bulan dari sewa program (sewa mitra + biaya program, 25% jadi saldo DP).
+// - Siap Berdaya: saldo DP saat konversi setelah 3 tahun RTO (25% sewa program per bulan), arahan user Okt 2026.
 // - Siap Bangun: modal mulai bangun, 25% dari nilai bangunan (RAB).
 // - Siap Beli: DP 10 sampai 20% dari harga.
 // - Rumah tujuan (developer mitra): DP minimal developer (bawaan 10%), dikumpulkan dari saldo DP sewa.
@@ -16,7 +16,8 @@ export interface DpEstimate {
 
 export function dpEstimate(l: Listing): DpEstimate | null {
   if (l.category === "siap-berdaya") {
-    return { label: l.rtoReady === false ? "Estimasi kalau ikut RTO" : "Saldo DP saat RTO", value: `${rp(dpPerMonth(l.sewaPerBulan))}/bulan` };
+    const y = RTO_CONVERT_YEARS.default;
+    return { label: l.rtoReady === false ? `Kalau ikut RTO, DP ${y} tahun` : `DP setelah ${y} tahun RTO`, value: `±${rpShort(saldoAfter(l.sewaPerBulan, y))}` };
   }
   if (l.category === "siap-beli") {
     const hi = l.hargaJualMaks ?? l.hargaJual;

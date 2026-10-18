@@ -153,16 +153,16 @@ export default function RtoGuidePage() {
             </p>
           </div>
           <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 md:p-7">
-            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Harga unit dikunci bertahap</p>
+            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/55">Dari MoU sampai konversi</p>
             <ol className="mt-4">
               {PRICE_LOCK_STAGES.map((s, i) => (
                 <li key={s.at} className="flex gap-4 border-t border-white/10 py-2.5">
-                  <span className={`w-28 shrink-0 text-[14px] font-extrabold ${i === 2 ? "text-brand-red" : ""}`}>{s.at}</span>
+                  <span className={`w-28 shrink-0 text-[14px] font-extrabold ${i === 1 ? "text-brand-red" : ""}`}>{s.at}</span>
                   <span className="text-[14px] leading-snug text-white/75">{s.body}</span>
                 </li>
               ))}
             </ol>
-            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Setelah PPJB ditandatangani, harga tidak bisa berubah.</p>
+            <p className="mt-3 text-[12.5px] leading-relaxed text-white/50">Unit, harga, dan jadwal konversi tertulis di MoU sejak awal, sebelum saldo mulai terkumpul.</p>
           </div>
         </div>
       </section>

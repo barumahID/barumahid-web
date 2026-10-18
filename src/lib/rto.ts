@@ -1,4 +1,4 @@
-import { RTO_LEVELS, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE, type RtoCategory } from "@/data/rto";
+import { RTO_CONVERT_YEARS, RTO_LEVELS, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE, type RtoCategory } from "@/data/rto";
 
 // Tipe dan logika akun penyewa RTO di Portal (aman untuk client). Data aslinya di Supabase project barumahid-web,
 // tabel rto_* dengan RLS: penyewa hanya melihat datanya sendiri, pemilik unit melihat sewa di unitnya, tim melihat semua.
@@ -229,7 +229,8 @@ export interface JourneyInput {
   score: number | null;
   rtoStatus: RtoStatus;
   contractSigned: boolean;
-  ppjbSigned: boolean;
+  /** Tanggal Kontrak RTO, untuk menghitung masa RTO sampai konversi */
+  contractSignedAt: string | null;
   dpBalance: number;
   dpTarget: number | null;
 }
@@ -250,8 +251,27 @@ export interface Journey {
   canApply: boolean;
 }
 
+/** Bulan penuh sejak tanggal tertentu */
+export function monthsSince(iso: string | null, now = new Date()): number {
+  if (!iso) return 0;
+  const d = new Date(iso);
+  const m = (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth() - (now.getDate() < d.getDate() ? 1 : 0);
+  return Math.max(0, m);
+}
+
+/** Konversi paling cepat: tanggal Kontrak RTO ditambah masa RTO minimal */
+export function earliestConversion(contractSignedAt: string | null): Date | null {
+  if (!contractSignedAt) return null;
+  const d = new Date(contractSignedAt);
+  d.setMonth(d.getMonth() + RTO_CONVERT_YEARS.min * 12);
+  return d;
+}
+
 export function computeJourney(j: JourneyInput): Journey {
   const pctDp = j.dpTarget && j.dpTarget > 0 ? j.dpBalance / j.dpTarget : 0;
+  const minMonths = RTO_CONVERT_YEARS.min * 12;
+  const monthsIn = j.contractSigned ? monthsSince(j.contractSignedAt) : 0;
+  const hasTarget = (j.dpTarget ?? 0) > 0;
   const scoreOk = (j.score ?? 0) >= RTO_UNLOCK_SCORE;
   const steps: { ok: boolean; missions: Mission[] }[] = [
     { ok: true, missions: [] },
@@ -283,13 +303,21 @@ export function computeJourney(j: JourneyInput): Journey {
       ],
     },
     {
-      ok: j.ppjbSigned && pctDp >= 0.5,
+      ok: hasTarget,
+      missions: [{ label: "Pilih rumah developer mitra dan tanda tangani MoU", done: hasTarget, note: "Target DP dicatat tim setelah MoU." }],
+    },
+    {
+      ok: monthsIn >= minMonths && pctDp >= 1,
       missions: [
-        { label: "Saldo DP mencapai 50% target", done: pctDp >= 0.5, progress: Math.min(1, pctDp / 0.5) },
-        { label: "PPJB ditandatangani, harga dikunci", done: j.ppjbSigned },
+        {
+          label: `Masa RTO minimal ${RTO_CONVERT_YEARS.min} tahun`,
+          done: monthsIn >= minMonths,
+          progress: Math.min(1, monthsIn / minMonths),
+          note: `${Math.min(monthsIn, minMonths)} dari ${minMonths} bulan`,
+        },
+        { label: "Saldo DP mencapai target di MoU", done: pctDp >= 1, progress: Math.min(1, pctDp) },
       ],
     },
-    { ok: pctDp >= 1, missions: [{ label: "Saldo DP mencapai 100% target", done: pctDp >= 1, progress: Math.min(1, pctDp) }] },
   ];
   let reached = 0;
   for (let i = 1; i < steps.length; i++) {
