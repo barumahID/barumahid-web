@@ -31,6 +31,8 @@ function cardFacts(l: Listing): string[] {
   if (l.category === "siap-beli") {
     return [l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "", l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "", ...(l.fasilitas ?? []).slice(-1)].filter(Boolean);
   }
+  if (l.category === "rumah-tujuan")
+    return [l.tipe ?? "", l.luasBangunan ? `${l.luasBangunan} m²` : "", l.kamarTidur ? `${l.kamarTidur} kamar tidur` : ""].filter(Boolean);
   if (l.luasBangunan || l.kamarTidur)
     return [l.lantai ? `${l.lantai} lantai` : "", l.luasBangunan ? `${l.luasBangunan} m²` : "", l.kamarTidur ? `${l.kamarTidur} kamar tidur` : ""].filter(Boolean);
   return [l.luasLahan ? `Lahan ${l.luasLahan} m²` : "", l.dimensi ?? ""].filter(Boolean);
@@ -134,6 +136,11 @@ export default function ListingCard({
           <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[12px] font-bold text-brand-dark shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
             Program RTO
+          </span>
+        ) : l.category === "rumah-tujuan" ? (
+          <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[12px] font-bold text-brand-dark shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-credit" />
+            Rumah tujuan RTO
           </span>
         ) : null}
         <div className="absolute right-2 top-2">

@@ -9,7 +9,7 @@ import PhotoMosaic from "@/components/rto/listing/PhotoMosaic";
 import { ListingRow } from "@/components/rto/listing/ListingRows";
 import { SaveTextButton, ShareButton } from "@/components/rto/listing/Buttons";
 import { priceMain, rp } from "@/components/rto/listing/format";
-import { listingKind, listingPlace, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
+import { listingKind, listingPath, listingPlace, listingPrice, listingRto, listingStatusLabel, type Listing } from "@/data/listings";
 import { RTO_PATHS, RTO_PROGRAM_FEE, RTO_RATE, RTO_UNLOCK_MONTHS, RTO_UNLOCK_SCORE, dpPerMonth, programRent } from "@/data/rto";
 import { SITE, waLink } from "@/data/site";
 import { getAllListings, getListing } from "@/lib/rto-listing";
@@ -128,6 +128,27 @@ function baseGroups(l: Listing): { title: string; rows: Row[] }[] {
       },
     ];
   }
+  if (l.category === "rumah-tujuan") {
+    return [
+      {
+        title: "Harga",
+        rows: [
+          ["Harga rumah", range(l.harga, l.hargaMaks)],
+          ["DP minimal", `${l.dpMinPct ?? 10}%`],
+        ],
+      },
+      {
+        title: "Ukuran",
+        rows: [
+          ["Tipe", l.tipe],
+          ["Luas tanah", l.luasTanah ? `${l.luasTanah} m²` : undefined],
+          ["Luas bangunan", l.luasBangunan ? `${l.luasBangunan} m²` : undefined],
+          ["Kamar tidur", l.kamarTidur],
+          ["Kamar mandi", l.kamarMandi],
+        ],
+      },
+    ];
+  }
   return [
     {
       title: "Harga",
@@ -187,6 +208,14 @@ function facts(l: Listing): string[] {
       l.kamarMandi ? `${l.kamarMandi} kamar mandi` : "",
     ].filter(Boolean);
   }
+  if (l.category === "rumah-tujuan") {
+    return [
+      l.tipe ?? "",
+      l.luasTanah ? `Tanah ${l.luasTanah} m²` : "",
+      l.luasBangunan ? `Bangunan ${l.luasBangunan} m²` : "",
+      l.kamarTidur ? `${l.kamarTidur} kamar tidur` : "",
+    ].filter(Boolean);
+  }
   return [
     l.lantai ? `${l.lantai} lantai` : "",
     l.luasBangunan ? `Bangunan ${l.luasBangunan} m²` : "",
@@ -225,6 +254,8 @@ function primaryCta(l: Listing, waText: string): { label: string; text: string }
   if (l.status === "terjual") return { label: "Cari rumah serupa", text: `Halo barumahID, saya cari rumah seperti ${unit}. Bisa dibantu?` };
   if (l.status === "selesai") return { label: "Konsultasi Siap Bangun", text: `Halo barumahID, saya punya lahan dan ingin membangun seperti ${unit}. Bisa konsultasi?` };
   if (l.status === "segera") return { label: "Kabari saya", text: `Halo barumahID, saya tertarik dengan ${unit}. Tolong kabari saat sudah dibuka.` };
+  if (l.category === "rumah-tujuan")
+    return { label: "Tanya rumah ini", text: `Halo barumahID, saya tertarik dengan ${unit} sebagai rumah tujuan DP program RTO. Bisa dijelaskan?` };
   return { label: "Jadwalkan survei", text: waText };
 }
 
@@ -240,12 +271,16 @@ const PARTNER: Record<Listing["category"], { title: string; body: string }> = {
   "siap-berdaya": { title: "Mitra penyedia barumahID", body: "Unit dari jaringan mitra penyedia kos dan rumah sewa barumahID." },
   "siap-beli": { title: "Jaringan rumah barumahID", body: "Rumah dari jaringan pemilik dan developer mitra barumahID." },
   "siap-bangun": { title: "Proyek Siap Bangun", body: "Dirancang dan didampingi tim Jasa Konstruksi barumahID bersama pemilik lahan." },
+  "rumah-tujuan": { title: "Developer mitra RTO", body: "Unit dari developer yang bekerja sama di program Rent-to-Own barumahID." },
 };
 
 /** Sorotan di bawah judul, menyesuaikan kategori dan status */
 function highlights(l: Listing): { icon: string; title: string; body: string }[] {
   const out: { icon: string; title: string; body: string }[] = [];
-  if (l.category === "siap-bangun") {
+  if (l.category === "rumah-tujuan") {
+    out.push({ icon: ICON.key, title: "Rumah tujuan saldo DP", body: "Peserta RTO bisa memakai saldo DP dari sewa di kos mitra untuk uang muka rumah ini." });
+    out.push({ icon: ICON.shield, title: "Harga dikunci bertahap", body: "Reservasi saat saldo DP 30% target, PPJB dan harga terkunci saat 50%." });
+  } else if (l.category === "siap-bangun") {
     out.push(
       l.status === "selesai"
         ? { icon: ICON.home, title: "Sudah berdiri", body: "Contoh nyata jalur Siap Bangun: rumah dibangun di lahan milik pemiliknya. Foto pertama rumah jadinya, sisanya render desain." }
@@ -261,6 +296,12 @@ function highlights(l: Listing): { icon: string; title: string; body: string }[]
         icon: ICON.home,
         title: "Sewa tepat waktu dihitung untuk naik level",
         body: `${RTO_UNLOCK_MONTHS} bulan bayar tepat waktu di unit mitra jadi salah satu syarat membuka RTO.`,
+      });
+    if (l.category === "siap-berdaya")
+      out.push({
+        icon: ICON.key,
+        title: "Saldo DP untuk rumah developer mitra",
+        body: "Setelah ikut RTO, saldo DP dari sewa di sini dipakai untuk uang muka rumah dari developer mitra, bukan untuk unit sewa ini.",
       });
   }
   out.push({ icon: ICON.pin, title: "Alamat lengkap tidak ditampilkan", body: "Di website hanya kelurahan, kecamatan, dan area perkiraan di peta. Alamat dibagikan saat survei." });
@@ -295,20 +336,25 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
       )}
       {l.category === "siap-beli" && l.status !== "terjual" && (
         <p className="mt-4 rounded-xl bg-brand-cream px-4 py-3 text-[13px] text-brand-dark/80">
-          Unit dijual. Kami bantu hitung DP, cicilan KPR, BPHTB, dan biaya notaris saat konsultasi.
+          Listing jual beli. Kami pertemukan pembeli dan penjual, lalu bantu hitung DP, cicilan KPR, BPHTB, dan biaya notaris.
+        </p>
+      )}
+      {l.category === "rumah-tujuan" && (
+        <p className="mt-4 rounded-xl bg-brand-cream px-4 py-3 text-[13px] leading-snug text-brand-dark/80">
+          Rumah tujuan program RTO. Mulai dari ngekos di unit mitra, lalu saldo DP dari sewa dipakai untuk uang muka rumah ini.
         </p>
       )}
       <div className="mt-5 grid gap-2.5">
         <ButtonLink href={waLink(cta.text)} variant="red" arrow={false} className="w-full">
           {cta.label}
         </ButtonLink>
-        {l.category === "siap-berdaya" ? (
+        {l.category === "siap-berdaya" || l.category === "rumah-tujuan" ? (
           <ButtonLink href="/portal/daftar?akun=penyewa" variant="outline-dark" arrow={false} className="w-full">
             Buat akun penyewa
           </ButtonLink>
         ) : (
-          <ButtonLink href={`/layanan/rto#${l.category}`} variant="outline-dark" arrow={false} className="w-full">
-            Pelajari jalur {RTO_PATHS.find((p) => p.id === l.category)?.name}
+          <ButtonLink href={`/layanan/rto#${listingPath(l)}`} variant="outline-dark" arrow={false} className="w-full">
+            Pelajari jalur {RTO_PATHS.find((p) => p.id === listingPath(l))?.name}
           </ButtonLink>
         )}
       </div>
@@ -316,7 +362,7 @@ function PriceCard({ l, waText }: { l: Listing; waText: string }) {
       {rto && (
         <p className="mt-4 border-t border-brand-dark/10 pt-4 text-[12.5px] leading-relaxed text-brand-gray">
           Saldo DP mulai dicatat setelah RTO terbuka: KTP terverifikasi, {RTO_UNLOCK_MONTHS} bulan sewa tepat waktu, dan skor minimal {RTO_UNLOCK_SCORE}.
-          Sewa program sudah termasuk biaya program {fee}%.
+          Sewa program sudah termasuk biaya program {fee}%. Saldo DP dipakai untuk rumah dari developer mitra, bukan unit ini.
         </p>
       )}
     </div>
@@ -329,7 +375,7 @@ export default async function ListingDetailPage({ params }: Props) {
   const l = all.find((x) => x.slug === slug);
   if (!l) notFound();
 
-  const path = RTO_PATHS.find((p) => p.id === l.category);
+  const path = RTO_PATHS.find((p) => p.id === listingPath(l));
   const place = listingPlace(l);
   const rto = listingRto(l) && l.category === "siap-berdaya";
   const facilities = l.fasilitas ?? [];
@@ -390,7 +436,7 @@ export default async function ListingDetailPage({ params }: Props) {
                   RTO
                 </span>
                 <span className="min-w-0 flex-1 text-[14px] leading-snug text-brand-dark">
-                  Pemilik bersedia unit ini jadi jalan menuju rumah sendiri. {ratePct}% sewa program bisa jadi saldo DP atas namamu.
+                  Ngekos di sini bisa jadi jalan menuju rumah sendiri. {ratePct}% sewa program jadi saldo DP atas namamu, untuk rumah dari developer mitra.
                 </span>
                 <span className="hidden shrink-0 text-right sm:block">
                   <span className="block text-[17px] font-extrabold text-credit">{rp(dp)}</span>
@@ -494,7 +540,7 @@ export default async function ListingDetailPage({ params }: Props) {
                   {[
                     { k: `Bulan 1 sampai ${RTO_UNLOCK_MONTHS}`, t: "Sewa biasa", b: `${rp(l.sewaPerBulan)}/bulan, bayar tepat waktu, isi Skor Siap Punya Rumah.` },
                     { k: "RTO terbuka", t: "Kontrak RTO", b: `Sewa program ${rp(programRent(l.sewaPerBulan))}/bulan, termasuk biaya program ${fee}%.` },
-                    { k: "Setiap bulan", t: "Saldo DP tumbuh", b: `${rp(dp)} tercatat atas namamu dan bisa dipantau di dashboard.` },
+                    { k: "Setiap bulan", t: "Saldo DP tumbuh", b: `${rp(dp)} tercatat atas namamu, untuk uang muka rumah dari developer mitra.` },
                   ].map((s, i) => (
                     <li key={s.k} className="rounded-2xl border border-brand-dark/10 bg-white p-5">
                       <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-red text-[12px] font-extrabold text-white">{i + 1}</span>
@@ -559,7 +605,12 @@ export default async function ListingDetailPage({ params }: Props) {
                     t: "Sebelum sewa",
                     items: ["Survei unit dulu bersama tim atau pemilik.", "Jangan transfer apa pun sebelum survei dan tanda tangan Perjanjian Sewa.", "Ketentuan sewa tertulis di Perjanjian Sewa."],
                   }
-                : l.category === "siap-beli"
+                : l.category === "rumah-tujuan"
+                  ? {
+                      t: "Sebelum memilih rumah",
+                      items: ["Survei lokasi dan unit bersama tim.", "Reservasi saat saldo DP 30% target, PPJB saat 50%.", "Keputusan KPR tetap ada di bank."],
+                    }
+                  : l.category === "siap-beli"
                   ? {
                       t: "Sebelum membeli",
                       items: ["Cek langsung rumah dan dokumennya bersama tim.", "Jangan transfer apa pun sebelum dokumen diperiksa.", "Kami bantu hitung DP, KPR, BPHTB, dan biaya notaris."],

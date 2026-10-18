@@ -5,21 +5,86 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "@/i18n/Link";
 import LeadForm from "@/components/forms/LeadForm";
 import { PATH_STEPS, RTO_PATHS, RTO_STEPS, type RtoCategory } from "@/data/rto";
-import { CLOSED_STATUS, listingPlace, listingPrice, listingStatusLabel, type Listing } from "@/data/listings";
-import { SITE } from "@/data/site";
+import { CLOSED_STATUS, listingPath, listingPlace, listingPrice, listingStatusLabel, type Listing } from "@/data/listings";
+import { GFORMS } from "@/data/google-forms";
+import { SITE, waLink } from "@/data/site";
 import ListingCard, { PhotoPlaceholder } from "./ListingCard";
 import UnitSimulator from "./UnitSimulator";
 import { dpEstimate } from "./estimate";
 import { priceMain } from "./format";
 
 // Platform listing di halaman RTO (arahan user Okt 2026): unit dikelompokkan per jalur (tab Siap Berdaya, Siap Bangun,
-// Siap Beli). Tiap tab menjelaskan jalurnya dan langkahnya; tab Siap Berdaya juga memuat level perjalanan dan Skor
+// Siap Beli). Model bisnis: Siap Berdaya dua sisi seperti marketplace (kos dari penyedia mitra untuk tempat tinggal,
+// rumah tujuan dari developer mitra untuk saldo DP); Siap Bangun mengumpulkan saldo DP sampai 25% RAB lalu dibangun;
+// Siap Beli listing jual beli di luar RTO (barumahID mempertemukan pembeli dan penjual). Tiap tab menjelaskan jalurnya dan langkahnya; tab Siap Berdaya juga memuat level perjalanan dan Skor
 // Siap Punya Rumah (dikirim dari server lewat `berdayaExtra`). Klik unit membuka panel: estimasi DP, simulasi sesuai
 // jalur, dan formulir minat (form situs customer-rto, unit dan kota terisi otomatis).
 // Anchor lama tetap jalan: #jalur, #siap-berdaya / #siap-bangun / #siap-beli (pilih tab), #level (buka level).
 
 const PATH_IDS = RTO_PATHS.map((p) => p.id);
 const open = (l: Listing) => Number(CLOSED_STATUS.includes(l.status));
+/** Di tab Siap Berdaya: kos dan rumah sewa dulu, baru rumah tujuan developer */
+const side = (l: Listing) => Number(l.category === "rumah-tujuan");
+
+const SELLER_WA =
+  "Halo barumahID, saya ingin mengiklankan properti untuk dijual.\nLokasi (kelurahan, kecamatan, kota): \nHarga: \nLuas tanah dan bangunan: \nSertifikat: ";
+
+function CardGroup({
+  title,
+  sub,
+  items,
+  selected,
+  onSelect,
+  empty,
+}: {
+  title: string;
+  sub: string;
+  items: Listing[];
+  selected?: string;
+  onSelect: (slug: string) => void;
+  empty: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="text-[16px] font-extrabold text-brand-dark">{title}</p>
+      <p className="mt-0.5 text-[13.5px] leading-snug text-brand-gray">{sub}</p>
+      {items.length ? (
+        <div className="mt-4 grid gap-x-5 gap-y-8 sm:grid-cols-2">
+          {items.map((l) => (
+            <ListingCard key={l.slug} l={l} active={l.slug === selected} onSelect={() => onSelect(l.slug)} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 90vw" />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 rounded-3xl border-2 border-dashed border-brand-dark/15 bg-white px-6 py-8 text-center">{empty}</div>
+      )}
+    </div>
+  );
+}
+
+/** Dua sisi Siap Berdaya: penyedia kos, penyewa, developer mitra */
+function MarketplaceFlow() {
+  const sides = [
+    { who: "Penyedia kos mitra", what: "Tempat tinggalmu selama menabung DP" },
+    { who: "Kamu, penyewa", what: "Sewa tepat waktu, buka RTO, 25% sewa jadi saldo DP" },
+    { who: "Developer mitra", what: "Rumah tujuan yang uang mukanya dari saldo DP" },
+  ];
+  return (
+    <ol className="grid gap-2 sm:grid-cols-3" aria-label="Alur Siap Berdaya">
+      {sides.map((s, i) => (
+        <li key={s.who} className={`relative rounded-2xl p-4 ${i === 1 ? "bg-brand-dark text-white" : "border border-brand-dark/10 bg-white"}`}>
+          <p className="text-[11.5px] font-bold uppercase tracking-[0.12em] text-brand-red">0{i + 1}</p>
+          <p className={`mt-1 text-[15px] font-extrabold ${i === 1 ? "" : "text-brand-dark"}`}>{s.who}</p>
+          <p className={`mt-0.5 text-[13px] leading-snug ${i === 1 ? "text-white/70" : "text-brand-gray"}`}>{s.what}</p>
+          {i < 2 && (
+            <span aria-hidden className="absolute -right-2.5 top-1/2 z-10 hidden h-5 w-5 -translate-y-1/2 place-items-center rounded-full bg-brand-red text-[11px] font-black text-white sm:grid">
+              ›
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 /** Judul form di panel menyesuaikan status unit */
 function formTitle(l: Listing): string {
@@ -27,13 +92,15 @@ function formTitle(l: Listing): string {
   if (l.status === "terjual") return "Cari rumah serupa";
   if (l.status === "selesai") return "Konsultasi Siap Bangun";
   if (l.status === "segera") return "Kabari saya saat dibuka";
+  if (l.category === "rumah-tujuan") return "Ajukan minat rumah tujuan ini";
+  if (l.category === "siap-beli") return "Ajukan minat beli";
   return l.category === "siap-berdaya" ? "Ajukan minat dan jadwalkan survei" : "Ajukan minat untuk unit ini";
 }
 
 export default function RtoPlatform({ listings, berdayaExtra }: { listings: Listing[]; berdayaExtra?: React.ReactNode }) {
   const byPath = useMemo(() => {
     const m = new Map<RtoCategory, Listing[]>();
-    for (const id of PATH_IDS) m.set(id, listings.filter((l) => l.category === id).sort((a, b) => open(a) - open(b)));
+    for (const id of PATH_IDS) m.set(id, listings.filter((l) => listingPath(l) === id).sort((a, b) => side(a) - side(b) || open(a) - open(b)));
     return m;
   }, [listings]);
 
@@ -164,18 +231,72 @@ export default function RtoPlatform({ listings, berdayaExtra }: { listings: List
         </aside>
 
         {/* Kartu unit jalur ini */}
-        <div className="order-1 lg:order-2 lg:col-span-8">
-          {items.length ? (
-            <div className="grid gap-x-5 gap-y-8 sm:grid-cols-2">
-              {items.map((l) => (
-                <ListingCard key={l.slug} l={l} active={l.slug === unit?.slug} onSelect={() => select(l.slug)} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 90vw" />
-              ))}
-            </div>
+        <div className="order-1 space-y-10 lg:order-2 lg:col-span-8">
+          {tab === "siap-berdaya" ? (
+            <>
+              <MarketplaceFlow />
+              <CardGroup
+                title="Tempat tinggal: kos dan rumah sewa mitra"
+                sub="Sewa tepat waktu di sini yang membuka RTO. Saldo DP-mu tidak dipakai untuk unit ini."
+                items={items.filter((l) => l.category === "siap-berdaya")}
+                selected={unit?.slug}
+                onSelect={select}
+                empty={<p className="text-[14px] text-brand-gray">Kos mitra pertama sedang kami siapkan.</p>}
+              />
+              <CardGroup
+                title="Rumah tujuan DP dari developer mitra"
+                sub="Setelah RTO terbuka, saldo DP dari sewa dipakai untuk uang muka salah satu rumah ini."
+                items={items.filter((l) => l.category === "rumah-tujuan")}
+                selected={unit?.slug}
+                onSelect={select}
+                empty={
+                  <>
+                    <p className="text-[16px] font-extrabold text-brand-dark">Rumah developer mitra sedang kami kurasi.</p>
+                    <p className="mx-auto mt-1.5 max-w-md text-[13.5px] leading-relaxed text-brand-gray">
+                      Unit dari developer yang bekerja sama di program RTO akan tampil di sini, lengkap dengan target DP-nya. Sementara itu, mulai dari
+                      ngekos dan penuhi syarat RTO.
+                    </p>
+                    <a href={GFORMS.F16} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-[13.5px] font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red">
+                      Developer? Daftarkan unitmu (F16)
+                    </a>
+                  </>
+                }
+              />
+            </>
+          ) : tab === "siap-bangun" ? (
+            <CardGroup
+              title="Proyek Siap Bangun"
+              sub="Rencana dan rumah yang dibangun di lahan milik pemiliknya."
+              items={items}
+              selected={unit?.slug}
+              onSelect={select}
+              empty={<p className="text-[14px] text-brand-gray">Proyek Siap Bangun pertama sedang kami siapkan.</p>}
+            />
           ) : (
-            <div className="rounded-3xl border-2 border-dashed border-brand-dark/15 bg-white px-6 py-12 text-center">
-              <p className="text-[18px] font-extrabold text-brand-dark">Unit {path.name} pertama sedang kami siapkan.</p>
-              <p className="mx-auto mt-2 max-w-md text-[14px] leading-relaxed text-brand-gray">Isi formulir minat di bawah supaya kamu dikabari begitu unitnya tayang.</p>
-            </div>
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-brand-dark p-5 text-white">
+                <div className="max-w-md">
+                  <p className="text-[16px] font-extrabold">Punya properti untuk dijual?</p>
+                  <p className="mt-0.5 text-[13.5px] leading-snug text-white/70">Iklankan lewat barumahID. Kami cek, tayangkan, lalu pertemukan dengan pembeli.</p>
+                </div>
+                <a
+                  href={waLink(SELLER_WA)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-white px-5 py-2.5 text-[13.5px] font-bold text-brand-dark transition-colors hover:bg-brand-cream"
+                >
+                  Pasang iklan properti
+                </a>
+              </div>
+              <CardGroup
+                title="Properti dijual"
+                sub="Listing jual beli dari pemilik dan developer. barumahID mempertemukan pembeli dan penjual."
+                items={items}
+                selected={unit?.slug}
+                onSelect={select}
+                empty={<p className="text-[14px] text-brand-gray">Properti pertama sedang kami siapkan.</p>}
+              />
+            </>
           )}
         </div>
       </div>
@@ -196,7 +317,7 @@ export default function RtoPlatform({ listings, berdayaExtra }: { listings: List
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-red">
-                {path.name} · {listingStatusLabel(unit)}
+                {unit.category === "rumah-tujuan" ? "Rumah tujuan RTO" : path.name} · {listingStatusLabel(unit)}
               </p>
               <p className="truncate text-[17px] font-extrabold text-brand-dark md:text-[19px]">{unit.title}</p>
               <p className="truncate text-[13.5px] text-brand-gray">{listingPlace(unit)}</p>
@@ -222,7 +343,15 @@ export default function RtoPlatform({ listings, berdayaExtra }: { listings: List
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
           <div>
-            <p className="mb-3 text-[15px] font-extrabold text-brand-dark">{tab === "siap-berdaya" ? "Simulasi DP dari unit ini" : tab === "siap-bangun" ? "Simulasi modal bangun" : "Simulasi DP dan KPR"}</p>
+            <p className="mb-3 text-[15px] font-extrabold text-brand-dark">
+              {unit?.category === "rumah-tujuan"
+                ? "Simulasi DP untuk rumah ini"
+                : tab === "siap-berdaya"
+                  ? "Simulasi DP dari sewa di unit ini"
+                  : tab === "siap-bangun"
+                    ? "Simulasi saldo DP sampai 25% RAB"
+                    : "Simulasi DP dan KPR"}
+            </p>
             {unit ? (
               <UnitSimulator key={unit.slug} l={unit} />
             ) : (
@@ -239,7 +368,7 @@ export default function RtoPlatform({ listings, berdayaExtra }: { listings: List
               initial={
                 unit
                   ? {
-                      "Unit Diminati": `${unit.title} (${path.name}) ${SITE.url.replace(/^https?:\/\//, "")}/layanan/rto/${unit.slug}`.slice(0, 200),
+                      "Unit Diminati": `${unit.title} (${unit.category === "rumah-tujuan" ? "Rumah tujuan RTO" : path.name}) ${SITE.url.replace(/^https?:\/\//, "")}/layanan/rto/${unit.slug}`.slice(0, 200),
                       "Kota Tujuan": unit.city,
                     }
                   : undefined

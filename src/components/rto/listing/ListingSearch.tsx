@@ -42,6 +42,7 @@ function kindMatch(l: Listing, jenis: KindFilter) {
   if (jenis === "beli") return l.category === "siap-beli";
   if (jenis === "lahan") return l.category === "siap-bangun";
   if (jenis === "sewa") return l.category === "siap-berdaya";
+  if (jenis === "tujuan") return l.category === "rumah-tujuan";
   return l.category === "siap-berdaya" && (l.kind ?? "rumah") === jenis;
 }
 
@@ -98,6 +99,8 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
     const closed = (l: Listing) => Number(CLOSED_STATUS.includes(l.status));
     return list.sort((a, b) => closed(a) - closed(b));
   }, [listings, pill, rto, fas, onlySaved, saved, sort]);
+  /** Filter rumah developer dipilih, tapi belum ada rumah tujuan sama sekali */
+  const noTujuan = pill.jenis === "tujuan" && !listings.some((l) => l.category === "rumah-tujuan");
 
   const points = useMemo<MapItem[]>(
     () =>
@@ -178,9 +181,13 @@ export default function ListingSearch({ listings }: { listings: Listing[] }) {
             </div>
           ) : (
             <div className="mt-6 rounded-3xl border-2 border-dashed border-brand-dark/15 bg-white px-6 py-12 text-center">
-              <p className="text-[18px] font-extrabold text-brand-dark">{listings.length ? "Coba longgarkan filternya." : "Unit pertama sedang kami siapkan."}</p>
+              <p className="text-[18px] font-extrabold text-brand-dark">
+                {noTujuan ? "Rumah developer mitra sedang kami kurasi." : listings.length ? "Coba longgarkan filternya." : "Unit pertama sedang kami siapkan."}
+              </p>
               <p className="mx-auto mt-2 max-w-md text-[14px] leading-relaxed text-brand-gray">
-                {listings.length
+                {noTujuan
+                  ? "Rumah tujuan saldo DP dari developer yang bekerja sama di program RTO tampil di sini setelah kerja samanya resmi."
+                  : listings.length
                   ? "Belum ada unit yang memenuhi semua filter yang kamu pilih."
                   : "Kami hanya menayangkan unit yang sudah kami cek langsung. Buat akun penyewa supaya kamu siap begitu unit pertama tayang."}
               </p>

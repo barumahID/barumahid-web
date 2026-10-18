@@ -26,9 +26,16 @@ export const STATUS_LABEL: Record<ListingStatus, string> = {
 /** Status yang tidak bisa dipesan lagi: ditaruh di belakang hasil cari */
 export const CLOSED_STATUS: ListingStatus[] = ["terisi", "terjual", "selesai"];
 
+/**
+ * Kategori listing. Tiga jalur RTO, ditambah "rumah-tujuan": unit dari developer mitra RTO yang jadi tujuan saldo DP
+ * peserta Siap Berdaya. Arahan user Okt 2026: Siap Berdaya itu dua sisi seperti marketplace, penyewa ngekos di unit
+ * penyedia kos, lalu saldo DP-nya untuk rumah developer mitra (bukan kos yang disewa).
+ */
+export type ListingCategory = RtoCategory | "rumah-tujuan";
+
 interface ListingBase {
   slug: string;
-  category: RtoCategory;
+  category: ListingCategory;
   title: string;
   kelurahan: string;
   kecamatan: string;
@@ -131,7 +138,28 @@ export interface SiapBangunListing extends ListingBase {
   rekomendasi?: string;
 }
 
-export type Listing = SiapBerdayaListing | SiapBeliListing | SiapBangunListing;
+/** Rumah dari developer mitra RTO: tujuan uang muka dari saldo DP peserta Siap Berdaya */
+export interface RumahTujuanListing extends ListingBase {
+  category: "rumah-tujuan";
+  harga: number;
+  hargaMaks?: number;
+  /** Contoh "Tipe 36/72" */
+  tipe?: string;
+  /** DP minimal yang diterima developer, dalam persen */
+  dpMinPct?: number;
+  luasTanah?: number;
+  luasBangunan?: number;
+  kamarTidur?: number;
+  kamarMandi?: number;
+  fasilitas?: string[];
+}
+
+export type Listing = SiapBerdayaListing | SiapBeliListing | SiapBangunListing | RumahTujuanListing;
+
+/** Jalur RTO tempat listing tampil (rumah tujuan ikut tab Siap Berdaya) */
+export function listingPath(l: Listing): RtoCategory {
+  return l.category === "rumah-tujuan" ? "siap-berdaya" : l.category;
+}
 
 const foto = (slug: string, alts: string[]) => alts.map((alt, i) => ({ src: `/images/listing/${slug}/${String(i + 1).padStart(2, "0")}.webp`, alt }));
 
@@ -323,6 +351,7 @@ export function listingPlace(l: Pick<ListingBase, "kelurahan" | "kecamatan" | "c
 export function listingKind(l: Listing): string {
   if (l.kindLabel) return l.kindLabel;
   if (l.category === "siap-berdaya") return l.kind === "kos" ? "Kos" : "Rumah sewa";
+  if (l.category === "rumah-tujuan") return "Rumah developer";
   return l.category === "siap-beli" ? "Rumah dijual" : "Lahan";
 }
 
@@ -349,6 +378,7 @@ export function listingPrice(l: Listing): ListingPrice {
     return { label: "Sewa", value: l.sewaPerBulan, max: l.sewaPerBulanMaks, suffix: "/bulan" };
   }
   if (l.category === "siap-beli") return { label: "Harga jual", value: l.hargaJual, max: l.hargaJualMaks };
+  if (l.category === "rumah-tujuan") return { label: "Harga rumah", value: l.harga, max: l.hargaMaks };
   if (l.hargaLahanPerM2 && l.luasLahan) return { label: "Harga lahan", value: l.hargaLahanPerM2 * l.luasLahan };
   if (l.harga) return { label: "Kisaran nilai", value: l.harga, max: l.hargaMaks };
   return { label: "Harga", value: null };

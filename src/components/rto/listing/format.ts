@@ -27,6 +27,7 @@ export const KINDS = [
   { value: "sewa", label: "Kos dan rumah sewa" },
   { value: "kos", label: "Kos" },
   { value: "rumah", label: "Rumah sewa" },
+  { value: "tujuan", label: "Rumah developer RTO" },
   { value: "beli", label: "Rumah dijual" },
   { value: "lahan", label: "Siap Bangun" },
 ] as const;
