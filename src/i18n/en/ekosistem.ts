@@ -210,9 +210,9 @@ export const EKOSISTEM: Record<string, string> = {
   ...pairs(
     HOME_FAQ.map((f) => f.answer),
     [
-      "A rent-while-saving program for your down payment. You rent a barumahID partner unit, and 25% of every rent payment is recorded as your down payment balance. Once the balance is enough, you can move on to an ownership path. The program is still in preparation, so register your interest to hear from us first.",
+      "A rent-while-saving program for your down payment. You rent a barumahID partner unit. Once RTO opens, you choose a home from a partner developer with its price locked, and 25% of your program rent is recorded as your down payment balance. After 2 to 4 years, that balance is converted into the down payment for that home. The program is still in preparation, so register your interest to hear from us first.",
       "Once the program runs, your down payment balance will be kept in a separate company account and never mixed with operating funds. Balance reports are sent monthly via WhatsApp until the customer dashboard is ready. We will announce the full scheme before the first unit opens.",
-      "It depends on your rent, the house price, and your down payment target. Try the down payment simulator on the Rent-to-Own page for an estimate. Keep in mind that house prices can rise while you save.",
+      "2 to 4 years after RTO opens, following the schedule in the MoU. The balance depends on your rent. The target home's price is locked from the start, so it won't rise while you save. Try the simulator on the Rent-to-Own page for an estimate.",
       "Drawing and modelling starts at Rp15,000 per m², structural design and analysis starts at Rp18,000 per m². There are Basic, Plus, and Pro packages. The final price depends on project complexity, and your first consultation is free.",
       "Costs are calculated per work item using AHSP (Minister of Public Works Regulation No. 1 of 2022) and local unit prices, then agreed in a cost estimate (RAB) before work starts. Payments are made in stages following progress milestones that we check together.",
       "Open the Partnership page, choose your role (boarding house owner, developer, contractor and foreman, worker, supplier, freelancer, or institution), and fill in a short form. Our team will reach you on WhatsApp.",

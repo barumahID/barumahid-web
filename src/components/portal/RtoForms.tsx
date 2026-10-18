@@ -177,8 +177,9 @@ export function UnitSubmitForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="u-rent" className={label}>Harga sewa per bulan (Rp)</label>
+          <label htmlFor="u-rent" className={label}>Harga sewa yang Anda terima per bulan (Rp)</label>
           <input id="u-rent" name="rent_monthly" inputMode="numeric" required className={input} />
+          <p className="mt-1 text-[11.5px] leading-snug text-brand-gray">Harga final disepakati saat negosiasi. Di website tampil ditambah biaya layanan barumahID 9%.</p>
         </div>
         <div>
           <label htmlFor="u-rooms" className={label}>Jumlah kamar atau unit</label>
@@ -339,6 +340,7 @@ export function TenancyForm({ userId, units }: { userId: string; units: RtoUnit[
           <div>
             <label className={label}>Sewa/bulan (Rp)</label>
             <input name="rent_monthly" inputMode="numeric" required className={input} />
+            <p className="mt-1 text-[11px] leading-snug text-brand-gray">Peserta RTO: isi sewa program (sewa biasa + setoran DP), karena 25% pembayaran jadi saldo DP.</p>
           </div>
           <div>
             <label className={label}>Jatuh tempo (tgl)</label>

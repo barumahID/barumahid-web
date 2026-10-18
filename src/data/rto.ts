@@ -9,32 +9,49 @@ export const RTO_RATE = 0.25;
 // Keputusan user Okt 2026 (angka di PRD v3.2 dan Legal Kit sempat berbeda, ini yang dipakai):
 // - Saldo DP baru dicatat setelah RTO terbuka dan Kontrak RTO ditandatangani (Level 3).
 // - RTO terbuka setelah KTP terverifikasi, 6 bulan sewa tepat waktu di unit mitra, dan Skor Siap Punya Rumah >= 36.
-// - Biaya program 9% di atas harga sewa mitra (pemilik tetap terima harga yang disepakati).
-// - Pengembalian saldo DP: persentase PRD + kasus 100% dan 105% dari Kontrak RTO (REFUND_POLICY).
+// - Model dua harga, semuanya terbuka (keputusan user Okt 2026, "model yang paling aman"):
+//   harga deal = hasil nego dengan penyedia kos, pemilik selalu menerima ini penuh;
+//   sewa biasa = harga deal + biaya layanan barumahID 9% (harga yang tampil di listing, dibayar 6 bulan pertama dan
+//   oleh penyewa yang tidak ikut RTO);
+//   sewa program = sewa biasa + setoran DP, dibayar setelah RTO terbuka. 25% dari sewa program jadi saldo DP, jadi
+//   setoran DP = sepertiga sewa biasa. Fungsi database mencatat 25% dari pembayaran setelah Kontrak RTO, jadi tim
+//   mencatat sewa peserta RTO dengan harga sewa program.
+// - Harga rumah tujuan DIKUNCI di MoU sejak awal sampai konversi. Ini keunggulan utama RTO: developer mitra sudah
+//   memperhitungkan masa tunggunya, penyewa aman karena harga tidak naik.
+// - Pengembalian saldo DP: TIDAK ditahan. Saldo sepenuhnya hak penyewa, bisa ditarik 100% kapan saja (keputusan user
+//   Okt 2026, menggantikan potongan 70/80/90% dari PRD). 105% kalau barumahID wanprestasi tetap berlaku (REFUND_POLICY).
 export const RTO_UNLOCK_MONTHS = 6;
 export const RTO_UNLOCK_SCORE = 36;
 export const RTO_PROGRAM_FEE = 0.09;
 
-/** Sewa program RTO = harga sewa mitra + biaya program. Saldo DP dicatat dari sewa program yang lunas. */
-export const programRent = (rent: number) => Math.round(rent * (1 + RTO_PROGRAM_FEE));
-export const dpPerMonth = (rent: number) => Math.round(programRent(rent) * RTO_RATE);
+const round1k = (n: number) => Math.round(n / 1_000) * 1_000;
+/** Sewa biasa (yang tampil di listing) dari harga deal dengan pemilik: ditambah biaya layanan barumahID */
+export const regularRent = (deal: number) => round1k(deal * (1 + RTO_PROGRAM_FEE));
+/** Harga deal yang diterima pemilik dari sewa biasa */
+export const ownerDeal = (rent: number) => round1k(rent / (1 + RTO_PROGRAM_FEE));
+/** Sewa program RTO = sewa biasa + setoran DP, supaya 25% dari sewa program jadi saldo DP */
+export const programRent = (rent: number) => round1k(rent / (1 - RTO_RATE));
+/** Setoran DP per bulan = 25% dari sewa program = selisih sewa program dan sewa biasa */
+export const dpPerMonth = (rent: number) => programRent(rent) - rent;
+/** Contoh pembagian yang ditampilkan terbuka di halaman RTO: harga deal dengan pemilik Rp1,8 juta */
+export const PRICE_EXAMPLE_DEAL = 1_800_000;
 
 // Konversi (arahan user Okt 2026): setelah RTO terbuka, rumah tujuan dipilih dan MoU dengan developer mitra
 // ditandatangani di awal. 2 sampai 4 tahun kemudian saldo dikonversi jadi DP. Simulasi menghitung saldo saat konversi
 // dan harga rumah yang DP-nya tertutup, bukan "berapa tahun sampai target" (hasilnya dulu bisa 6 tahun lebih).
-// Aliran dana sesuai PRD v3.2: pembayaran sewa program dipecah 25% ke rekening dana titipan, sisanya ke pemilik unit.
+// Aliran dana: dari sewa program, 25% ke rekening dana titipan (saldo DP), sisanya sewa biasa (pemilik + layanan barumahID).
 export const RTO_CONVERT_YEARS = { min: 2, max: 4, default: 3 } as const;
 export const RTO_CONVERT_OPTIONS = [2, 3, 4];
 /** Persen DP rumah yang umum diminta developer, untuk pilihan di simulasi */
 export const DP_PCT_OPTIONS = [5, 10, 15, 20];
-/** Saldo DP setelah sekian tahun RTO: 25% sewa program, ditambah kanal percepatan per bulan */
+/** Saldo DP setelah sekian tahun RTO dari sewa biasa `rent`: setoran DP tiap bulan, ditambah kanal percepatan */
 export const saldoAfter = (rent: number, years: number, extraPerMonth = 0) => (dpPerMonth(rent) + extraPerMonth) * years * 12;
 /** Harga rumah tertinggi yang DP-nya tertutup saldo, dibulatkan ke bawah per Rp5 juta */
 export const maxHomePrice = (saldo: number, dpPct: number) => Math.floor(saldo / (dpPct / 100) / 5_000_000) * 5_000_000;
 /** Tabungan tambahan per bulan untuk menutup kekurangan DP dalam sekian tahun, dibulatkan ke atas per Rp1.000 */
 export const topUpPerMonth = (gap: number, years: number) => Math.ceil(gap / (years * 12) / 1_000) * 1_000;
-/** Sewa per bulan yang dibutuhkan supaya DP tertutup dalam sekian tahun */
-export const rentForDp = (dp: number, years: number) => dp / (years * 12) / ((1 + RTO_PROGRAM_FEE) * RTO_RATE);
+/** Sewa biasa per bulan yang dibutuhkan supaya DP tertutup dalam sekian tahun */
+export const rentForDp = (dp: number, years: number) => ((dp / (years * 12)) * (1 - RTO_RATE)) / RTO_RATE;
 /** Ilustrasi KPR di simulasi: bunga tetap. Keputusan, bunga, dan biaya akhir ada di bank. */
 export const KPR_ILUSTRASI = { ratePct: 8, tenorYears: 20 };
 export function kprInstallment(loan: number, ratePct: number = KPR_ILUSTRASI.ratePct, tenorYears: number = KPR_ILUSTRASI.tenorYears) {
@@ -46,6 +63,7 @@ export function kprInstallment(loan: number, ratePct: number = KPR_ILUSTRASI.rat
 
 const { min: CONV_MIN, max: CONV_MAX } = RTO_CONVERT_YEARS;
 const juta = (n: number) => `Rp${(n / 1e6).toLocaleString("id-ID", { maximumFractionDigits: 1 })} juta`;
+const rpFull = (n: number) => "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(n));
 
 export type RtoCategory = "siap-berdaya" | "siap-bangun" | "siap-beli";
 
@@ -64,7 +82,7 @@ export const RTO_PATHS: RtoPath[] = [
     name: "Siap Berdaya",
     explainer: "Sewa kos sambil menabung DP",
     forWho: "Untuk kamu yang belum punya DP dan ingin mulai dari sewa.",
-    how: `Tinggal di kos atau rumah sewa mitra. Setelah syarat terpenuhi, RTO terbuka dan kamu memilih rumah dari developer mitra lewat MoU. 25% sewa jadi saldo DP, lalu setelah ${CONV_MIN} sampai ${CONV_MAX} tahun dikonversi jadi DP rumah itu. Bukan untuk unit yang kamu sewa.`,
+    how: `Tinggal di kos atau rumah sewa mitra dengan sewa biasa. Setelah syarat terpenuhi, RTO terbuka: kamu memilih rumah dari developer mitra lewat MoU, harganya dikunci, dan mulai bayar sewa program (sewa biasa + setoran DP). 25% dari sewa program jadi saldo DP, lalu setelah ${CONV_MIN} sampai ${CONV_MAX} tahun dikonversi jadi DP rumah itu. Bukan untuk unit yang kamu sewa.`,
     status: "Inti program",
   },
   {
@@ -90,7 +108,7 @@ export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: s
   "siap-bangun": [
     { title: "Sewa di unit mitra", body: `Ngekos atau ngontrak di unit mitra sambil memenuhi syarat RTO: ${RTO_UNLOCK_MONTHS} bulan tepat waktu dan skor minimal ${RTO_UNLOCK_SCORE}.` },
     { title: "Ceritakan lahan atau asetmu", body: "Tim survei lokasi, lalu desain dan RAB disusun bersama Jururancang, partner desain barumahID." },
-    { title: `Saldo ${CONV_MIN}-${CONV_MAX} tahun jadi modal`, body: "25% sewa terkumpul jadi saldo DP. Saat konversi, saldo ditambah tabunganmu sampai 25% dari RAB." },
+    { title: `Saldo ${CONV_MIN}-${CONV_MAX} tahun jadi modal`, body: "Bayar sewa program, 25%-nya terkumpul jadi saldo DP. Saat konversi, saldo ditambah tabunganmu sampai 25% dari RAB." },
     { title: "Pembangunan dimulai", body: "barumahID atau developer mitra membangun di lahanmu. Sisanya dibayar bertahap, atau mulai dari tahap pertama yang lebih kecil." },
   ],
   "siap-beli": [
@@ -104,15 +122,15 @@ export const PATH_STEPS: Record<Exclude<RtoCategory, "siap-berdaya">, { title: s
 export const RTO_STEPS = [
   {
     title: "Ngekos di unit mitra",
-    body: `${RTO_UNLOCK_MONTHS} bulan pertama sewa biasa. KTP terverifikasi, bayar tepat waktu, dan Skor Siap Punya Rumah minimal ${RTO_UNLOCK_SCORE}. Kami kabari begitu syaratnya terpenuhi.`,
+    body: `${RTO_UNLOCK_MONTHS} bulan pertama bayar sewa biasa. KTP terverifikasi, bayar tepat waktu, dan Skor Siap Punya Rumah minimal ${RTO_UNLOCK_SCORE}. Kami kabari begitu syaratnya terpenuhi.`,
   },
   {
     title: "Buka RTO, pilih rumah tujuan",
-    body: "Risiko dan aturan pengembalian dijelaskan dulu. Kamu pilih rumah dari developer mitra, lalu Kontrak RTO dan MoU ditandatangani di awal: unit, harga, dan jadwal konversi.",
+    body: "Risiko dan aturan pengembalian dijelaskan dulu. Kamu pilih rumah dari developer mitra, lalu Kontrak RTO dan MoU ditandatangani di awal. Harga rumahnya dikunci sampai konversi.",
   },
   {
-    title: "25% sewa jadi saldo DP",
-    body: `Selama ${CONV_MIN} sampai ${CONV_MAX} tahun, 25% sewa program tercatat atas namamu tiap bulan. Saldo ini untuk rumah tujuan, bukan kos yang kamu sewa.`,
+    title: "Sewa program, 25% jadi DP",
+    body: `Selama ${CONV_MIN} sampai ${CONV_MAX} tahun kamu bayar sewa program: sewa biasa + setoran DP. 25%-nya tercatat atas namamu tiap bulan, untuk rumah tujuan, bukan kos yang kamu sewa.`,
   },
   {
     title: "Konversi jadi DP, lanjut KPR",
@@ -178,7 +196,7 @@ export const RTO_LEVELS: RtoLevel[] = [
     name: "Peserta RTO",
     short: "Kontrak RTO, 25% jadi DP",
     missions: ["Tanda tangani Kontrak RTO", "Bayar sewa program setiap bulan"],
-    unlocks: ["25% sewa dicatat jadi saldo DP", "Laporan saldo DP setiap bulan"],
+    unlocks: ["25% sewa program dicatat jadi saldo DP", "Laporan saldo DP setiap bulan"],
     stage: "rto",
   },
   {
@@ -186,8 +204,8 @@ export const RTO_LEVELS: RtoLevel[] = [
     n: 4,
     name: "Rumah Terpilih",
     short: "MoU rumah tujuan",
-    missions: ["Pilih rumah dari developer mitra", "MoU ditandatangani: unit, harga, dan jadwal konversi"],
-    unlocks: ["Target DP dan jadwal konversi tampil di dashboard", "Berkas KPR mulai disiapkan bertahap"],
+    missions: ["Pilih rumah dari developer mitra", "MoU ditandatangani: unit, harga terkunci, dan jadwal konversi"],
+    unlocks: ["Harga rumah tujuan tidak naik sampai konversi", "Target DP dan jadwal konversi tampil di dashboard"],
     stage: "rto",
   },
   {
@@ -239,7 +257,7 @@ export const RTO_ROLES: RtoRole[] = [
     id: "penyedia",
     name: "Penyedia kos dan rumah sewa",
     tagline: "Kamar terisi penyewa terverifikasi yang betah lama.",
-    gets: ["Listing gratis, tanpa biaya awal", "Tetap terima harga sewa yang disepakati", "Laporan unit dan penyewa"],
+    gets: ["Listing gratis, tanpa biaya awal", "Terima harga yang disepakati, penuh", "Laporan unit dan penyewa"],
     form: { code: "F14", label: "Daftarkan properti" },
   },
   {
@@ -287,11 +305,11 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
       },
       {
         title: "Kontrak RTO",
-        body: "Mulai bulan pertama program, 25% sewa dicatat jadi saldo DP. Laporan saldo dikirim di awal bulan berikutnya.",
+        body: "Mulai bulan pertama program, kamu bayar sewa program (sewa biasa + setoran DP). 25%-nya dicatat jadi saldo DP, laporannya dikirim di awal bulan berikutnya.",
       },
       {
         title: "Pilih rumah dan MoU",
-        body: "Pilih rumah dari developer mitra, bukan unit yang kamu sewa. MoU ditandatangani di awal: unit, harga, dan jadwal konversi.",
+        body: "Pilih rumah dari developer mitra, bukan unit yang kamu sewa. MoU ditandatangani di awal, dan harga rumahnya dikunci sampai konversi.",
       },
       {
         title: "Konversi dan akad",
@@ -299,7 +317,7 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
       },
     ],
     notes: [
-      "Sewa program sudah termasuk biaya program 9% di atas harga sewa mitra. Angkanya tertulis jelas sebelum kamu tanda tangan.",
+      "Sewa biasa = harga yang disepakati dengan pemilik + biaya layanan barumahID 9%. Sewa program = sewa biasa + setoran DP. Semua angkanya tertulis di kontrak sebelum kamu tanda tangan.",
       "barumahID tidak menjamin persetujuan KPR. Keputusan tetap ada di bank.",
       "Kalau terlambat bayar, tim menghubungimu dulu untuk mencari jalan keluar, misalnya cicil atau perpanjangan tenggat.",
     ],
@@ -308,7 +326,10 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
     intro: "Daftarkan unit, kami cek, lalu kami carikan penyewa yang sudah terverifikasi.",
     steps: [
       { title: "Isi formulir penyedia (F14)", body: "Data pemilik, jenis properti, jumlah kamar, harga sewa, dan fasilitas. Tim menghubungimu dalam 1×24 jam kerja." },
-      { title: "Penetapan harga", body: "Harga dibandingkan dengan 3 sampai 5 unit sejenis di sekitarnya, lalu disepakati bersama." },
+      {
+        title: "Penetapan harga",
+        body: "Harga dibandingkan dengan 3 sampai 5 unit sejenis di sekitarnya, lalu dinegosiasikan dan disepakati bersama. Kamu menerima harga ini penuh.",
+      },
       {
         title: "Inspeksi unit",
         body: "Paling lambat 5 hari setelah daftar. Dicek struktur, air dan listrik, kamar mandi, dan keamanan. Hasilnya Layak, Layak dengan Catatan, atau Tidak Layak.",
@@ -318,7 +339,7 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
       { title: "Penyewa masuk", body: "Check-in didampingi tim, dengan Berita Acara Serah Terima. Laporan unit dikirim setiap bulan." },
     ],
     notes: [
-      "Biaya program 9% dibayar penyewa, bukan kamu. Kamu tetap menerima harga sewa yang disepakati.",
+      "Kamu menerima harga yang disepakati saat negosiasi, penuh, baik penyewanya ikut RTO atau tidak. Biaya layanan barumahID 9% dan setoran DP dibayar penyewa di atas harga itu.",
       "Ikut program RTO itu pilihan. Kalau bersedia, dibuat addendum khusus.",
       "Harga sewa tidak diubah sepihak selama kontrak penyewa berjalan.",
     ],
@@ -330,11 +351,15 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
       { title: "Pertemuan dan due diligence", body: "Kami pelajari proyek dan legalitasnya, lalu membahas alokasi unit untuk program." },
       { title: "NDA dan MoU Developer", body: "NDA ditandatangani sebelum data calon pembeli dibuka. MoU mengatur harga, jadwal konversi, dan fee konversi." },
       { title: "Unit masuk katalog", body: "Peserta yang RTO-nya sudah terbuka bisa memilih unit dari katalog sebagai rumah tujuan." },
-      { title: "MoU dengan pembeli di awal", body: `MoU tiga pihak (developer, peserta, barumahID): unit, harga, dan jadwal konversi ${CONV_MIN} sampai ${CONV_MAX} tahun.` },
+      {
+        title: "MoU dan harga terkunci",
+        body: `MoU tiga pihak (developer, peserta, barumahID) di awal: unit, harga yang dikunci sampai konversi, dan jadwal konversi ${CONV_MIN} sampai ${CONV_MAX} tahun.`,
+      },
       { title: "Konversi", body: "Sesuai jadwal, saldo peserta dicairkan sebagai DP. PPJB dan KPR menyusul. Fee konversi dibayar setelah transaksi selesai." },
     ],
     notes: [
       "Calon pembeli yang dikirim sudah melalui verifikasi dan profil kelayakan tim barumahID.",
+      `Harga di MoU tidak berubah sampai konversi. Perhitungkan masa tunggu ${CONV_MIN} sampai ${CONV_MAX} tahun saat menentukan harga unit untuk program.`,
       "Kalau unit di MoU ditarik sebelum konversi, developer menyiapkan unit pengganti yang setara.",
       "Kerja sama tidak eksklusif.",
     ],
@@ -343,19 +368,17 @@ export const GUIDES: Record<RtoRole["id"], { intro: string; steps: GuideStep[]; 
 
 // ---- Aturan dana ----
 
-/** Tahapan dari sewa sampai konversi (dulu bertahap per persen DP; sekarang MoU di awal, konversi setelah 2-4 tahun) */
+/** Tahapan dari sewa sampai konversi (dulu bertahap per persen DP; sekarang MoU dan harga terkunci di awal, konversi setelah 2-4 tahun) */
 export const PRICE_LOCK_STAGES = [
   { at: `Bulan 1-${RTO_UNLOCK_MONTHS}`, body: "Sewa biasa di unit mitra sambil memenuhi syarat RTO." },
-  { at: "RTO terbuka", body: "Pilih rumah dari developer mitra. MoU ditandatangani di awal: unit, harga, dan jadwal konversi." },
-  { at: `${CONV_MIN}-${CONV_MAX} tahun`, body: "25% sewa jadi saldo DP setiap bulan. Tim bantu siapkan berkas KPR." },
-  { at: "Konversi", body: "Saldo dikonversi jadi DP. PPJB, lalu akad KPR dengan harga sesuai MoU." },
+  { at: "RTO terbuka", body: "Pilih rumah dari developer mitra. MoU ditandatangani dan harga rumah dikunci sejak hari itu." },
+  { at: `${CONV_MIN}-${CONV_MAX} tahun`, body: "Bayar sewa program, 25%-nya jadi saldo DP setiap bulan. Tim bantu siapkan berkas KPR." },
+  { at: "Konversi", body: "Saldo dikonversi jadi DP. PPJB, lalu akad KPR dengan harga yang sama seperti di MoU." },
 ];
 
 export const REFUND_POLICY = [
-  { when: "Mundur sebelum 6 bulan program", back: "70%" },
-  { when: "Mundur di bulan ke-6 sampai 12", back: "80%" },
-  { when: "Mundur setelah 12 bulan", back: "90%" },
-  { when: "KPR ditolak bank, bukan karena kelalaianmu", back: "100%" },
+  { when: "Mundur kapan saja, di bulan berapa pun", back: "100%" },
+  { when: "KPR ditolak bank", back: "100%" },
   { when: "Force majeure atau bencana", back: "100%" },
   { when: "barumahID tidak memenuhi kewajibannya", back: "105%" },
 ];
@@ -380,7 +403,7 @@ export interface DpChannel {
 // Channel percepatan DP sesuai PRD v3.2. Hanya Sewa Core yang jadi inti program.
 // Jasa titip dan jasa pindahan digabung jadi satu (arahan user Okt 2026).
 export const DP_CHANNELS: DpChannel[] = [
-  { name: "Sewa Core", body: "25% dari sewa bulanan jadi saldo DP.", status: "inti" },
+  { name: "Sewa Core", body: "25% dari sewa program jadi saldo DP.", status: "inti" },
   { name: "Kosanesia Laundry", body: "Cuci di laundry mitra, cashback masuk saldo DP.", status: "segera" },
   { name: "Jasa Titip dan Pindahan", body: "Titip barang antarkota atau pindahan, cashback masuk saldo DP.", status: "segera" },
   { name: "GreenPoint", body: "Pilah sampah rutin, poinnya jadi tambahan DP.", status: "segera" },
@@ -416,6 +439,11 @@ export const RTO_FAQ = [
       "Belum. Program pertama sedang kami siapkan bersama mitra penyedia unit. Daftar sekarang supaya kamu dapat kabar pertama, lengkap dengan syarat dan simulasinya.",
   },
   {
+    question: "Apakah harga rumah bisa naik selama saya menabung DP?",
+    answer:
+      "Tidak. Harga rumah tujuan dikunci di MoU sejak RTO dimulai sampai konversi. Developer mitra sudah memperhitungkan masa tunggunya, jadi kamu tidak dikejar kenaikan harga.",
+  },
+  {
     question: "Kenapa harus sewa dulu sebelum bisa RTO?",
     answer: `Riwayat bayar ${RTO_UNLOCK_MONTHS} bulan menunjukkan kamu siap berkomitmen. Riwayat ini juga yang nanti membantu saat pengajuan KPR.`,
   },
@@ -426,7 +454,7 @@ export const RTO_FAQ = [
   },
   {
     question: "Berapa lama sampai saldo bisa jadi DP?",
-    answer: `${CONV_MIN} sampai ${CONV_MAX} tahun setelah RTO terbuka, sesuai jadwal di MoU. Contoh: sewa Rp2 juta per bulan, setelah ${RTO_CONVERT_YEARS.default} tahun saldo DP sekitar ${juta(saldoAfter(2_000_000, RTO_CONVERT_YEARS.default))}. Cukup untuk DP 10% rumah sampai sekitar ${juta(maxHomePrice(saldoAfter(2_000_000, RTO_CONVERT_YEARS.default), 10))}.`,
+    answer: `${CONV_MIN} sampai ${CONV_MAX} tahun setelah RTO terbuka, sesuai jadwal di MoU. Contoh: sewa biasa Rp2 juta per bulan, setelah ${RTO_CONVERT_YEARS.default} tahun saldo DP sekitar ${juta(saldoAfter(2_000_000, RTO_CONVERT_YEARS.default))}. Cukup untuk DP 10% rumah sampai sekitar ${juta(maxHomePrice(saldoAfter(2_000_000, RTO_CONVERT_YEARS.default), 10))}.`,
   },
   {
     question: "Kalau saldo belum cukup saat konversi?",
@@ -435,12 +463,16 @@ export const RTO_FAQ = [
   {
     question: "Apakah ada biaya tambahan?",
     answer:
-      "Daftar dan sewa biasa tidak ada biaya tambahan. Setelah masuk program RTO, sewa program sudah termasuk biaya program 9% di atas harga sewa mitra, tertulis jelas di kontrak.",
+      "Daftar gratis. Sewa biasa sudah termasuk biaya layanan barumahID 9% dari harga yang disepakati dengan pemilik. Setelah RTO terbuka, kamu bayar sewa program: sewa biasa ditambah setoran DP. Setoran itu tetap uangmu, tercatat sebagai saldo DP.",
   },
   {
-    question: "Bagaimana kalau saya mundur sebelum DP cukup?",
+    question: "Kenapa sewa program lebih tinggi dari sewa biasa?",
+    answer: `Selisihnya adalah setoran DP. Contoh: sewa biasa ${rpFull(regularRent(PRICE_EXAMPLE_DEAL))}, sewa program ${rpFull(programRent(regularRent(PRICE_EXAMPLE_DEAL)))}. ${rpFull(dpPerMonth(regularRent(PRICE_EXAMPLE_DEAL)))} (25% dari sewa program) masuk saldo DP atas namamu. Pemilik tetap terima harga yang disepakati, biaya layanan barumahID tidak bertambah.`,
+  },
+  {
+    question: "Bagaimana kalau saya mundur sebelum konversi?",
     answer:
-      "Saldo DP dikembalikan sesuai lama program: 70% sebelum 6 bulan, 80% di bulan ke-6 sampai 12, 90% setelah 12 bulan. Kalau KPR ditolak bukan karena kelalaianmu, kembali 100%.",
+      "Saldo DP itu uangmu, jadi tidak ditahan. Kamu bisa menariknya kembali 100%, tanpa potongan, di bulan berapa pun. Dicairkan paling lambat 14 hari kerja setelah pengajuan, dan rumah tujuan di MoU dilepas.",
   },
   {
     question: "Saldo DP saya untuk rumah yang mana?",

@@ -100,3 +100,31 @@ export function Row({ label, value, strong = false, tone }: { label: string; val
     </div>
   );
 }
+
+/** Pembagian sewa program, ditampilkan terbuka: pemilik kos, layanan barumahID, dan saldo DP penyewa */
+export function RentSplit({ owner, fee, dp, dark = false }: { owner: number; fee: number; dp: number; dark?: boolean }) {
+  const total = owner + fee + dp;
+  const rupiah = (n: number) => "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(n));
+  const parts = [
+    { label: "Pemilik kos", v: owner, dot: dark ? "bg-white/35" : "bg-brand-dark/25" },
+    { label: "Layanan barumahID", v: fee, dot: dark ? "bg-white/70" : "bg-brand-dark/60" },
+    { label: "Saldo DP-mu", v: dp, dot: "bg-brand-red" },
+  ];
+  return (
+    <div>
+      <div className="flex h-2.5 overflow-hidden rounded-full" aria-hidden="true">
+        {parts.map((p) => (
+          <span key={p.label} className={p.dot} style={{ width: `${(p.v / total) * 100}%` }} />
+        ))}
+      </div>
+      <ul className={`mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11.5px] ${dark ? "text-white/60" : "text-brand-gray"}`}>
+        {parts.map((p) => (
+          <li key={p.label} className="flex items-center gap-1.5">
+            <span className={`h-2 w-2 rounded-full ${p.dot}`} aria-hidden="true" />
+            {p.label} <span className={`font-bold ${dark ? "text-white" : "text-brand-dark"}`}>{rupiah(p.v)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

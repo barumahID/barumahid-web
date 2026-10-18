@@ -1,4 +1,5 @@
 import { LISTINGS, type Listing } from "@/data/listings";
+import { regularRent } from "@/data/rto";
 
 // Listing RTO publik (server saja). Unit kos dan rumah sewa dari mitra penyedia kos dibaca dari database lewat
 // fungsi rto_public_units: hanya unit tayang/penuh yang lolos inspeksi, dan hanya kolom aman (tanpa alamat,
@@ -72,7 +73,8 @@ function toListing(u: PublicUnitRow): Listing {
       .filter((src): src is string => Boolean(src))
       .map((src, i) => ({ src, alt: `${u.title}, foto ${i + 1}` })),
     description: u.description ?? undefined,
-    sewaPerBulan: Number(u.rent_monthly),
+    // rent_monthly = harga deal yang diterima pemilik; yang tampil di listing = sewa biasa (deal + layanan barumahID)
+    sewaPerBulan: regularRent(Number(u.rent_monthly)),
     kind: u.kind,
     rooms: u.rooms ?? undefined,
     rtoReady: u.rto_ready,
