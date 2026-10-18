@@ -6,7 +6,7 @@ import Link from "@/i18n/Link";
 import LeadForm from "@/components/forms/LeadForm";
 import {
   PATH_STEPS,
-  PRICE_EXAMPLE_DEAL,
+  PRICE_EXAMPLE_RENT,
   READINESS_ASPECTS,
   READINESS_BANDS,
   RTO_CONVERT_OPTIONS,
@@ -18,7 +18,6 @@ import {
   dpPerMonth,
   maxHomePrice,
   programRent,
-  regularRent,
   saldoAfter,
   type RtoCategory,
 } from "@/data/rto";
@@ -56,7 +55,7 @@ const span = (m: number) => (m / 12).toLocaleString("id-ID", { maximumFractionDi
 const linkCls = "font-bold text-brand-dark underline underline-offset-4 hover:text-brand-red";
 const box = "rounded-2xl border border-brand-dark/10 bg-white p-4 sm:p-5";
 const maxAspect = Math.max(...READINESS_ASPECTS.map((a) => a.max));
-const EXAMPLE_RENT = regularRent(PRICE_EXAMPLE_DEAL);
+const EXAMPLE_RENT = PRICE_EXAMPLE_RENT;
 
 interface Action {
   label: string;
