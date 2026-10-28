@@ -28,8 +28,24 @@ async function origin() {
   return SITE.url;
 }
 
-function authMessage(msg: string) {
-  const m = msg.toLowerCase();
+/** Pesan yang jelas untuk pengguna dari error Supabase Auth (kode dulu, lalu teks pesan sebagai cadangan) */
+function authMessage(error: { message: string; code?: string }) {
+  switch (error.code) {
+    case "email_address_invalid":
+      return "Alamat email tidak valid atau tidak aktif. Periksa lagi ejaannya (nama Gmail minimal 6 huruf), atau pakai email lain.";
+    case "email_address_not_authorized":
+      return "Email konfirmasi belum bisa dikirim ke alamat ini. Hubungi admin barumahID lewat WhatsApp.";
+    case "over_email_send_rate_limit":
+      return "Pendaftaran sedang ramai, email konfirmasi tertunda. Coba lagi sekitar 1 jam lagi, atau hubungi admin barumahID.";
+    case "user_already_exists":
+    case "email_exists":
+      return "Email ini sudah terdaftar. Silakan masuk, atau pakai Lupa kata sandi.";
+    case "weak_password":
+      return "Kata sandi terlalu lemah. Pakai minimal 8 karakter, campur huruf dan angka.";
+    case "signup_disabled":
+      return "Pendaftaran akun sedang ditutup. Hubungi admin barumahID.";
+  }
+  const m = error.message.toLowerCase();
   if (m.includes("invalid login credentials")) return "Email atau kata sandi tidak sesuai.";
   if (m.includes("email not confirmed")) return "Email belum dikonfirmasi. Buka tautan konfirmasi yang kami kirim ke email Anda.";
   if (m.includes("already registered") || m.includes("already been registered")) return "Email ini sudah terdaftar. Silakan masuk.";
@@ -47,7 +63,7 @@ export async function signIn(_: FormState, fd: FormData): Promise<FormState> {
   if (!email || !password) return { error: "Isi email dan kata sandi." };
   const supabase = await portalClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: authMessage(error.message) };
+  if (error) return { error: authMessage(error) };
   redirect("/portal/dashboard");
 }
 
@@ -82,7 +98,7 @@ export async function signUp(_: FormState, fd: FormData): Promise<FormState> {
       emailRedirectTo: `${await origin()}/portal/auth/callback`,
     },
   });
-  if (error) return { error: authMessage(error.message) };
+  if (error) return { error: authMessage(error) };
   if (data.session) redirect("/portal/dashboard");
   return {
     ok: true,
@@ -114,7 +130,7 @@ export async function updatePassword(_: FormState, fd: FormData): Promise<FormSt
   if (password !== String(fd.get("confirm") ?? "")) return { error: "Konfirmasi kata sandi tidak sama." };
   const supabase = await portalClient();
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: authMessage(error.message) };
+  if (error) return { error: authMessage(error) };
   redirect("/portal/dashboard");
 }
 
