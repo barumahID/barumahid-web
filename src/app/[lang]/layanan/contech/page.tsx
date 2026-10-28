@@ -13,7 +13,20 @@ import AccordionFAQ from "@/components/ui/AccordionFAQ";
 import { PROJECT_CITIES, verifiedCities } from "@/data/projects";
 import { AHSP_FORMULA, BUILD_STEPS } from "@/data/pricing";
 import { GFORMS } from "@/data/google-forms";
-import { CONTECH_FAQ, CONTECH_HERO, FORM_KLIEN, CONTECH_REACH, FOTO_RENOVASI, GAMBAR_STRUKTUR, KARYA, PROYEK_NON_RUMAH, RENOVASI_BANGUN, SETELAH_KIRIM } from "@/data/contech";
+import {
+  CONTECH_FAQ,
+  CONTECH_HERO,
+  CONTECH_SERVICES,
+  FORM_KLIEN,
+  CONTECH_REACH,
+  FOTO_RENOVASI,
+  GAMBAR_STRUKTUR,
+  KARYA,
+  PROYEK_NON_RUMAH,
+  RENOVASI_BANGUN,
+  SETELAH_KIRIM,
+  STEP_FORMS,
+} from "@/data/contech";
 import { ADDRESSES, waLink } from "@/data/site";
 import { alternates, pageLang } from "@/i18n/server";
 
@@ -60,7 +73,7 @@ export default async function ContechPage({ params }: Props) {
   const cities = verifiedCities();
   return (
     <>
-      {/* 1. Hero: 4 foto saat konstruksi berganti pelan */}
+      {/* 1. Hero: 4 foto saat konstruksi berganti pelan, plus kartu dua layanan dan miniCAD (terlihat tanpa scroll) */}
       <PageHero label={t(CONTECH_HERO.label)} title={t(CONTECH_HERO.title)} subtitle={
           <p>
             {t(CONTECH_HERO.subtitle)}
@@ -71,9 +84,24 @@ export default async function ContechPage({ params }: Props) {
         <ButtonLink href="#konsultasi" variant="red">
           {t("Konsultasi gratis")}
         </ButtonLink>
-        <ButtonLink href="#renovasi" variant="outline-light" arrow={false}>
-          {t("Lihat harga paket")}
-        </ButtonLink>
+        <nav aria-label={t("Layanan ConTech")} className="grid w-full gap-2 sm:grid-cols-3 lg:max-w-4xl">
+          {CONTECH_SERVICES.map((s) => (
+            <a
+              key={s.href}
+              href={s.href}
+              className="group rounded-2xl border border-white/15 bg-white/[0.06] px-4 py-3 backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/10 sm:py-4"
+            >
+              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-red">{t(s.tag)}</span>
+              <span className="mt-0.5 flex items-center justify-between gap-2 text-[15px] font-extrabold leading-snug text-white">
+                {t(s.title)}
+                <span aria-hidden="true" className="text-white/50 transition-transform group-hover:translate-y-0.5">
+                  ↓
+                </span>
+              </span>
+              <span className="mt-0.5 hidden text-[12.5px] leading-snug text-white/65 sm:block">{t(s.body)}</span>
+            </a>
+          ))}
+        </nav>
       </PageHero>
 
       {/* 2. Jejak proyek: globe + Base dan VO, wilayah, angka per lini jasa */}
@@ -142,19 +170,18 @@ export default async function ContechPage({ params }: Props) {
             ))}
           </div>
 
-          {/* Paket: cakupan pekerjaan, harga dihitung per item (AHSP) */}
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          {/* Cakupan pekerjaan (tanpa nomor supaya tidak terbaca seperti alur), harga cukup ditulis sekali */}
+          <div className="mt-12 grid gap-3 md:grid-cols-3">
             {RENOVASI_BANGUN.scopes.map((s, i) => (
               <Reveal key={s.name} delay={i * 80}>
-                <article className="flex h-full flex-col rounded-3xl border border-brand-dark/10 bg-white p-6 md:p-7">
-                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-brand-red">0{i + 1}</span>
-                  <h3 className="mt-4 text-[21px] font-extrabold tracking-tight text-brand-dark">{t(s.name)}</h3>
-                  <p className="mt-2 text-[14.5px] leading-relaxed text-brand-gray">{t(s.body)}</p>
-                  <p className="mt-auto border-t border-brand-dark/10 pt-5 text-[13px] font-bold text-brand-dark">{t(RENOVASI_BANGUN.priceLabel)}</p>
+                <article className="h-full rounded-2xl border border-brand-dark/10 bg-white p-5 md:p-6">
+                  <h3 className="text-[19px] font-extrabold tracking-tight text-brand-dark">{t(s.name)}</h3>
+                  <p className="mt-1.5 text-[14.5px] leading-relaxed text-brand-gray">{t(s.body)}</p>
                 </article>
               </Reveal>
             ))}
           </div>
+          <p className="mt-3 text-[13.5px] font-bold text-brand-dark">{t(RENOVASI_BANGUN.priceLabel)}</p>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-12">
             <Reveal className="lg:col-span-5">
@@ -182,19 +209,37 @@ export default async function ContechPage({ params }: Props) {
                 </div>
               </div>
             </Reveal>
-            <ol className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
-              {BUILD_STEPS.map((s, i) => (
-                <Reveal key={s.title} delay={i * 60}>
-                  <li className="flex h-full gap-4 rounded-3xl bg-white p-5 card-shadow">
-                    <span className="text-[26px] font-black leading-none text-brand-red/80">{String(i + 1).padStart(2, "0")}</span>
-                    <span>
-                      <span className="block text-[16px] font-extrabold text-brand-dark">{t(s.title)}</span>
-                      <span className="mt-1 block text-[14px] leading-relaxed text-brand-gray">{t(s.body)}</span>
-                    </span>
-                  </li>
-                </Reveal>
-              ))}
-            </ol>
+            {/* Alur kerja + formulir klien jadi satu (masukan pelanggan Okt 2026). id formulir-klien untuk tautan lama. */}
+            <div id="formulir-klien" className="scroll-mt-24 lg:col-span-7">
+              <p className="type-micro text-brand-red">{t("Alur kerja dan formulir")}</p>
+              <ol className="mt-3 grid gap-3 sm:grid-cols-2">
+                {BUILD_STEPS.map((s, i) => {
+                  const f = FORM_KLIEN.find((x) => x.code === STEP_FORMS[i]);
+                  return (
+                    <Reveal key={s.title} delay={i * 60}>
+                      <li className="flex h-full gap-4 rounded-3xl bg-white p-5 card-shadow">
+                        <span className="text-[26px] font-black leading-none text-brand-red/80">{String(i + 1).padStart(2, "0")}</span>
+                        <span>
+                          <span className="block text-[16px] font-extrabold text-brand-dark">{t(s.title)}</span>
+                          <span className="mt-1 block text-[14px] leading-relaxed text-brand-gray">{t(s.body)}</span>
+                          {f && (
+                            <a
+                              href={GFORMS[f.code]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-2.5 block text-[13px] font-bold leading-snug text-brand-red underline-offset-4 hover:underline"
+                            >
+                              <span className="mr-1.5 rounded bg-brand-red/10 px-1.5 py-0.5 font-mono text-[11px]">{f.code}</span>
+                              {t(f.title)} <span aria-hidden="true">↗</span>
+                            </a>
+                          )}
+                        </span>
+                      </li>
+                    </Reveal>
+                  );
+                })}
+              </ol>
+            </div>
           </div>
         </div>
       </section>
@@ -216,45 +261,6 @@ export default async function ContechPage({ params }: Props) {
           <Reveal className="mt-8">
             <PricingTerrace partnerTitle={GAMBAR_STRUKTUR.partnerTitle} />
           </Reveal>
-        </div>
-      </section>
-
-      {/* Formulir klien E2E: tiga tahap, diisi langsung oleh klien */}
-      <section id="formulir-klien" className="scroll-mt-20 bg-brand-cream">
-        <div className="mx-auto max-w-[1280px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
-            <div className="lg:col-span-7">
-              <p className="type-micro text-brand-red">{t("Formulir klien")}</p>
-              <h2 className="mt-4 text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold leading-tight tracking-[-0.02em] text-brand-dark">
-                {t("Tiga formulir, sesuai tahap proyekmu.")}
-              </h2>
-            </div>
-            <p className="text-[15px] leading-relaxed text-brand-gray lg:col-span-5">
-              {t("Diisi langsung oleh klien. Datanya membantu kami menyiapkan penawaran, menjalankan pesanan, dan memperbaiki layanan.")}
-            </p>
-          </div>
-          <ol className="mt-8 grid gap-3 md:grid-cols-3">
-            {FORM_KLIEN.map((f, i) => (
-              <li key={f.code}>
-                <a
-                  href={GFORMS[f.code]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex h-full flex-col rounded-2xl border border-brand-dark/10 bg-white p-5 transition-colors hover:border-brand-red"
-                >
-                  <span className="flex items-center justify-between gap-3">
-                    <span className="text-[12px] font-bold uppercase tracking-[0.12em] text-brand-mute">
-                      {String(i + 1).padStart(2, "0")} · {t(f.stage)}
-                    </span>
-                    <span className="rounded-md bg-brand-dark/[0.06] px-2 py-0.5 font-mono text-[11px] font-bold text-brand-dark">{f.code}</span>
-                  </span>
-                  <span className="mt-3 text-[17px] font-extrabold leading-snug text-brand-dark group-hover:text-brand-red">{t(f.title)}</span>
-                  <span className="mt-1.5 text-[14px] leading-relaxed text-brand-gray">{t(f.body)}</span>
-                  <span className="mt-auto pt-4 text-[13px] font-bold text-brand-red">{t("Isi formulir")} ↗</span>
-                </a>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 

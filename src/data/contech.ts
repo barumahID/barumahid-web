@@ -35,6 +35,14 @@ export const CONTECH_REACH = {
   ],
 };
 
+// Dua layanan ConTech + miniCAD, tampil sebagai kartu di hero supaya terlihat tanpa scroll (masukan pelanggan Okt 2026:
+// pengunjung tidak tahu ada jasa gambar dan struktur kalau tidak scroll ke bawah).
+export const CONTECH_SERVICES = [
+  { href: "#renovasi", tag: "Layanan 01", title: "Renovasi & Bangun", body: "Renovasi, bangun baru, dan manajemen konstruksi. RAB berbasis AHSP." },
+  { href: "#harga", tag: "Layanan 02", title: "Gambar, Modelling & Struktur", body: "Gambar kerja, model 3D, dan analisa struktur bersama Jururancang." },
+  { href: "#konsultasi", tag: "Gratis", title: "miniCAD", body: "Susun denah, tampak, 3D, dan estimasi biaya rumahmu sendiri." },
+];
+
 export const RENOVASI_BANGUN = {
   label: "Layanan unggulan",
   title: "Renovasi dan bangun.",
@@ -141,9 +149,13 @@ export const SETELAH_KIRIM = [
 ];
 
 // Formulir klien layanan E2E (Google Form resmi, link di src/data/google-forms.ts). Diisi langsung oleh klien sesuai
-// tahap proyeknya (arahan user Okt 2026: judul rapi dan singkat).
+// tahap proyeknya (arahan user Okt 2026: judul rapi dan singkat). Sejak masukan pelanggan Okt 2026 tidak lagi jadi
+// bagian sendiri: tiap formulir menempel di langkah alur kerja (BUILD_STEPS) lewat STEP_FORMS, supaya tidak berulang.
 export const FORM_KLIEN: { code: "F01" | "F02" | "F03"; stage: string; title: string; body: string }[] = [
   { code: "F01", stage: "Sebelum proyek", title: "Survei Kebutuhan & Konsultasi Awal", body: "Ceritakan kebutuhan, lokasi, dan anggaran proyekmu." },
   { code: "F02", stage: "Saat siap memesan", title: "Pemesanan Jasa Konstruksi", body: "Konfirmasi jasa yang dipilih beserta data proyek." },
   { code: "F03", stage: "Setelah proyek selesai", title: "Feedback Layanan (NPS)", body: "Nilai pengalamanmu bekerja bersama barumahID." },
 ];
+
+/** Formulir per langkah alur kerja (indeks BUILD_STEPS): Konsultasi = F01, Kontrak = F02, Serah terima = F03 */
+export const STEP_FORMS: Record<number, "F01" | "F02" | "F03"> = { 0: "F01", 3: "F02", 5: "F03" };

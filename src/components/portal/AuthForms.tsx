@@ -25,7 +25,7 @@ function Submit({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Notice({ state }: { state: FormState }) {
+export function Notice({ state }: { state: FormState }) {
   if (state.error)
     return (
       <p role="alert" className="rounded-lg bg-brand-red/10 px-3.5 py-2.5 text-[13px] font-medium text-brand-red">

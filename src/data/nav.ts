@@ -5,6 +5,8 @@ export interface NavChild {
   label: string;
   description: string;
   audience: string;
+  /** Sub layanan di dropdown (arahan user Okt 2026, masukan pelanggan: layanan di bawah halaman tidak terlihat tanpa scroll) */
+  subs?: { href: string; label: string }[];
 }
 
 export interface NavItem {
@@ -19,12 +21,23 @@ export const SERVICE_LINKS: NavChild[] = [
     label: "Rent-to-Own",
     description: "Sewa sambil menabung DP, lalu miliki rumahnya.",
     audience: "Untuk calon pemilik rumah",
+    subs: [
+      { href: "/layanan/rto#siap-berdaya", label: "Rumah Berdaya" },
+      { href: "/layanan/rto#siap-bangun", label: "Rumah Bangun" },
+      { href: "/layanan/rto#siap-beli", label: "Rumah Beli" },
+      { href: "/layanan/rto/cari", label: "Cari unit" },
+    ],
   },
   {
     href: "/layanan/contech",
     label: "ConTech",
     description: "Jasa gambar, analisa struktur, renovasi, dan bangun.",
     audience: "Untuk pemilik proyek",
+    subs: [
+      { href: "/layanan/contech#renovasi", label: "Renovasi & Bangun" },
+      { href: "/layanan/contech#harga", label: "Gambar, Modelling & Struktur" },
+      { href: "/layanan/contech#konsultasi", label: "miniCAD: denah gratis" },
+    ],
   },
 ];
 

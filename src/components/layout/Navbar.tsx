@@ -198,28 +198,39 @@ export default function Navbar() {
                   <Chevron open={serviceOpen} />
                 </button>
                 <div
-                  className={`absolute left-1/2 top-full w-[480px] -translate-x-1/2 pt-3 transition-all duration-200 ${
+                  className={`absolute left-1/2 top-full w-[560px] -translate-x-1/2 pt-3 transition-all duration-200 ${
                     serviceOpen ? "visible opacity-100" : "invisible -translate-y-1 opacity-0"
                   }`}
                 >
                   <div className="grid gap-1 rounded-2xl border border-brand-dark/10 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(20,20,20,0.35)]">
                     {item.children.map((c) => (
-                      <Link
-                        key={c.href}
-                        href={c.href}
-                        className={`group flex items-start gap-4 rounded-xl p-4 transition-colors hover:bg-brand-cream ${
-                          isActive(c.href) ? "bg-brand-cream" : ""
-                        }`}
-                      >
-                        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-brand-red" aria-hidden="true" />
-                        <span>
-                          <span className="block text-[15px] font-bold text-brand-dark group-hover:text-brand-red">{t(c.label)}</span>
-                          <span className="mt-0.5 block text-[13px] leading-snug text-brand-gray">{t(c.description)}</span>
-                          <span className="mt-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">
-                            {t(c.audience)}
+                      <div key={c.href} className={`rounded-xl p-2 transition-colors hover:bg-brand-cream ${isActive(c.href) ? "bg-brand-cream" : ""}`}>
+                        <Link href={c.href} onClick={closeService} className="group flex items-start gap-4 rounded-lg p-2">
+                          <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-brand-red" aria-hidden="true" />
+                          <span>
+                            <span className="block text-[15px] font-bold text-brand-dark group-hover:text-brand-red">{t(c.label)}</span>
+                            <span className="mt-0.5 block text-[13px] leading-snug text-brand-gray">{t(c.description)}</span>
+                            <span className="mt-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-mute">
+                              {t(c.audience)}
+                            </span>
                           </span>
-                        </span>
-                      </Link>
+                        </Link>
+                        {/* Sub layanan: langsung ke bagiannya, tanpa harus scroll halaman */}
+                        {c.subs && (
+                          <div className="flex flex-wrap gap-1.5 pb-1 pl-8 pr-2">
+                            {c.subs.map((s) => (
+                              <Link
+                                key={s.href}
+                                href={s.href}
+                                onClick={closeService}
+                                className="rounded-full border border-brand-dark/10 bg-white px-3 py-1 text-[12.5px] font-semibold text-brand-dark transition-colors hover:border-brand-red hover:text-brand-red"
+                              >
+                                {t(s.label)}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -318,14 +329,26 @@ export default function Navbar() {
                 <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-brand-mute">{t(item.label)}</p>
                 <div className="mt-2 grid gap-1">
                   {item.children.map((c) => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      className={`rounded-xl px-3 py-3 ${isActive(c.href) ? "bg-brand-cream" : "active:bg-brand-cream"}`}
-                    >
-                      <span className={`block text-[17px] font-bold ${isActive(c.href) ? "text-brand-red" : "text-brand-dark"}`}>{t(c.label)}</span>
-                      <span className="block text-[13px] text-brand-gray">{t(c.description)}</span>
-                    </Link>
+                    <div key={c.href} className={`rounded-xl px-3 py-3 ${isActive(c.href) ? "bg-brand-cream" : ""}`}>
+                      <Link href={c.href} onClick={() => setMobileOpen(false)} className="block active:opacity-70">
+                        <span className={`block text-[17px] font-bold ${isActive(c.href) ? "text-brand-red" : "text-brand-dark"}`}>{t(c.label)}</span>
+                        <span className="block text-[13px] text-brand-gray">{t(c.description)}</span>
+                      </Link>
+                      {c.subs && (
+                        <div className="mt-2.5 flex flex-wrap gap-1.5">
+                          {c.subs.map((s) => (
+                            <Link
+                              key={s.href}
+                              href={s.href}
+                              onClick={() => setMobileOpen(false)}
+                              className="rounded-full border border-brand-dark/15 bg-white px-3 py-1.5 text-[13px] font-semibold text-brand-dark active:bg-brand-cream"
+                            >
+                              {t(s.label)}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
